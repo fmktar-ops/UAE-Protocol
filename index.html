@@ -260,15 +260,15 @@ const protocolData = {
 };
 
 const touristPhrases = [
-  {ar:"مرحبا", tr:"Marhaba", en:"Hello"},
+  {ar:"والنعم", tr:"Walla ni'am", en:"A word of praise said to a man for his chivalry, good conduct, and character"},
   {ar:"السلام عليكم", tr:"Assalamu alaikum", en:"Peace be upon you (greeting)"},
   {ar:"شكراً", tr:"Shukran", en:"Thank you"},
-  {ar:"عفواً", tr:"Afwan", en:"You're welcome / Excuse me"},
-  {ar:"من فضلك", tr:"Min fadlak", en:"Please"},
-  {ar:"بكم هذا؟", tr:"Bikam hatha?", en:"How much is this?"},
+  {ar:"حي الله من يانا", tr:"Hayyak Allah min yana", en:"Welcome, a phrase used to receive a guest"},
+  {ar:"مرحبا الساع", tr:"Marhaba al-sa'a", en:"Welcome (welcoming greeting)"},
+  {ar:"خاطرك شي؟", tr:"Khatrak shay?", en:"Do you need anything?"},
   {ar:"وين...؟", tr:"Wain...?", en:"Where is...?"},
-  {ar:"تكرم", tr:"Tkarram", en:"A polite local courtesy word, like \"please\""},
-  {ar:"يعطيك العافية", tr:"Ya'teek al-afiya", en:"Thanks for the effort (to workers)"},
+  {ar:"اشحالك", tr:"Ish-halak", en:"How are you"},
+  {ar:"ربك بخير", tr:"Rabbak bikhair", en:"God willing, all is well (response to how are you)"},
   {ar:"مع السلامة", tr:"Ma'a salama", en:"Goodbye"}
 ];
 
@@ -385,7 +385,20 @@ const heritageWords = [
   {w:"العزبة", m:"المزرعة أو المكان المخصص لتربية الإبل"},
   {w:"مستانس", m:"سعيد"},
   {w:"متروس", m:"ممتلئ"},
-  {w:"تحيد", m:"تتذكر"}
+  {w:"تحيد", m:"تتذكر"},
+  {w:"الخاشوقة", m:"الملعقة"},
+  {w:"شرات", m:"مثل"},
+  {w:"الشبرية", m:"السرير"},
+  {w:"غرشة", m:"زجاجة"},
+  {w:"اليهال", m:"الأطفال"},
+  {w:"ارمس", m:"اتكلم"},
+  {w:"دختر", m:"الدكتور"},
+  {w:"درب", m:"الطريق"},
+  {w:"غاوية", m:"جميلة"},
+  {w:"خلاف", m:"بعدين"},
+  {w:"المجبة", m:"وعاء يوضع عليه الطعام"},
+  {w:"عسب", m:"عشان"},
+  {w:"ربيعي", m:"صديقي"}
 ];
 
 /* ===================== STATE ===================== */
@@ -581,10 +594,10 @@ const heritageMenu = [
 ];
 
 const nationalIdentityMenu = [
-  {key:'landmarks', icon:'🏙️', title:'المعالم السياحية', desc:'أبرز وجهات الإمارات ومواقعها'},
-  {key:'national', icon:'🇦🇪', title:'الأحداث الوطنية', desc:'اليوم الوطني، يوم العلم، وغيرها'},
+  {key:'governance', icon:'🏛️', title:'نظام الحكم والقيادة', desc:'الاتحاد، الرئاسة، وحكام الإمارات'},
   {key:'anthem', icon:'🎵', title:'السلام الوطني', desc:'كلمات عيشي بلادي واستماع'},
-  {key:'governance', icon:'🏛️', title:'نظام الحكم والقيادة', desc:'الاتحاد، الرئاسة، وحكام الإمارات'}
+  {key:'landmarks', icon:'🏙️', title:'المعالم السياحية', desc:'أبرز وجهات الإمارات ومواقعها'},
+  {key:'national', icon:'🇦🇪', title:'الأحداث الوطنية', desc:'اليوم الوطني، يوم العلم، وغيرها'}
 ];
 
 const allHeritageEntries = heritageMenu.concat(nationalIdentityMenu);
