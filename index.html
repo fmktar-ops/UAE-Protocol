@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>البروتوكول الإماراتي</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#063D2C">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="البروتوكول">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@400;600;700;800&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --green:#0B6E4F; --green-deep:#063D2C; --red:#CE1126; --black:#14181A;
+    --cream:#FBF8F1; --sand:#F1EAD9; --ink:#1B2220; --ink-soft:#64706C; --line:#E7E1D2;
+    --card:#FFFFFF; --shadow: 0 1px 2px rgba(10,20,15,.06), 0 8px 20px -12px rgba(10,20,15,.25);
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    background: linear-gradient(180deg,#DCE4DE 0%, #C9D3CB 100%);
+    color:var(--ink); font-family:'Tajawal', sans-serif; min-height:100vh;
+    display:flex; align-items:center; justify-content:center; padding: 24px 10px;
+  }
+
+  /* ---------- Phone shell ---------- */
+  .phone{
+    width: 380px; max-width: 100%;
+    background: var(--black);
+    border-radius: 46px;
+    padding: 12px;
+    box-shadow: 0 40px 70px -25px rgba(0,0,0,.55), 0 0 0 2px rgba(255,255,255,.04) inset;
+    position: relative;
+  }
+  .screen{
+    background: var(--sand);
+    border-radius: 34px;
+    overflow:hidden;
+    height: 800px;
+    display:flex; flex-direction:column;
+    position:relative;
+  }
+  .notch{
+    position:absolute; top:8px; left:50%; transform:translateX(-50%);
+    width:110px; height:22px; background:var(--black); border-radius:12px; z-index:20;
+  }
+  .status-bar{
+    height:46px; flex-shrink:0; display:flex; align-items:center; justify-content:space-between;
+    padding: 6px 22px 0; font-size:13px; font-weight:700; color:var(--ink);
+  }
+  .status-bar .flagchip{ display:flex; align-items:center; gap:5px; font-size:11px; font-weight:700; color:var(--ink-soft); }
+  .status-bar .flagchip svg{ width:16px; height:11px; border-radius:2px; box-shadow:0 0 0 1px rgba(0,0,0,.1); }
+
+  .content{ flex:1; overflow-y:auto; padding: 4px 18px 100px; scrollbar-width:none; }
+  .content::-webkit-scrollbar{ display:none; }
+
+  /* Bottom nav */
+  .bottom-nav{
+    position:absolute; bottom:0; left:0; right:0; height:82px;
+    background: rgba(255,255,255,.94); backdrop-filter: blur(12px);
+    border-top:1px solid var(--line);
+    display:flex; padding-bottom:16px; z-index:10;
+  }
+  .nav-item{
+    flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:3px; font-size:10.5px; color: var(--ink-soft); cursor:pointer; font-weight:600; position:relative;
+  }
+  .nav-item .ic{ font-size:19px; line-height:1; }
+  .nav-item.active{ color: var(--green-deep); font-weight:800; }
+  .nav-item.active .ic{ transform: translateY(-1px); }
+  .nav-badge{
+    position:absolute; top:0; right:calc(50% - 20px); background:var(--red); color:#fff;
+    font-size:9px; font-weight:800; border-radius:999px; padding:1px 5px; min-width:15px; text-align:center;
+  }
+
+  /* Typography helpers */
+  h1,h2,h3,p{ margin:0; }
+  .kufi{ font-family:'Noto Kufi Arabic', sans-serif; }
+  .app-header{ padding: 14px 0 10px; }
+  .app-header .greet{ font-size:12px; color:var(--ink-soft); font-weight:600; }
+  .app-header .name{ font-family:'Noto Kufi Arabic', sans-serif; font-weight:800; font-size:22px; color:var(--green-deep); }
+
+  /* Cards & sections */
+  .section-title{ font-family:'Noto Kufi Arabic', sans-serif; font-weight:700; font-size:15px; color:var(--green-deep); margin: 18px 2px 10px; display:flex; align-items:center; gap:6px; }
+
+  .potd{
+    background: linear-gradient(135deg, var(--green) 0%, var(--green-deep) 100%);
+    border-radius:18px; padding:16px 18px; color:#fff; box-shadow:var(--shadow); position:relative; overflow:hidden;
+  }
+  .potd::after{ content:""; position:absolute; inset:auto 0 0 0; height:5px; background: repeating-linear-gradient(-45deg, var(--red) 0 8px, #fff0 8px 16px); opacity:.35; }
+  .potd .eyebrow{ font-size:10.5px; opacity:.8; font-weight:700; letter-spacing:.4px; }
+  .potd .say{ font-family:'Noto Kufi Arabic', sans-serif; font-size:17px; font-weight:700; margin:6px 0 3px; }
+  .potd .resp{ font-size:12.5px; opacity:.9; }
+  .potd .en{ font-size:11px; opacity:.7; margin-top:6px; font-style:italic; }
+
+  .chip-row{ display:flex; gap:8px; overflow-x:auto; padding: 2px 0 6px; scrollbar-width:none; }
+  .chip-row::-webkit-scrollbar{ display:none; }
+  .chip{
+    flex-shrink:0; background:var(--card); border:1px solid var(--line); border-radius:999px;
+    padding:9px 16px; font-size:12.5px; font-weight:700; color:var(--green-deep); cursor:pointer; box-shadow:var(--shadow);
+  }
+
+  .list-item{
+    background:var(--card); border:1px solid var(--line); border-radius:16px;
+    padding:14px 16px; margin-bottom:10px; display:flex; align-items:center; justify-content:space-between;
+    cursor:pointer; box-shadow:var(--shadow); transition: transform .12s ease;
+  }
+  .list-item:active{ transform: scale(.98); }
+  .list-item .li-main{ display:flex; align-items:center; gap:12px; }
+  .list-item .li-ic{
+    width:38px; height:38px; border-radius:12px; background:var(--sand);
+    display:flex; align-items:center; justify-content:center; font-size:17px; flex-shrink:0;
+  }
+  .list-item .li-txt b{ font-size:14px; color:var(--ink); display:block; }
+  .list-item .li-txt span{ font-size:11px; color:var(--ink-soft); }
+  .list-item .chev{ color:var(--ink-soft); }
+
+  .back-row{ display:flex; align-items:center; gap:8px; margin: 10px 0 14px; cursor:pointer; color:var(--green-deep); font-weight:700; font-size:13.5px; }
+
+  .detail-title{
+    text-align:center; background: linear-gradient(135deg, var(--green) 0%, var(--green-deep) 100%);
+    color:#fff; border-radius:18px; padding:20px; margin-bottom:10px; box-shadow:var(--shadow);
+  }
+  .detail-title h2{ font-family:'Noto Kufi Arabic', sans-serif; font-size:19px; font-weight:700; }
+  .detail-note{ font-size:12px; color:var(--ink-soft); background:var(--card); border:1px dashed var(--line); border-radius:12px; padding:9px 14px; margin-bottom:14px; text-align:center; }
+
+  .phrase-card{
+    background:var(--card); border-radius:16px; padding:14px 16px; margin-bottom:10px; box-shadow:var(--shadow);
+    border-right:3px solid var(--green);
+  }
+  .phrase-card .row1{ display:flex; align-items:flex-start; justify-content:space-between; gap:8px; }
+  .phrase-card .say{ font-family:'Noto Kufi Arabic', sans-serif; font-weight:700; font-size:15px; color:var(--green-deep); }
+  .phrase-card .say-en{ font-size:10.5px; color:var(--ink-soft); font-style:italic; margin-top:2px; }
+  .phrase-card .actions{ display:flex; gap:6px; flex-shrink:0; }
+  .icon-btn{
+    width:30px; height:30px; border-radius:50%; border:1px solid var(--line); background:var(--sand);
+    display:flex; align-items:center; justify-content:center; font-size:13px; cursor:pointer; color:var(--ink-soft);
+    flex-shrink:0; text-decoration:none;
+  }
+  .icon-btn.fav.active{ background: var(--red); color:#fff; border-color:var(--red); }
+  .phrase-card .divider{ height:1px; background:var(--line); margin:10px 0; }
+  .phrase-card .resp{ font-size:13.5px; color:var(--ink); font-weight:600; }
+  .phrase-card .resp-en{ font-size:10.5px; color:var(--ink-soft); font-style:italic; margin-top:2px; }
+  .phrase-card .row2{ display:flex; align-items:flex-start; justify-content:space-between; gap:8px; }
+
+  .searchbox{ position:relative; margin: 6px 0 4px; }
+  .searchbox input{
+    width:100%; padding:12px 42px 12px 14px; border-radius:14px; border:1px solid var(--line);
+    background:var(--card); font-family:'Tajawal',sans-serif; font-size:14px; outline:none; box-shadow:var(--shadow);
+  }
+  .searchbox svg{ position:absolute; right:14px; top:50%; transform:translateY(-50%); width:16px; height:16px; color:var(--ink-soft); }
+
+  .heritage-card{ background:var(--card); border-radius:16px; padding:16px; margin-bottom:12px; box-shadow:var(--shadow); }
+  .heritage-card .h-top{ display:flex; align-items:center; gap:10px; margin-bottom:8px; }
+  .heritage-card .h-ic{ font-size:20px; }
+  .heritage-card h3{ font-family:'Noto Kufi Arabic', sans-serif; font-size:14.5px; color:var(--green-deep); font-weight:700; }
+  .heritage-card p{ font-size:12.5px; color:var(--ink-soft); line-height:1.8; }
+  .heritage-card ol{ margin:6px 0 0; padding-inline-start:18px; font-size:12.5px; color:var(--ink-soft); line-height:1.9; }
+
+  .tourist-row{
+    background:var(--card); border-radius:14px; padding:12px 14px; margin-bottom:9px; box-shadow:var(--shadow);
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+  }
+  .tourist-row .t-txt b{ font-family:'Noto Kufi Arabic', sans-serif; font-size:14px; color:var(--green-deep); display:block; }
+  .tourist-row .t-txt .translit{ font-size:11px; color:var(--red); font-weight:700; }
+  .tourist-row .t-txt .en{ font-size:11px; color:var(--ink-soft); }
+
+  .empty-state{ text-align:center; color:var(--ink-soft); font-size:13px; padding: 60px 20px; line-height:1.8; }
+  .empty-state .em-ic{ font-size:34px; display:block; margin-bottom:10px; }
+
+  .note-banner{
+    font-size:11px; color:var(--ink-soft); background:rgba(11,110,79,.08); border-radius:10px; padding:8px 12px; margin: 6px 0 14px; text-align:center;
+  }
+</style>
+</head>
+<body>
+
+<div class="phone">
+  <div class="notch"></div>
+  <div class="screen">
+    <div class="status-bar">
+      <span id="clock">9:41</span>
+      <div class="flagchip">
+        <svg viewBox="0 0 60 40"><rect width="60" height="40" fill="#00732F"/><rect y="13.3" width="60" height="13.3" fill="#fff"/><rect y="26.6" width="60" height="13.4" fill="#000"/><rect width="15" height="40" fill="#CE1126"/></svg>
+        الإمارات
+      </div>
+    </div>
+
+    <div class="content" id="content"></div>
+
+    <div class="bottom-nav">
+      <div class="nav-item" data-tab="home"><span class="ic">🏠</span>الرئيسية</div>
+      <div class="nav-item" data-tab="categories"><span class="ic">📖</span>المناسبات</div>
+      <div class="nav-item" data-tab="tourist"><span class="ic">🧭</span>للزوار</div>
+      <div class="nav-item" data-tab="heritage"><span class="ic">🏺</span>التراث</div>
+      <div class="nav-item" data-tab="favorites"><span class="ic">❤️</span>المفضلة<span class="nav-badge" id="favBadge" style="display:none">0</span></div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ===================== DATA ===================== */
+const protocolData = {
+  "العودة من السفر": { icon:"🧳", note:"تُقال لاستقبال المسافر والاطمئنان عليه بعد رحلته.", items:[
+    {s:"تستاهل اللوال", r:"الله ياول عليك خير", se:"You deserve a warm welcome", re:"May God grant you goodness"},
+    {s:"السلومة", r:"الله يسلمك", se:"Glad you're safe", re:"May God keep you safe"}
+  ]},
+  "الترحيب واللقاء": { icon:"🤝", note:"عبارات الترحيب اليومية بين الأهل والجيران، أساس المجالس الإماراتية.", items:[
+    {s:"شحالكم كل بحالة", r:"طيبين الله يسلمك", se:"How is everyone doing?", re:"We're well, God keep you safe"},
+    {s:"مرحبا", r:"المرحب باجي", se:"Welcome", re:"Welcome to the one who came"},
+    {s:"أقرب", r:"قريب", se:"Come closer", re:"I'm near"},
+    {s:"ما تولهت علينا", r:"السلومة على الزمان", se:"You didn't forget us", re:"Blame it on time"},
+    {s:"اشحالك ربك بخير", r:"بخير وسهالة", se:"How are you, God keep you well", re:"I'm well and at ease"}
+  ]},
+  "مناسبة العيد": { icon:"🌙", note:"تهاني العيدين، وتُستخدم في زيارات الأقارب وصلة الرحم.", items:[
+    {s:"عساك من عواده", r:"ينعاد عليك وعلينا بالخير", se:"May you live to see many more Eids", re:"May it return with goodness to us all"},
+    {s:"مبارك عيدكم", r:"عساكم من عواده", se:"Blessed Eid to you", re:"May you live to see many more"},
+    {s:"عيدكم مبارك", r:"وانتم من العايدين والسالمين", se:"Your Eid is blessed", re:"And may you celebrate safely"},
+    {s:"هنيتم بالعيد", r:"الله يهنينا ويهنيكم", se:"Congratulations on the Eid", re:"May God bless us all"},
+    {s:"كل عام وأنتم بخير", r:"وأنتم بخير وصحة وعافية", se:"Every year and you are well", re:"And you in health and wellness"}
+  ]},
+  "مناسبة رمضان": { icon:"🕌", note:"عبارات الترحيب بالشهر الفضيل وتهنئة الأهل ببدايته.", items:[
+    {s:"مبروك عليكم الشهر", r:"علينا وعليكم يتبارك", se:"Blessed month to you", re:"May it be blessed upon us all"},
+    {s:"هنيتم بالشهر", r:"الله يهنينا ويهنيكم", se:"Congratulations on the month", re:"May God bless us all"}
+  ]},
+  "الأعراس والخطوبة": { icon:"💍", note:"تهاني المناسبات السعيدة كالزواج والخطوبة في الأفراح العائلية.", items:[
+    {s:"مبروك ما دبرت", r:"الله يبارك فيك", se:"Congratulations on what you've arranged", re:"May God bless you"},
+    {s:"مبروك الزواج", r:"الله يبارك لكم", se:"Congratulations on the marriage", re:"May God bless you both"},
+    {s:"مبروك الخطوبة", r:"الله يبارك فيك", se:"Congratulations on the engagement", re:"May God bless you"}
+  ]},
+  "المباركة بالمواليد": { icon:"👶", note:"تهنئة الأهل بالمولود، وتختلف تسمية العبارة بين الولد والبنت.", items:[
+    {s:"مبروك الطارش للولد", r:"الله يبارك فيك", se:"Congratulations on the baby boy", re:"May God bless you"},
+    {s:"مبروك الحاسر للبنت", r:"الله يبارك فيك", se:"Congratulations on the baby girl", re:"May God bless you"}
+  ]},
+  "الضيافة والعزائم": { icon:"☕", note:"آداب تقديم القهوة والطعام للضيوف، وجوهر الكرم الإماراتي الأصيل.", items:[
+    {s:"هود", r:"هدا", se:"Here, take this", re:"Thank you, I will"},
+    {s:"أهبش", r:"أبشر", se:"Go ahead, help yourself", re:"Gladly, at your service"},
+    {s:"بالعافية عليك", r:"ربي لا يحرمك العافية", se:"Enjoy it in good health", re:"May God never deprive you of good health"},
+    {s:"الله يغنيكم ويكثر خيركم", r:"هني وعافية", se:"May God enrich you and multiply your goodness", re:"Enjoy in good health"},
+    {s:"تفضل أشرب", r:"الله يسقيك من نهار الكوثر", se:"Please, have a drink", re:"May God quench you from Al-Kawthar"}
+  ]},
+  "العزاء": { icon:"🕊️", note:"عبارات المواساة وتقديم العزاء لأهل المتوفى، تُقال بصدق وتقدير.", items:[
+    {s:"أحسن الله عزاكم", r:"الدايم وجه الله", se:"May God console you well", re:"Only God's face is eternal"},
+    {s:"مأجورين", r:"أجرنا وأجركم على الله", se:"May you be rewarded by God", re:"Our reward and yours is with God"},
+    {s:"يا فلان مأجور", r:"الله يجيرك من النار", se:"You are rewarded, friend", re:"May God protect you from the Fire"}
+  ]},
+  "حالات شائعة": { icon:"💬", note:"تعبيرات يومية متداولة في المجالس والأسواق بين الناس.", items:[
+    {s:"المعونة", r:"كفيت المهونة", se:"Need any help?", re:"You've been more than enough help"},
+    {s:"كفو", r:"ما عليك زود كفو من رباك", se:"Well done", re:"No need, well done to whoever raised you"},
+    {s:"السموحة", r:"مسموح", se:"Excuse me / pardon", re:"You're excused"},
+    {s:"فالك طيب", r:"فالك ما يخيب", se:"Good omen to you", re:"Your omen won't fail"},
+    {s:"سلمت", r:"من قال سلم", se:"Well said", re:"Blessed is the one who said it"}
+  ]},
+  "المباركة بالبيت": { icon:"🏡", note:"تهنئة صاحب المنزل الجديد عند الانتقال أو الزيارة الأولى للبيت.", items:[
+    {s:"يعله بيت معمور", r:"جزاكم الله خير شرفتونا", se:"May it be a prosperous, blessed home", re:"May God reward you, you've honored us"}
+  ]}
+};
+
+const touristPhrases = [
+  {ar:"مرحبا", tr:"Marhaba", en:"Hello"},
+  {ar:"السلام عليكم", tr:"Assalamu alaikum", en:"Peace be upon you (greeting)"},
+  {ar:"شكراً", tr:"Shukran", en:"Thank you"},
+  {ar:"عفواً", tr:"Afwan", en:"You're welcome / Excuse me"},
+  {ar:"من فضلك", tr:"Min fadlak", en:"Please"},
+  {ar:"بكم هذا؟", tr:"Bikam hatha?", en:"How much is this?"},
+  {ar:"وين...؟", tr:"Wain...?", en:"Where is...?"},
+  {ar:"تكرم", tr:"Tkarram", en:"A polite local courtesy word, like \"please\""},
+  {ar:"يعطيك العافية", tr:"Ya'teek al-afiya", en:"Thanks for the effort (to workers)"},
+  {ar:"مع السلامة", tr:"Ma'a salama", en:"Goodbye"}
+];
+
+const heritageCards = [
+  {icon:"🇦🇪", title:"معنى ألوان العلم", body:"الأخضر يرمز للخصب والأمل، الأبيض للسلام والنقاء، الأسود للعزّة والقوة، والأحمر للوحدة والتضحية — ألوان تحمل تاريخ المنطقة العربية بأكملها."},
+  {icon:"☕", title:"أدب فنجان القهوة", body:"جزء من ضيافة المجلس الإماراتي:", steps:["تُقدَّم القهوة باليد اليمنى دائماً","تُصب كمية قليلة (ثلث الفنجان) حتى تُعاد التعبئة بسهولة","لإنهاء الشرب، يهزّ الضيف الفنجان بسيطًا يمينًا ويسارًا"]},
+  {icon:"👳", title:"اللباس التقليدي", body:"الكندورة (الدشداشة) الثوب الأبيض للرجال مع الغترة والعقال، والعباءة والشيلة السوداء للنساء — أزياء تعكس البساطة والأناقة الخليجية."},
+  {icon:"🦪", title:"إرث الغوص واللؤلؤ", body:"قبل النفط، كان الغوص بحثاً عن اللؤلؤ مصدر رزق أهل الإمارات الأساسي، ومنه تشكّلت قيم الصبر والتعاون والاعتماد على البحر."},
+  {icon:"🏛️", title:"المجلس", body:"مكان اللقاء اليومي لتبادل الأخبار وحل المسائل وتقديم الضيافة — هو المكان الذي وُلدت فيه أغلب عبارات هذا التطبيق."}
+];
+
+const traditionalFood = [
+  {icon:"🍚", name:"المجبوس", body:"أرز مطبوخ مع بهارات مميزة واللحم أو الدجاج أو السمك — الطبق الأشهر على موائد الإمارات في كل مناسبة."},
+  {icon:"🍲", name:"الهريس", body:"قمح مطحون يُطبخ ببطء مع اللحم حتى يتماسك كالعصيدة — طبق أساسي في رمضان والأعياد."},
+  {icon:"🍩", name:"اللقيمات", body:"كرات عجين مقلية ذهبية تُغطّى بالدبس والسمسم — الحلا المفضّل في مجالس رمضان."},
+  {icon:"🍞", name:"الثريد", body:"خبز رقاق منقوع بمرق اللحم والخضار، من أقدم الأطباق الشعبية وأكثرها دفئاً."},
+  {icon:"🐟", name:"المضروبة", body:"أرز مهروس مطبوخ مع السمك الطازج والتوابل المحلية، طبق ساحلي أصيل."},
+  {icon:"🍮", name:"العصيدة", body:"حلا من الدقيق والسكر والهيل، يُقدَّم في المناسبات السعيدة والولائم."},
+  {icon:"🍳", name:"البلاليط", body:"شعيرية حلوة بالهيل وماء الورد تُقدَّم مع البيض المقلي — فطور شعبي محبوب."}
+];
+
+const ahazeejList = [
+  {icon:"⚔️", name:"العيالة", body:"رقصة وهزيج جماعي بالعصي، يؤدَّى في الأعراس والمناسبات الوطنية تعبيراً عن الفخر والشجاعة والوحدة."},
+  {icon:"🎯", name:"اليولة", body:"هزيج وطني حماسي يرافقه رمي العصا وتناقلها بين الشباب بحركات متزامنة، مرتبط بالاحتفالات الوطنية."},
+  {icon:"🌊", name:"النهمة (التغرودة)", body:"غناء بحري كان يردده الغواصون والبحارة أثناء رحلات اللؤلؤ لتنظيم العمل ورفع الروح المعنوية — سجّلته اليونسكو ضمن التراث الإنساني."},
+  {icon:"💐", name:"هزيج الزفة", body:"يُردَّد في مواكب زفة العريس احتفالاً بيوم الفرح، بمشاركة الأهل والأصدقاء."}
+];
+
+const folkProverbs = [
+  {icon:"🦅", name:"اللي ما يعرف الصقر يشويه", body:"يُقال لمن لا يعرف قيمة الأشياء الثمينة."},
+  {icon:"🎁", name:"من طوّل الغيبات جاب الغنايم", body:"يُقال لمن يعود بعد غياب طويل متوقعاً الترحيب الكبير."},
+  {icon:"🪞", name:"عوقك في بطنك", body:"أي أن مشاكلك تأتي من نفسك."},
+  {icon:"🐔", name:"من خلا نفسه سبوس لعبت به الدياي", body:"يُحذّر الإنسان من أن يجعل نفسه موضع اتهام وشبهات، فيفتح على نفسه باباً لا يمكن إغلاقه."},
+  {icon:"🐟", name:"السمكة الخايسة تخيس السمك كله", body:"يدعو إلى عدم مخالطة الفاسدين وعديمي الأخلاق، لأن المرء على دين خليله."},
+  {icon:"⏳", name:"إذا ما طاعك الزمن طيّعه", body:"يدعو إلى التكيّف مع المتغيرات والتحديات في الحياة."}
+];
+
+const landmarksData = [
+  {icon:"🏰", name:"قصر الإمارات", body:"أبوظبي", url:"https://www.mandarinoriental.com/en/abu-dhabi/emirates-palace"},
+  {icon:"🖼️", name:"برواز دبي", body:"دبي", url:"https://www.dubaiframe.ae"},
+  {icon:"🌷", name:"حديقة دبي المعجزة", body:"دبي", url:"https://www.dubaimiraclegarden.com"},
+  {icon:"🌊", name:"ياس ووتر وورلد", body:"أبوظبي", url:"https://www.yaswaterworld.com"},
+  {icon:"🎪", name:"القرية العالمية", body:"دبي", url:"https://www.globalvillage.ae"},
+  {icon:"🐠", name:"دبي أكواريوم وحديقة الحيوانات المائية", body:"دبي", url:"https://www.visitdubai.com/en/places-to-visit/dubai-aquarium-and-underwater-zoo"},
+  {icon:"⛷️", name:"سكي دبي", body:"دبي", url:"https://www.skidxb.com"},
+  {icon:"🐳", name:"سي وورلد جزيرة ياس", body:"أبوظبي", url:"https://www.seaworldabudhabi.com"},
+  {icon:"🏄", name:"حديقة أكوافنتشر", body:"دبي", url:"https://www.aquaventureworld.com"},
+  {icon:"⛲", name:"نافورة دبي", body:"دبي", url:"https://www.visitdubai.com/en/places-to-visit/the-dubai-fountain"},
+  {icon:"🌴", name:"جزيرة النخلة", body:"دبي", url:"https://www.visitdubai.com/en/places-to-visit/palm-jumeirah"},
+  {icon:"📖", name:"الحديقة القرآنية", body:"دبي", url:"https://www.visitdubai.com/en/places-to-visit/dubai-quran-park"},
+  {icon:"🏺", name:"متحف الشندغة", body:"دبي", url:"https://www.dubaiculture.gov.ae/en/attractions/museums/al-shindagha-museum"}
+];
+
+const nationalDays = [
+  {icon:"🇦🇪", name:"اليوم الوطني", body:"2 ديسمبر — ذكرى قيام اتحاد دولة الإمارات العربية المتحدة عام 1971."},
+  {icon:"🚩", name:"يوم العلم", body:"3 نوفمبر — مناسبة وطنية سنوية للاحتفاء برفع علم الدولة رمزاً للوحدة والانتماء."},
+  {icon:"🕊️", name:"يوم الشهيد", body:"30 نوفمبر — تكريم وتخليد أرواح شهداء الوطن الذين ضحّوا من أجله."},
+  {icon:"🤲", name:"يوم زايد للعمل الإنساني", body:"19 أغسطس — ذكرى وفاة الشيخ زايد بن سلطان آل نهيان، تكريماً لمسيرته الإنسانية."},
+  {icon:"🏃", name:"اليوم الوطني للرياضة", body:"أول خميس من فبراير — يوم مجتمعي يشجّع أسلوب الحياة الصحي والنشاط الرياضي للجميع."}
+];
+
+const nationalAnthem = {
+  title:"السلام الوطني - عيشي بلادي",
+  meta:"كلمات: د. عارف الشيخ عبدالله الحسن · لحن: سعد عبدالوهاب (1971) · اعتُمدت الكلمات عام 1986",
+  lines:[
+    "عيشي بلادي عاش اتحاد إماراتنا",
+    "عشتِ لشعبٍ دينُه الإسلام هديُه القرآن",
+    "حصّنتكِ باسم الله يا وطن",
+    "بلادي بلادي بلادي بلادي",
+    "حماكِ الإله شرور الزمان",
+    "أقسمنا أن نبني نعمل نُخلص نعمل نُخلص",
+    "مهما عشنا نُخلص نُخلص",
+    "دام الأمان وعاش العلم يا إماراتنا",
+    "رمز العروبة",
+    "كلّنا نفديكِ بالدماء نرويكِ",
+    "نفديكِ بالأرواح يا وطن"
+  ],
+  refUrl:"https://www.protocol.dubai.ae/ar/protocols-listing/protocols/translation-of-uae-national-anthem/",
+  videoId:"lCkdxlNhz-Q"
+};
+
+const governanceInfo = {
+  intro:"دولة الإمارات العربية المتحدة اتحاد فيدرالي قام في 2 ديسمبر 1971 من سبع إمارات، لكل منها حاكمها المستقل في شؤونه المحلية.",
+  points:[
+    "المجلس الأعلى للاتحاد: أعلى سلطة في الدولة، يتكوّن من حكام الإمارات السبع مجتمعين.",
+    "رئيس الدولة ونائبه: ينتخبهما المجلس الأعلى من بين أعضائه لمدة خمس سنوات قابلة للتجديد. وجرى العرف أن يكون حاكم أبوظبي رئيساً وحاكم دبي نائباً للرئيس.",
+    "مجلس الوزراء: السلطة التنفيذية للاتحاد، يرأسه رئيس مجلس الوزراء.",
+    "المجلس الوطني الاتحادي: هيئة استشارية وتشريعية تضم ممثلين عن الإمارات السبع."
+  ],
+  president:{name:"الشيخ محمد بن زايد آل نهيان", title:"رئيس الدولة، حاكم إمارة أبوظبي"},
+  vicePresidents:[
+    {name:"الشيخ محمد بن راشد آل مكتوم", title:"نائب رئيس الدولة، رئيس مجلس الوزراء، حاكم إمارة دبي"},
+    {name:"الشيخ منصور بن زايد آل نهيان", title:"نائب رئيس الدولة، نائب رئيس مجلس الوزراء"}
+  ],
+  emirates:[
+    {emirate:"أبوظبي", ruler:"الشيخ محمد بن زايد آل نهيان", crown:"الشيخ خالد بن محمد بن زايد آل نهيان"},
+    {emirate:"دبي", ruler:"الشيخ محمد بن راشد آل مكتوم", crown:"الشيخ حمدان بن محمد بن راشد آل مكتوم"},
+    {emirate:"الشارقة", ruler:"الشيخ الدكتور سلطان بن محمد القاسمي", crown:"الشيخ سلطان بن محمد بن سلطان القاسمي"},
+    {emirate:"عجمان", ruler:"الشيخ حميد بن راشد النعيمي", crown:"الشيخ عمار بن حميد النعيمي"},
+    {emirate:"أم القيوين", ruler:"الشيخ سعود بن راشد المعلا", crown:"الشيخ راشد بن سعود بن راشد المعلا"},
+    {emirate:"رأس الخيمة", ruler:"الشيخ سعود بن صقر القاسمي", crown:"الشيخ محمد بن سعود بن صقر القاسمي"},
+    {emirate:"الفجيرة", ruler:"الشيخ حمد بن محمد الشرقي", crown:"الشيخ محمد بن حمد بن محمد الشرقي"}
+  ]
+};
+
+const heritageWords = [
+  {w:"الحوي", m:"الساحة أو الفناء الخارجي للمنزل"},
+  {w:"وايد", m:"كثير جداً — مثال: زين وايد (جيد جداً)"},
+  {w:"الفوالة", m:"ما يُقدَّم للضيف من طعام وحلى وقهوة عند مجيئه"},
+  {w:"الكندورة", m:"الثوب أو الرداء الذي يلبسه الرجل أو المرأة"},
+  {w:"ريوق", m:"وجبة الإفطار"},
+  {w:"غبشة", m:"وقت الصباح الباكر"},
+  {w:"زاهب", m:"جاهز"},
+  {w:"العزبة", m:"المزرعة أو المكان المخصص لتربية الإبل"},
+  {w:"مستانس", m:"سعيد"},
+  {w:"متروس", m:"ممتلئ"},
+  {w:"تحيد", m:"تتذكر"}
+];
+
+/* ===================== STATE ===================== */
+let currentTab = 'home';
+let catDetail = null; // category name if viewing detail
+let heritageSection = null; // 'stories' | 'food' | 'ahazeej' | 'words'
+let favorites = [];
+let favLoaded = false;
+
+async function loadFavorites(){
+  try{
+    if(window.storage){
+      const r = await window.storage.get('favorites');
+      favorites = r ? JSON.parse(r.value) : [];
+    }
+  }catch(e){ favorites = []; }
+  favLoaded = true;
+  updateFavBadge();
+}
+async function saveFavorites(){
+  try{ if(window.storage){ await window.storage.set('favorites', JSON.stringify(favorites)); } }catch(e){}
+}
+function isFav(id){ return favorites.includes(id); }
+function toggleFav(id){
+  if(isFav(id)) favorites = favorites.filter(f => f !== id);
+  else favorites.push(id);
+  saveFavorites();
+  updateFavBadge();
+  render();
+}
+function updateFavBadge(){
+  const b = document.getElementById('favBadge');
+  if(!b) return;
+  if(favorites.length > 0){ b.style.display='block'; b.textContent = favorites.length; }
+  else b.style.display='none';
+}
+
+function speak(text){
+  if(!('speechSynthesis' in window)){ alert('المتصفح لا يدعم النطق الصوتي حالياً'); return; }
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'ar-SA'; u.rate = 0.82;
+  window.speechSynthesis.speak(u);
+}
+
+function escapeHtml(str){
+  return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+/* ===================== RENDER ===================== */
+function allItemsFlat(){
+  const all = [];
+  Object.keys(protocolData).forEach(cat => {
+    protocolData[cat].items.forEach((it, idx) => all.push({cat, idx, ...it}));
+  });
+  return all;
+}
+
+function renderHome(){
+  const all = allItemsFlat();
+  const dayIndex = Math.floor(Date.now()/86400000) % all.length;
+  const p = all[dayIndex];
+  const cats = Object.keys(protocolData);
+  return `
+    <div class="app-header">
+      <div class="greet">مساء الخير 👋</div>
+      <div class="name kufi">البروتوكول الإماراتي</div>
+    </div>
+
+    <div class="section-title">💬 عبارة اليوم</div>
+    <div class="potd">
+      <div class="eyebrow">${escapeHtml(p.cat)}</div>
+      <div class="say kufi">${escapeHtml(p.s)}</div>
+      <div class="resp">الرد: ${escapeHtml(p.r)}</div>
+      <div class="en">${escapeHtml(p.se)}</div>
+    </div>
+
+    <div class="section-title">📚 تصفح سريع</div>
+    <div class="chip-row">
+      ${cats.map(c => `<div class="chip" data-open-cat="${escapeHtml(c)}">${protocolData[c].icon} ${escapeHtml(c)}</div>`).join('')}
+    </div>
+
+    <div class="section-title">🧭 هل أنت زائر للإمارات؟</div>
+    <div class="list-item" data-tab-link="tourist">
+      <div class="li-main">
+        <div class="li-ic">🧭</div>
+        <div class="li-txt"><b>عبارات أساسية للزوار</b><span>ترجمة ونطق فوري بالإنجليزية</span></div>
+      </div>
+      <div class="chev">‹</div>
+    </div>
+
+    <div class="section-title">🏺 اكتشف التراث</div>
+    <div class="list-item" data-tab-link="heritage">
+      <div class="li-main">
+        <div class="li-ic">🏺</div>
+        <div class="li-txt"><b>قصص وعادات إماراتية</b><span>القهوة، اللباس، اللؤلؤ، والمجلس</span></div>
+      </div>
+      <div class="chev">‹</div>
+    </div>
+    <div class="note-banner">🔊 ميزة النطق تعتمد على محرك المتصفح، للحصول على لهجة إماراتية أصيلة يُفضّل لاحقاً تسجيل أصوات حقيقية.</div>
+  `;
+}
+
+function renderCategoriesList(filterText){
+  const q = (filterText||'').trim();
+  if(q){
+    const all = allItemsFlat().filter(it => it.s.includes(q) || it.r.includes(q) || (it.se||'').toLowerCase().includes(q.toLowerCase()));
+    if(all.length===0) return searchBoxHtml(q) + `<div class="empty-state"><span class="em-ic">🔍</span>ما فيه نتائج تطابق "${escapeHtml(q)}"</div>`;
+    return searchBoxHtml(q) + all.map(it => phraseCardHtml(it.cat, it.idx, it)).join('');
+  }
+  const cats = Object.keys(protocolData);
+  return searchBoxHtml('') + cats.map(c => `
+    <div class="list-item" data-open-cat="${escapeHtml(c)}">
+      <div class="li-main">
+        <div class="li-ic">${protocolData[c].icon}</div>
+        <div class="li-txt"><b>${escapeHtml(c)}</b></div>
+      </div>
+      <div class="chev">‹</div>
+    </div>
+  `).join('');
+}
+
+function searchBoxHtml(val){
+  return `<div class="searchbox">
+    <input id="searchInput" type="text" value="${escapeHtml(val)}" placeholder="ابحث عن قول أو رد أو بالإنجليزي...">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+  </div>`;
+}
+
+function phraseCardHtml(cat, idx, it){
+  const id = cat + '|' + idx;
+  const fav = isFav(id);
+  return `
+    <div class="phrase-card">
+      <div class="row1">
+        <div>
+          <div class="say kufi">${escapeHtml(it.s)}</div>
+          <div class="say-en">${escapeHtml(it.se||'')}</div>
+        </div>
+        <div class="actions">
+          <div class="icon-btn" data-speak="${escapeHtml(it.s)}">🔊</div>
+          <div class="icon-btn fav ${fav?'active':''}" data-fav="${escapeHtml(id)}">❤</div>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="row2">
+        <div>
+          <div class="resp">${escapeHtml(it.r)}</div>
+          <div class="resp-en">${escapeHtml(it.re||'')}</div>
+        </div>
+        <div class="actions">
+          <div class="icon-btn" data-speak="${escapeHtml(it.r)}">🔊</div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderCategoryDetail(cat){
+  const data = protocolData[cat];
+  return `
+    <div class="back-row" data-back-cats>
+      <span>→</span> العودة للمناسبات
+    </div>
+    <div class="detail-title"><h2 class="kufi">${data.icon} ${escapeHtml(cat)}</h2></div>
+    <div class="detail-note">${escapeHtml(data.note)}</div>
+    ${data.items.map((it,idx) => phraseCardHtml(cat, idx, it)).join('')}
+  `;
+}
+
+function renderTourist(){
+  return `
+    <div class="app-header"><div class="name kufi">🧭 عبارات للزوار والمقيمين</div></div>
+    <div class="detail-note">عبارات أساسية بالعامية الإماراتية، بالنطق اللاتيني ومعناها بالإنجليزي — تكفيك لأول أسبوع بالإمارات.</div>
+    ${touristPhrases.map(t => `
+      <div class="tourist-row">
+        <div class="t-txt">
+          <b>${escapeHtml(t.ar)}</b>
+          <span class="translit">${escapeHtml(t.tr)}</span> · <span class="en">${escapeHtml(t.en)}</span>
+        </div>
+        <div class="icon-btn" data-speak="${escapeHtml(t.ar)}">🔊</div>
+      </div>
+    `).join('')}
+  `;
+}
+
+const heritageMenu = [
+  {key:'stories', icon:'🏛️', title:'قصص وعادات', desc:'القهوة، اللباس، اللؤلؤ، والمجلس'},
+  {key:'food', icon:'🍚', title:'الأكلات التراثية', desc:'أشهر الأطباق الإماراتية الأصيلة'},
+  {key:'ahazeej', icon:'⚔️', title:'الأهازيج الإماراتية', desc:'العيالة، اليولة، النهمة، والزفة'},
+  {key:'proverbs', icon:'📜', title:'أمثال شعبية', desc:'حكم ومعانٍ متوارثة من كبار السن'},
+  {key:'words', icon:'📖', title:'كلمات تراثية ومعانيها', desc:'قاموس مصغّر للهجة الإماراتية'}
+];
+
+const nationalIdentityMenu = [
+  {key:'landmarks', icon:'🏙️', title:'المعالم السياحية', desc:'أبرز وجهات الإمارات ومواقعها'},
+  {key:'national', icon:'🇦🇪', title:'الأحداث الوطنية', desc:'اليوم الوطني، يوم العلم، وغيرها'},
+  {key:'anthem', icon:'🎵', title:'السلام الوطني', desc:'كلمات عيشي بلادي واستماع'},
+  {key:'governance', icon:'🏛️', title:'نظام الحكم والقيادة', desc:'الاتحاد، الرئاسة، وحكام الإمارات'}
+];
+
+const allHeritageEntries = heritageMenu.concat(nationalIdentityMenu);
+
+function simpleCardHtml(icon, title, body, steps){
+  return `
+    <div class="heritage-card">
+      <div class="h-top"><span class="h-ic">${icon}</span><h3>${escapeHtml(title)}</h3></div>
+      <p>${escapeHtml(body)}</p>
+      ${steps ? `<ol>${steps.map(s=>`<li>${escapeHtml(s)}</li>`).join('')}</ol>` : ''}
+    </div>
+  `;
+}
+
+function heritageListItems(list){
+  return list.map(m => `
+    <div class="list-item" data-open-heritage="${m.key}">
+      <div class="li-main">
+        <div class="li-ic">${m.icon}</div>
+        <div class="li-txt"><b>${escapeHtml(m.title)}</b><span>${escapeHtml(m.desc)}</span></div>
+      </div>
+      <div class="chev">‹</div>
+    </div>
+  `).join('');
+}
+
+function renderHeritage(){
+  if(!heritageSection){
+    return `
+      <div class="app-header"><div class="name kufi">🏺 التراث والهوية الوطنية</div></div>
+
+      <div class="section-title" style="margin-top:4px;">🎨 التراث الشعبي</div>
+      <div class="detail-note">عادات وفنون متوارثة من كبار السن</div>
+      ${heritageListItems(heritageMenu)}
+
+      <div class="section-title">🇦🇪 الهوية الوطنية</div>
+      <div class="detail-note">رموز الدولة ونظام حكمها ووجهاتها</div>
+      ${heritageListItems(nationalIdentityMenu)}
+    `;
+  }
+
+  const menuItem = allHeritageEntries.find(m => m.key === heritageSection);
+  let body = '';
+  if(heritageSection === 'stories'){
+    body = heritageCards.map(h => simpleCardHtml(h.icon, h.title, h.body, h.steps)).join('');
+  } else if(heritageSection === 'food'){
+    body = traditionalFood.map(f => simpleCardHtml(f.icon, f.name, f.body)).join('');
+  } else if(heritageSection === 'ahazeej'){
+    body = ahazeejList.map(a => simpleCardHtml(a.icon, a.name, a.body)).join('');
+  } else if(heritageSection === 'proverbs'){
+    body = folkProverbs.map(p => simpleCardHtml(p.icon, p.name, p.body)).join('');
+  } else if(heritageSection === 'landmarks'){
+    body = landmarksData.map(l => `
+      <div class="tourist-row">
+        <div class="t-txt"><b>${l.icon} ${escapeHtml(l.name)}</b><span class="en">📍 ${escapeHtml(l.body)}</span></div>
+        ${l.url ? `<a class="icon-btn" href="${escapeHtml(l.url)}" target="_blank" rel="noopener" title="زيارة الموقع الرسمي">🔗</a>` : ''}
+      </div>
+    `).join('');
+  } else if(heritageSection === 'national'){
+    body = nationalDays.map(n => simpleCardHtml(n.icon, n.name, n.body)).join('');
+  } else if(heritageSection === 'anthem'){
+    const fullAnthem = nationalAnthem.lines.join(' ');
+    body = `
+      <div class="heritage-card">
+        <div class="h-top"><span class="h-ic">🎵</span><h3>${escapeHtml(nationalAnthem.title)}</h3></div>
+        <p style="margin-bottom:10px;">${escapeHtml(nationalAnthem.meta)}</p>
+
+        <audio controls style="width:100%; margin-bottom:12px; border-radius:10px;" preload="none">
+          <source src="uae-anthem.mp3" type="audio/mpeg">
+          متصفحك لا يدعم تشغيل الصوت مباشرة.
+        </audio>
+
+        <div style="background:var(--sand); border-radius:12px; padding:14px 16px; margin-bottom:10px;">
+          ${nationalAnthem.lines.map(l => `<div class="kufi" style="color:var(--green-deep); font-weight:700; font-size:14px; margin-bottom:8px; line-height:1.8;">${escapeHtml(l)}</div>`).join('')}
+        </div>
+        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+          <div class="icon-btn" data-speak="${escapeHtml(fullAnthem)}" style="width:auto; border-radius:999px; padding:0 14px; gap:6px; display:flex;">🗣️ قراءة الكلمات</div>
+          <a class="icon-btn" href="${escapeHtml(nationalAnthem.refUrl)}" target="_blank" rel="noopener" style="width:auto; border-radius:999px; padding:0 14px;">🔗 المصدر الرسمي للكلمات</a>
+        </div>
+        <p style="margin-top:10px; font-size:11px; color:var(--ink-soft);">🎵 تشغيل السلام الرسمي بلحنه الكامل. زر "قراءة الكلمات" منفصل وينطق النص فقط بدون لحن.</p>
+      </div>
+    `;
+  } else if(heritageSection === 'governance'){
+    body = `
+      <div class="heritage-card">
+        <p>${escapeHtml(governanceInfo.intro)}</p>
+        <ol>${governanceInfo.points.map(p => `<li>${escapeHtml(p)}</li>`).join('')}</ol>
+      </div>
+      <div class="section-title" style="margin-top:6px;">👑 رئيس الدولة ونائباه</div>
+      <div class="phrase-card">
+        <div class="say kufi">${escapeHtml(governanceInfo.president.name)}</div>
+        <div class="say-en" style="font-style:normal; margin-top:2px;">${escapeHtml(governanceInfo.president.title)}</div>
+      </div>
+      ${governanceInfo.vicePresidents.map(v => `
+        <div class="phrase-card">
+          <div class="say kufi">${escapeHtml(v.name)}</div>
+          <div class="say-en" style="font-style:normal; margin-top:2px;">${escapeHtml(v.title)}</div>
+        </div>
+      `).join('')}
+      <div class="section-title">🏳️ حكام الإمارات وأولياء عهودهم</div>
+      ${governanceInfo.emirates.map(e => `
+        <div class="phrase-card">
+          <div class="say kufi">${escapeHtml(e.emirate)}</div>
+          <div class="say-en" style="font-style:normal; margin-top:4px;">👤 الحاكم: ${escapeHtml(e.ruler)}</div>
+          <div class="say-en" style="font-style:normal; margin-top:2px;">🎖️ ولي العهد: ${escapeHtml(e.crown)}</div>
+        </div>
+      `).join('')}
+      <div class="note-banner">ℹ️ الأسماء والمناصب أعلاه محدّثة بحسب أحدث المعلومات المتوفرة، وقد تتغيّر مستقبلاً.</div>
+    `;
+  } else if(heritageSection === 'words'){
+    body = heritageWords.map(w => `
+      <div class="tourist-row">
+        <div class="t-txt"><b>${escapeHtml(w.w)}</b><span class="en">${escapeHtml(w.m)}</span></div>
+        <div class="icon-btn" data-speak="${escapeHtml(w.w)}">🔊</div>
+      </div>
+    `).join('');
+  }
+
+  return `
+    <div class="back-row" data-back-heritage>
+      <span>→</span> العودة للتراث
+    </div>
+    <div class="detail-title"><h2 class="kufi">${menuItem.icon} ${escapeHtml(menuItem.title)}</h2></div>
+    ${body}
+  `;
+}
+
+function renderFavorites(){
+  if(favorites.length === 0){
+    return `<div class="app-header"><div class="name kufi">❤️ المفضلة</div></div>
+    <div class="empty-state"><span class="em-ic">💔</span>ما حفظت أي عبارة بعد.<br>اضغط على ❤ بأي عبارة عشان تضيفها هنا.</div>`;
+  }
+  const all = allItemsFlat();
+  const favItems = favorites.map(id => {
+    const [cat, idxStr] = id.split('|');
+    const idx = parseInt(idxStr,10);
+    const it = protocolData[cat] && protocolData[cat].items[idx];
+    return it ? {cat, idx, ...it} : null;
+  }).filter(Boolean);
+  return `<div class="app-header"><div class="name kufi">❤️ المفضلة (${favItems.length})</div></div>
+    ${favItems.map(it => phraseCardHtml(it.cat, it.idx, it)).join('')}`;
+}
+
+function render(){
+  const content = document.getElementById('content');
+  let html = '';
+  if(currentTab === 'home') html = renderHome();
+  else if(currentTab === 'categories') html = catDetail ? renderCategoryDetail(catDetail) : renderCategoriesList(window.__lastSearch);
+  else if(currentTab === 'tourist') html = renderTourist();
+  else if(currentTab === 'heritage') html = renderHeritage();
+  else if(currentTab === 'favorites') html = renderFavorites();
+  content.innerHTML = html;
+  content.scrollTop = 0;
+
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.toggle('active', el.dataset.tab === currentTab));
+
+  content.querySelectorAll('[data-open-cat]').forEach(el => el.addEventListener('click', () => {
+    currentTab = 'categories'; catDetail = el.dataset.openCat; render();
+  }));
+  content.querySelectorAll('[data-tab-link]').forEach(el => el.addEventListener('click', () => {
+    currentTab = el.dataset.tabLink; catDetail = null; heritageSection = null; render();
+  }));
+  const backEl = content.querySelector('[data-back-cats]');
+  if(backEl) backEl.addEventListener('click', () => { catDetail = null; render(); });
+  content.querySelectorAll('[data-open-heritage]').forEach(el => el.addEventListener('click', () => {
+    heritageSection = el.dataset.openHeritage; render();
+  }));
+  const backHeritageEl = content.querySelector('[data-back-heritage]');
+  if(backHeritageEl) backHeritageEl.addEventListener('click', () => { heritageSection = null; render(); });
+  content.querySelectorAll('[data-speak]').forEach(el => el.addEventListener('click', () => speak(el.dataset.speak)));
+  content.querySelectorAll('[data-fav]').forEach(el => el.addEventListener('click', () => toggleFav(el.dataset.fav)));
+  const searchEl = document.getElementById('searchInput');
+  if(searchEl){
+    searchEl.addEventListener('input', (e) => { window.__lastSearch = e.target.value; render(); setTimeout(()=>{ const s=document.getElementById('searchInput'); if(s){ s.focus(); s.selectionStart=s.selectionEnd=s.value.length; } },0); });
+  }
+}
+
+document.querySelectorAll('.nav-item').forEach(el => {
+  el.addEventListener('click', () => {
+    currentTab = el.dataset.tab; catDetail = null; heritageSection = null; window.__lastSearch=''; render();
+  });
+});
+
+function tickClock(){
+  const d = new Date();
+  document.getElementById('clock').textContent = d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',hour12:false});
+}
+tickClock(); setInterval(tickClock, 30000);
+
+loadFavorites().then(render);
+
+if('serviceWorker' in navigator){
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
+  });
+}
+</script>
+</body>
+</html>
