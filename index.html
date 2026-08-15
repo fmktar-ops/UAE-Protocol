@@ -120,6 +120,20 @@
 
   .back-row{ display:flex; align-items:center; gap:8px; margin: 10px 0 14px; cursor:pointer; color:var(--green-deep); font-weight:700; font-size:13.5px; }
 
+  .national-alert{
+    background: linear-gradient(135deg, var(--red, #CE1126), #9c0d1c);
+    border-radius:16px; padding:14px 16px; margin-bottom:14px;
+    display:flex; align-items:center; gap:12px; cursor:pointer; box-shadow:var(--shadow);
+  }
+  .national-alert .na-ic{
+    width:38px; height:38px; border-radius:12px; background:rgba(255,255,255,.18);
+    display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0;
+  }
+  .national-alert .na-txt{ flex:1; }
+  .national-alert .na-txt b{ font-size:14px; color:#fff; display:block; }
+  .national-alert .na-txt span{ font-size:11.5px; color:rgba(255,255,255,.85); }
+  .national-alert .chev{ color:#fff; }
+
   .detail-title{
     text-align:center; background: linear-gradient(135deg, var(--green) 0%, var(--green-deep) 100%);
     color:#fff; border-radius:18px; padding:20px; margin-bottom:10px; box-shadow:var(--shadow);
@@ -323,12 +337,84 @@ const landmarksData = [
 ];
 
 const nationalDays = [
-  {icon:"🇦🇪", name:"اليوم الوطني", body:"2 ديسمبر — ذكرى قيام اتحاد دولة الإمارات العربية المتحدة عام 1971."},
-  {icon:"🚩", name:"يوم العلم", body:"3 نوفمبر — مناسبة وطنية سنوية للاحتفاء برفع علم الدولة رمزاً للوحدة والانتماء."},
-  {icon:"🕊️", name:"يوم الشهيد", body:"30 نوفمبر — تكريم وتخليد أرواح شهداء الوطن الذين ضحّوا من أجله."},
-  {icon:"🤲", name:"يوم زايد للعمل الإنساني", body:"19 أغسطس — ذكرى وفاة الشيخ زايد بن سلطان آل نهيان، تكريماً لمسيرته الإنسانية."},
-  {icon:"🏃", name:"اليوم الوطني للرياضة", body:"أول خميس من فبراير — يوم مجتمعي يشجّع أسلوب الحياة الصحي والنشاط الرياضي للجميع."}
+  {icon:"🇦🇪", name:"اليوم الوطني", body:"2 ديسمبر — ذكرى قيام اتحاد دولة الإمارات العربية المتحدة عام 1971.", month:12, day:2},
+  {icon:"🚩", name:"يوم العلم", body:"3 نوفمبر — مناسبة وطنية سنوية للاحتفاء برفع علم الدولة رمزاً للوحدة والانتماء.", month:11, day:3},
+  {icon:"🕊️", name:"يوم الشهيد", body:"30 نوفمبر — تكريم وتخليد أرواح شهداء الوطن الذين ضحّوا من أجله.", month:11, day:30},
+  {icon:"🤲", name:"يوم زايد للعمل الإنساني", body:"19 أغسطس — ذكرى وفاة الشيخ زايد بن سلطان آل نهيان، تكريماً لمسيرته الإنسانية.", month:8, day:19},
+  {icon:"🏃", name:"اليوم الوطني للرياضة", body:"أول خميس من فبراير — يوم مجتمعي يشجّع أسلوب الحياة الصحي والنشاط الرياضي للجميع.", month:2, firstThursday:true}
 ];
+
+/* ===================== NATIONAL DAYS REMINDER ===================== */
+function getFirstThursday(year, month){
+  // month is 1-indexed
+  const d = new Date(year, month-1, 1);
+  const dow = d.getDay(); // 0=Sun ... 4=Thu
+  const offset = (4 - dow + 7) % 7;
+  return new Date(year, month-1, 1 + offset);
+}
+
+function nextOccurrence(evt){
+  const now = new Date();
+  const y = now.getFullYear();
+  let target;
+  if(evt.firstThursday){
+    target = getFirstThursday(y, evt.month);
+    if(target < new Date(now.getFullYear(), now.getMonth(), now.getDate())){
+      target = getFirstThursday(y+1, evt.month);
+    }
+  } else {
+    target = new Date(y, evt.month-1, evt.day);
+    if(target < new Date(now.getFullYear(), now.getMonth(), now.getDate())){
+      target = new Date(y+1, evt.month-1, evt.day);
+    }
+  }
+  return target;
+}
+
+function upcomingNationalDays(withinDays){
+  const today = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
+  return nationalDays.map(evt => {
+    const target = nextOccurrence(evt);
+    const days = Math.round((target - today) / 86400000);
+    return {...evt, daysUntil: days};
+  }).filter(evt => evt.daysUntil >= 0 && evt.daysUntil <= withinDays)
+    .sort((a,b) => a.daysUntil - b.daysUntil);
+}
+
+async function requestNationalDayNotifications(){
+  if(!('Notification' in window)){
+    alert('متصفحك لا يدعم الإشعارات');
+    return;
+  }
+  const perm = await Notification.requestPermission();
+  if(perm === 'granted'){
+    await window.storage.set('notif-enabled', 'true', false);
+    notifEnabled = true;
+    checkAndFireNotification();
+    render();
+  }
+}
+
+async function isNotifEnabled(){
+  try{
+    const r = await window.storage.get('notif-enabled', false);
+    return r && r.value === 'true' && Notification.permission === 'granted';
+  }catch(e){ return false; }
+}
+
+async function checkAndFireNotification(){
+  if(Notification.permission !== 'granted') return;
+  const soon = upcomingNationalDays(7);
+  if(soon.length === 0) return;
+  const todayKey = new Date().toISOString().slice(0,10);
+  let lastFired = null;
+  try{ const r = await window.storage.get('notif-last-fired', false); lastFired = r ? r.value : null; }catch(e){}
+  if(lastFired === todayKey) return;
+  const evt = soon[0];
+  const msg = evt.daysUntil === 0 ? `اليوم! ${evt.name} 🇦🇪` : `${evt.name} بعد ${evt.daysUntil} ${evt.daysUntil===1?'يوم':'أيام'}`;
+  new Notification('البروتوكول الإماراتي', { body: msg, icon: 'icon-192.png' });
+  try{ await window.storage.set('notif-last-fired', todayKey, false); }catch(e){}
+}
 
 const nationalAnthem = {
   title:"السلام الوطني - عيشي بلادي",
@@ -407,6 +493,11 @@ let catDetail = null; // category name if viewing detail
 let heritageSection = null; // 'stories' | 'food' | 'ahazeej' | 'words'
 let favorites = [];
 let favLoaded = false;
+let notifEnabled = false;
+
+async function loadNotifState(){
+  notifEnabled = await isNotifEnabled();
+}
 
 async function loadFavorites(){
   try{
@@ -462,11 +553,24 @@ function renderHome(){
   const dayIndex = Math.floor(Date.now()/86400000) % all.length;
   const p = all[dayIndex];
   const cats = Object.keys(protocolData);
+  const soonEvents = upcomingNationalDays(7);
+  const notifBanner = soonEvents.length ? `
+    <div class="national-alert" data-open-national="1">
+      <div class="na-ic">${soonEvents[0].icon}</div>
+      <div class="na-txt">
+        <b>${escapeHtml(soonEvents[0].name)}</b>
+        <span>${soonEvents[0].daysUntil === 0 ? 'اليوم 🎉' : `بعد ${soonEvents[0].daysUntil} ${soonEvents[0].daysUntil===1?'يوم':'أيام'}`}</span>
+      </div>
+      <div class="chev">‹</div>
+    </div>
+  ` : '';
   return `
     <div class="app-header">
       <div class="greet">مساء الخير 👋</div>
       <div class="name kufi">البروتوكول الإماراتي</div>
     </div>
+
+    ${notifBanner}
 
     <div class="section-title">💬 عبارة اليوم</div>
     <div class="potd">
@@ -657,7 +761,18 @@ function renderHeritage(){
       </div>
     `).join('');
   } else if(heritageSection === 'national'){
-    body = nationalDays.map(n => simpleCardHtml(n.icon, n.name, n.body)).join('');
+    const notifBtnHtml = notifEnabled ? `
+      <div class="detail-note" style="display:flex;align-items:center;gap:6px;">🔔 التنبيهات مفعّلة — بتوصلك مناسبة قريبة تلقائياً</div>
+    ` : `
+      <div class="list-item" data-enable-notif="1">
+        <div class="li-main">
+          <div class="li-ic">🔔</div>
+          <div class="li-txt"><b>فعّل التنبيه بالمناسبات</b><span>إشعار قبل أسبوع من كل مناسبة وطنية</span></div>
+        </div>
+        <div class="chev">‹</div>
+      </div>
+    `;
+    body = notifBtnHtml + nationalDays.map(n => simpleCardHtml(n.icon, n.name, n.body)).join('');
   } else if(heritageSection === 'anthem'){
     const fullAnthem = nationalAnthem.lines.join(' ');
     body = `
@@ -769,6 +884,12 @@ function render(){
   if(backHeritageEl) backHeritageEl.addEventListener('click', () => { heritageSection = null; render(); });
   content.querySelectorAll('[data-speak]').forEach(el => el.addEventListener('click', () => speak(el.dataset.speak)));
   content.querySelectorAll('[data-fav]').forEach(el => el.addEventListener('click', () => toggleFav(el.dataset.fav)));
+  const nationalAlertEl = content.querySelector('[data-open-national]');
+  if(nationalAlertEl) nationalAlertEl.addEventListener('click', () => {
+    currentTab = 'heritage'; heritageSection = 'national'; render();
+  });
+  const enableNotifEl = content.querySelector('[data-enable-notif]');
+  if(enableNotifEl) enableNotifEl.addEventListener('click', () => requestNationalDayNotifications());
   const searchEl = document.getElementById('searchInput');
   if(searchEl){
     searchEl.addEventListener('input', (e) => { window.__lastSearch = e.target.value; render(); setTimeout(()=>{ const s=document.getElementById('searchInput'); if(s){ s.focus(); s.selectionStart=s.selectionEnd=s.value.length; } },0); });
@@ -788,6 +909,7 @@ function tickClock(){
 tickClock(); setInterval(tickClock, 30000);
 
 loadFavorites().then(render);
+loadNotifState().then(() => { render(); checkAndFireNotification(); });
 
 if('serviceWorker' in navigator){
   window.addEventListener('load', () => {
