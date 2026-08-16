@@ -96,6 +96,16 @@
   .potd .resp{ font-size:12.5px; opacity:.9; }
   .potd .en{ font-size:11px; opacity:.7; margin-top:6px; font-style:italic; }
 
+  .mbz-quote{
+    background: linear-gradient(135deg, #1a1a1a 0%, #063D2C 100%);
+    border-radius:18px; padding:18px; color:#fff; box-shadow:var(--shadow); position:relative; overflow:hidden;
+    border: 1px solid rgba(176,141,63,.4);
+  }
+  .mbz-quote::after{ content:""; position:absolute; inset:auto 0 0 0; height:4px; background:#B08D3F; opacity:.6; }
+  .mbz-quote .mq-ic{ font-size:22px; margin-bottom:8px; }
+  .mbz-quote .mq-body{ font-family:'Noto Kufi Arabic', sans-serif; font-size:15.5px; font-weight:700; line-height:1.7; }
+  .mbz-quote .mq-attr{ font-size:11px; opacity:.75; margin-top:10px; color:#E8D9AE; }
+
   .chip-row{ display:flex; gap:8px; overflow-x:auto; padding: 2px 0 6px; scrollbar-width:none; }
   .chip-row::-webkit-scrollbar{ display:none; }
   .chip{
@@ -209,7 +219,7 @@
       <div class="nav-item" data-tab="home"><span class="ic">🏠</span>الرئيسية</div>
       <div class="nav-item" data-tab="categories"><span class="ic">📖</span>المناسبات</div>
       <div class="nav-item" data-tab="tourist"><span class="ic">🧭</span>للزوار</div>
-      <div class="nav-item" data-tab="heritage"><span class="ic">🏺</span>التراث</div>
+      <div class="nav-item" data-tab="heritage"><span class="ic">🏺</span>الإمارات</div>
       <div class="nav-item" data-tab="favorites"><span class="ic">❤️</span>المفضلة<span class="nav-badge" id="favBadge" style="display:none">0</span></div>
     </div>
   </div>
@@ -320,6 +330,31 @@ const folkProverbs = [
   {icon:"⏳", name:"إذا ما طاعك الزمن طيّعه", body:"يدعو إلى التكيّف مع المتغيرات والتحديات في الحياة."}
 ];
 
+const zayedQuotes = [
+  {icon:"📚", name:"أكبر استثمار", body:"إن أكبر استثمار للمال هو استثماره في بناء أجيال من المتعلمين والمثقفين."},
+  {icon:"🕰️", name:"الماضي والحاضر", body:"من ليس له ماضٍ، ليس له حاضر ولا مستقبل."},
+  {icon:"🇦🇪", name:"مصلحة الوطن", body:"إن مصلحة الوطن العليا فوق كل اعتبار، ويجب أن تسبق بالأولوية والاهتمام والغاية أية مصلحة أخرى."},
+  {icon:"🛠️", name:"الإخلاص في العمل", body:"إذا أخلص كل منا في عمله فإن هذا العمل سوف يبقى مخلداً على مر السنين وللأجيال القادمة."},
+  {icon:"🤝", name:"الثروة المشتركة", body:"إننا نؤمن بأن خير الثروة التي حبانا الله بها، يجب أن يعم أصدقاءنا وأشقاءنا."},
+  {icon:"👨‍👩‍👧‍👦", name:"الأسرة والمجتمع", body:"الأسرة أساس أي مجتمع قوي."},
+  {icon:"🙏", name:"خادم الوطن", body:"إنني لست صانع معجزات، بل أنا خادم لوطني وأمتي."},
+  {icon:"🌍", name:"حماية الأرض", body:"لقد عاش آباؤنا على هذه الأرض، وحافظوا عليها بأقل الموارد، وعلينا واجب حمايتها للأجيال القادمة."},
+  {icon:"🤲", name:"طريق الاتحاد", body:"إن الاتحاد هو طريق القوة، وطريق العزة والمنعة، والخير المشترك."},
+  {icon:"💎", name:"الثروة الحقيقية", body:"إن الثروة الحقيقية هي ثروة الرجال، وليس المال والنفط."}
+];
+
+const mbzQuotes = [
+  {icon:"🎓", name:"رهان التعليم", body:"إن رهاننا الحقيقي في دولة الإمارات للسنوات المقبلة هو الاستثمار في التعليم."},
+  {icon:"🛢️", name:"ما بعد النفط", body:"سوف نحتفل بتصدير آخر برميل نفط."},
+  {icon:"🛡️", name:"مستقبل واحد", body:"مستقبلنا واحد، ومصيرنا واحد، وتطلعاتنا واحدة، ولا مكان بيننا لمتخاذل أو مفرّط في أمننا."},
+  {icon:"👷", name:"الكوادر الوطنية", body:"الإمارات تملك اليوم منظومة متكاملة من الكوادر الوطنية المؤهلة لإدارة أكبر المشاريع وأكثرها تعقيداً."},
+  {icon:"🚀", name:"اقتصاد المستقبل", body:"طموحنا هو رفد مسيرة التنمية المستدامة، وبناء اقتصاد قوي يعتمد على الابتكار والتكنولوجيا والعلوم الحديثة."},
+  {icon:"🌟", name:"ثروة الشباب", body:"ثروتنا الحقيقية هي ثروة البشر، والشباب هم طاقة الحاضر وأمل المستقبل، وبسواعدهم نصل إلى عنان السماء."},
+  {icon:"🕊️", name:"التسامح والتعايش", body:"التسامح والتعايش هما أساس الاستقرار والتقدم في أي مجتمع، والإمارات ستظل دائماً واحة للأمن والسلام للأطياف كافة."},
+  {icon:"🤲", name:"نجدة الأشقاء", body:"مد يد العون للأشقاء والأصدقاء في أوقات الأزمات هو ثوابت أصيلة في سياسة دولة الإمارات الخارجية."},
+  {icon:"❤️", name:"الكرامة الإنسانية", body:"صون الكرامة الإنسانية وتقديم الخير للبشرية جمعاء رسالة نؤمن بها ونعمل من أجلها بلا كلل."}
+];
+
 const landmarksData = [
   {icon:"🏰", name:"قصر الإمارات", body:"أبوظبي", url:"https://www.mandarinoriental.com/en/abu-dhabi/emirates-palace"},
   {icon:"🖼️", name:"برواز دبي", body:"دبي", url:"https://www.dubaiframe.ae"},
@@ -333,7 +368,14 @@ const landmarksData = [
   {icon:"⛲", name:"نافورة دبي", body:"دبي", url:"https://www.visitdubai.com/en/places-to-visit/the-dubai-fountain"},
   {icon:"🌴", name:"جزيرة النخلة", body:"دبي", url:"https://www.visitdubai.com/en/places-to-visit/palm-jumeirah"},
   {icon:"📖", name:"الحديقة القرآنية", body:"دبي", url:"https://www.visitdubai.com/en/places-to-visit/dubai-quran-park"},
-  {icon:"🏺", name:"متحف الشندغة", body:"دبي", url:"https://www.dubaiculture.gov.ae/en/attractions/museums/al-shindagha-museum"}
+  {icon:"🏺", name:"متحف الشندغة", body:"دبي", url:"https://www.dubaiculture.gov.ae/en/attractions/museums/al-shindagha-museum"},
+  {icon:"🕌", name:"قصر الوطن", body:"أبوظبي", url:"https://www.qasralwatan.ae"},
+  {icon:"🏎️", name:"عالم فيراري", body:"أبوظبي", url:"https://www.ferrariworldabudhabi.com"},
+  {icon:"🎬", name:"وورنر براذرز وورلد", body:"أبوظبي", url:"https://www.wbworldabudhabi.com"},
+  {icon:"🦸", name:"آي إم جي وورلدز أوف أدفنتشر", body:"دبي", url:"https://www.imgworlds.com"},
+  {icon:"🦋", name:"حديقة الفراشات", body:"دبي", url:"https://www.dubaibutterflygarden.com"},
+  {icon:"⛵", name:"برج العرب", body:"دبي", url:"https://www.jumeirah.com/en/stay/dubai/burj-al-arab"},
+  {icon:"🏙️", name:"أبراج الاتحاد", body:"أبوظبي", url:"https://etihadtowers.ae"}
 ];
 
 const nationalDays = [
@@ -548,11 +590,22 @@ function allItemsFlat(){
   return all;
 }
 
+function getGreeting(){
+  const hour = new Date().getHours();
+  if(hour >= 4 && hour < 12) return {text:"صباح الخير", icon:"☀️"};
+  if(hour >= 12 && hour < 17) return {text:"مساء الخير", icon:"🌤️"};
+  if(hour >= 17 && hour < 21) return {text:"مساء الخير", icon:"🌇"};
+  return {text:"مساء الخير", icon:"🌙"};
+}
+
 function renderHome(){
   const all = allItemsFlat();
   const dayIndex = Math.floor(Date.now()/86400000) % all.length;
   const p = all[dayIndex];
+  const mbzIndex = Math.floor(Date.now()/86400000) % mbzQuotes.length;
+  const mq = mbzQuotes[mbzIndex];
   const cats = Object.keys(protocolData);
+  const greeting = getGreeting();
   const soonEvents = upcomingNationalDays(7);
   const notifBanner = soonEvents.length ? `
     <div class="national-alert" data-open-national="1">
@@ -566,11 +619,18 @@ function renderHome(){
   ` : '';
   return `
     <div class="app-header">
-      <div class="greet">مساء الخير 👋</div>
+      <div class="greet">${greeting.text} ${greeting.icon}</div>
       <div class="name kufi">البروتوكول الإماراتي</div>
     </div>
 
     ${notifBanner}
+
+    <div class="section-title">👑 مقولة اليوم</div>
+    <div class="mbz-quote">
+      <div class="mq-ic">${mq.icon}</div>
+      <div class="mq-body">${escapeHtml(mq.body)}</div>
+      <div class="mq-attr">— الشيخ محمد بن زايد آل نهيان، حفظه الله ورعاه</div>
+    </div>
 
     <div class="section-title">💬 عبارة اليوم</div>
     <div class="potd">
@@ -694,11 +754,13 @@ const heritageMenu = [
   {key:'food', icon:'🍚', title:'الأكلات التراثية', desc:'أشهر الأطباق الإماراتية الأصيلة'},
   {key:'ahazeej', icon:'⚔️', title:'الأهازيج الإماراتية', desc:'العيالة، اليولة، النهمة، والزفة'},
   {key:'proverbs', icon:'📜', title:'أمثال شعبية', desc:'حكم ومعانٍ متوارثة من كبار السن'},
-  {key:'words', icon:'📖', title:'كلمات تراثية ومعانيها', desc:'قاموس مصغّر للهجة الإماراتية'}
+  {key:'words', icon:'📖', title:'كلمات تراثية ومعانيها', desc:'قاموس مصغّر للهجة الإماراتية'},
+  {key:'zayed', icon:'🕊️', title:'أقوال الشيخ زايد رحمه الله', desc:'من حكمة القائد المؤسس'}
 ];
 
 const nationalIdentityMenu = [
   {key:'governance', icon:'🏛️', title:'نظام الحكم والقيادة', desc:'الاتحاد، الرئاسة، وحكام الإمارات'},
+  {key:'mbz', icon:'👑', title:'أقوال الشيخ محمد بن زايد', desc:'من رؤية القيادة الرشيدة حفظه الله'},
   {key:'anthem', icon:'🎵', title:'السلام الوطني', desc:'كلمات عيشي بلادي واستماع'},
   {key:'landmarks', icon:'🏙️', title:'المعالم السياحية', desc:'أبرز وجهات الإمارات ومواقعها'},
   {key:'national', icon:'🇦🇪', title:'الأحداث الوطنية', desc:'اليوم الوطني، يوم العلم، وغيرها'}
@@ -731,7 +793,7 @@ function heritageListItems(list){
 function renderHeritage(){
   if(!heritageSection){
     return `
-      <div class="app-header"><div class="name kufi">🏺 التراث والهوية الوطنية</div></div>
+      <div class="app-header"><div class="name kufi">🏺 الإمارات — تراث وهوية</div></div>
 
       <div class="section-title" style="margin-top:4px;">🎨 التراث الشعبي</div>
       <div class="detail-note">عادات وفنون متوارثة من كبار السن</div>
@@ -753,6 +815,10 @@ function renderHeritage(){
     body = ahazeejList.map(a => simpleCardHtml(a.icon, a.name, a.body)).join('');
   } else if(heritageSection === 'proverbs'){
     body = folkProverbs.map(p => simpleCardHtml(p.icon, p.name, p.body)).join('');
+  } else if(heritageSection === 'zayed'){
+    body = zayedQuotes.map(q => simpleCardHtml(q.icon, q.name, q.body)).join('');
+  } else if(heritageSection === 'mbz'){
+    body = mbzQuotes.map(q => simpleCardHtml(q.icon, q.name, q.body)).join('');
   } else if(heritageSection === 'landmarks'){
     body = landmarksData.map(l => `
       <div class="tourist-row">
