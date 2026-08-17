@@ -177,6 +177,26 @@
   }
   .searchbox svg{ position:absolute; right:14px; top:50%; transform:translateY(-50%); width:16px; height:16px; color:var(--ink-soft); }
 
+  .suggest-form{ background:var(--card); border-radius:16px; padding:18px; box-shadow:var(--shadow); }
+  .suggest-form label{ display:block; font-size:12.5px; font-weight:700; color:var(--ink-soft); margin:0 0 6px; }
+  .suggest-form .req{ color:var(--red); }
+  .suggest-form input, .suggest-form textarea{
+    width:100%; padding:12px 14px; border-radius:12px; border:1px solid var(--line);
+    background:#fff; font-family:'Tajawal',sans-serif; font-size:14px; outline:none; margin-bottom:16px; box-sizing:border-box;
+  }
+  .suggest-form input:focus, .suggest-form textarea:focus{ border-color:var(--green); }
+  .suggest-form textarea{ min-height:120px; resize:vertical; }
+  .suggest-form .err{ color:var(--red); font-size:11.5px; margin:-10px 0 14px; display:none; }
+  .suggest-form .err.show{ display:block; }
+  .suggest-btn{
+    width:100%; padding:13px; border:none; border-radius:14px; background:var(--green); color:#fff;
+    font-family:'Tajawal',sans-serif; font-weight:700; font-size:14.5px; cursor:pointer;
+  }
+  .suggest-btn:disabled{ opacity:.6; }
+  .suggest-status{ text-align:center; font-size:13px; margin-top:12px; min-height:16px; }
+  .suggest-status.ok{ color:var(--green-deep); font-weight:700; }
+  .suggest-status.bad{ color:var(--red); font-weight:700; }
+
   .heritage-card{ background:var(--card); border-radius:16px; padding:16px; margin-bottom:12px; box-shadow:var(--shadow); }
   .heritage-card .h-top{ display:flex; align-items:center; gap:10px; margin-bottom:8px; }
   .heritage-card .h-ic{ font-size:20px; }
@@ -379,11 +399,16 @@ const landmarksData = [
 ];
 
 const nationalDays = [
-  {icon:"🇦🇪", name:"اليوم الوطني", body:"2 ديسمبر — ذكرى قيام اتحاد دولة الإمارات العربية المتحدة عام 1971.", month:12, day:2},
-  {icon:"🚩", name:"يوم العلم", body:"3 نوفمبر — مناسبة وطنية سنوية للاحتفاء برفع علم الدولة رمزاً للوحدة والانتماء.", month:11, day:3},
-  {icon:"🕊️", name:"يوم الشهيد", body:"30 نوفمبر — تكريم وتخليد أرواح شهداء الوطن الذين ضحّوا من أجله.", month:11, day:30},
-  {icon:"🤲", name:"يوم زايد للعمل الإنساني", body:"19 أغسطس — ذكرى وفاة الشيخ زايد بن سلطان آل نهيان، تكريماً لمسيرته الإنسانية.", month:8, day:19},
-  {icon:"🏃", name:"اليوم الوطني للرياضة", body:"أول خميس من فبراير — يوم مجتمعي يشجّع أسلوب الحياة الصحي والنشاط الرياضي للجميع.", month:2, firstThursday:true}
+  {icon:"🇦🇪", name:"اليوم الوطني", body:"2 ديسمبر — ذكرى قيام اتحاد دولة الإمارات العربية المتحدة عام 1971.", month:12, day:2,
+    say:"كل عام ووطننا الغالي بألف خير 🇦🇪", resp:"الله يديم عزّه ورفعته، وكل عام وأنتم بخير"},
+  {icon:"🚩", name:"يوم العلم", body:"3 نوفمبر — مناسبة وطنية سنوية للاحتفاء برفع علم الدولة رمزاً للوحدة والانتماء.", month:11, day:3,
+    say:"الله يعز علمنا ويرفعه دايم خفّاق", resp:"يارب، عزّ الوطن من عزّ علمه"},
+  {icon:"🕊️", name:"يوم الشهيد", body:"30 نوفمبر — تكريم وتخليد أرواح شهداء الوطن الذين ضحّوا من أجله.", month:11, day:30,
+    say:"الله يرحم شهداء الوطن ويسكنهم فسيح جناته", resp:"رحمة الله عليهم، تضحياتهم ما تُنسى"},
+  {icon:"🤲", name:"يوم زايد للعمل الإنساني", body:"19 أغسطس — ذكرى وفاة الشيخ زايد بن سلطان آل نهيان، تكريماً لمسيرته الإنسانية.", month:8, day:19,
+    say:"الله يرحم الوالد زايد ويجزاه خير الجزاء", resp:"رحمه الله وأسكنه فسيح جناته، بصمته باقية للأبد"},
+  {icon:"🏃", name:"اليوم الوطني للرياضة", body:"أول خميس من فبراير — يوم مجتمعي يشجّع أسلوب الحياة الصحي والنشاط الرياضي للجميع.", month:2, firstThursday:true,
+    say:"يومكم رياضي وصحتكم دايم زينة", resp:"الله يعطيك العافية، وحياة صحية للجميع"}
 ];
 
 /* ===================== NATIONAL DAYS REMINDER ===================== */
@@ -633,8 +658,10 @@ function renderHome(){
     <div class="section-title">💬 عبارة اليوم</div>
     <div class="potd">
       <div class="eyebrow">${escapeHtml(p.cat)}</div>
+      <div class="eyebrow" style="margin-top:4px;">القول:</div>
       <div class="say kufi">${escapeHtml(p.s)}</div>
-      <div class="resp">الرد: ${escapeHtml(p.r)}</div>
+      <div class="eyebrow" style="margin-top:2px;">الرد:</div>
+      <div class="resp">${escapeHtml(p.r)}</div>
       <div class="en">${escapeHtml(p.se)}</div>
     </div>
 
@@ -661,6 +688,41 @@ function renderHome(){
       <div class="chev">‹</div>
     </div>
     <div class="note-banner">🔊 ميزة النطق تعتمد على محرك المتصفح، للحصول على لهجة إماراتية أصيلة يُفضّل لاحقاً تسجيل أصوات حقيقية.</div>
+
+    <div class="section-title">💡 رأيك يهمنا</div>
+    <div class="list-item" data-tab-link="suggest">
+      <div class="li-main">
+        <div class="li-ic">💡</div>
+        <div class="li-txt"><b>عندك اقتراح أو ملاحظة؟</b><span>أرسلها لنا وبنسمعها بعين الاعتبار</span></div>
+      </div>
+      <div class="chev">‹</div>
+    </div>
+  `;
+}
+
+function renderSuggest(){
+  return `
+    <div class="back-row" data-back-suggest>
+      <span>→</span> العودة للرئيسية
+    </div>
+    <div class="app-header"><div class="name kufi">💡 عندك اقتراح أو ملاحظة؟</div></div>
+    <div class="detail-note">رأيك يساعدنا نطوّر التطبيق. الاسم إجباري، والإيميل والملاحظة تساعدنا نرد عليك إذا احتجنا.</div>
+    <form id="suggestForm" class="suggest-form">
+      <label>الاسم <span class="req">*</span></label>
+      <input type="text" id="sg-name" name="name" placeholder="اسمك" required>
+      <div class="err" id="sg-name-err">فضلاً اكتب اسمك.</div>
+
+      <label>الإيميل</label>
+      <input type="email" id="sg-email" name="email" placeholder="example@email.com">
+      <div class="err" id="sg-email-err">فضلاً اكتب إيميل صحيح.</div>
+
+      <label>المقترح <span class="req">*</span></label>
+      <textarea id="sg-msg" name="message" placeholder="اكتب اقتراحك أو ملاحظتك هنا..." required></textarea>
+      <div class="err" id="sg-msg-err">فضلاً اكتب المقترح.</div>
+
+      <button type="submit" class="suggest-btn" id="sg-submit">إرسال المقترح</button>
+      <div class="suggest-status" id="sg-status"></div>
+    </form>
   `;
 }
 
@@ -697,6 +759,7 @@ function phraseCardHtml(cat, idx, it){
     <div class="phrase-card">
       <div class="row1">
         <div>
+          <div class="eyebrow" style="color:var(--green-deep); font-weight:700;">القول:</div>
           <div class="say kufi">${escapeHtml(it.s)}</div>
           <div class="say-en">${escapeHtml(it.se||'')}</div>
         </div>
@@ -708,6 +771,7 @@ function phraseCardHtml(cat, idx, it){
       <div class="divider"></div>
       <div class="row2">
         <div>
+          <div class="eyebrow" style="font-weight:700;">الرد:</div>
           <div class="resp">${escapeHtml(it.r)}</div>
           <div class="resp-en">${escapeHtml(it.re||'')}</div>
         </div>
@@ -776,6 +840,37 @@ function simpleCardHtml(icon, title, body, steps){
   `;
 }
 
+function nationalDayCardHtml(n){
+  return `
+    <div class="heritage-card">
+      <div class="h-top"><span class="h-ic">${n.icon}</span><h3>${escapeHtml(n.name)}</h3></div>
+      <p>${escapeHtml(n.body)}</p>
+      ${n.say ? `
+      <div class="divider" style="margin:10px 0;"></div>
+      <div class="row1">
+        <div>
+          <div class="eyebrow" style="color:var(--green-deep); font-weight:700;">القول:</div>
+          <div class="say kufi">${escapeHtml(n.say)}</div>
+        </div>
+        <div class="actions">
+          <div class="icon-btn" data-speak="${escapeHtml(n.say)}">🔊</div>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="row2">
+        <div>
+          <div class="eyebrow" style="font-weight:700;">الرد:</div>
+          <div class="resp">${escapeHtml(n.resp)}</div>
+        </div>
+        <div class="actions">
+          <div class="icon-btn" data-speak="${escapeHtml(n.resp)}">🔊</div>
+        </div>
+      </div>
+      ` : ''}
+    </div>
+  `;
+}
+
 function heritageListItems(list){
   return list.map(m => `
     <div class="list-item" data-open-heritage="${m.key}">
@@ -836,7 +931,7 @@ function renderHeritage(){
         <div class="chev">‹</div>
       </div>
     `;
-    body = notifBtnHtml + nationalDays.map(n => simpleCardHtml(n.icon, n.name, n.body)).join('');
+    body = notifBtnHtml + nationalDays.map(n => nationalDayCardHtml(n)).join('');
   } else if(heritageSection === 'anthem'){
     const fullAnthem = nationalAnthem.lines.join(' ');
     body = `
@@ -928,6 +1023,7 @@ function render(){
   else if(currentTab === 'tourist') html = renderTourist();
   else if(currentTab === 'heritage') html = renderHeritage();
   else if(currentTab === 'favorites') html = renderFavorites();
+  else if(currentTab === 'suggest') html = renderSuggest();
   content.innerHTML = html;
   content.scrollTop = 0;
 
@@ -946,6 +1042,8 @@ function render(){
   }));
   const backHeritageEl = content.querySelector('[data-back-heritage]');
   if(backHeritageEl) backHeritageEl.addEventListener('click', () => { heritageSection = null; render(); });
+  const backSuggestEl = content.querySelector('[data-back-suggest]');
+  if(backSuggestEl) backSuggestEl.addEventListener('click', () => { currentTab = 'home'; render(); });
   content.querySelectorAll('[data-speak]').forEach(el => el.addEventListener('click', () => speak(el.dataset.speak)));
   content.querySelectorAll('[data-fav]').forEach(el => el.addEventListener('click', () => toggleFav(el.dataset.fav)));
   const nationalAlertEl = content.querySelector('[data-open-national]');
@@ -957,6 +1055,65 @@ function render(){
   const searchEl = document.getElementById('searchInput');
   if(searchEl){
     searchEl.addEventListener('input', (e) => { window.__lastSearch = e.target.value; render(); setTimeout(()=>{ const s=document.getElementById('searchInput'); if(s){ s.focus(); s.selectionStart=s.selectionEnd=s.value.length; } },0); });
+  }
+
+  const suggestForm = document.getElementById('suggestForm');
+  if(suggestForm){
+    suggestForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const nameEl = document.getElementById('sg-name');
+      const emailEl = document.getElementById('sg-email');
+      const msgEl = document.getElementById('sg-msg');
+      const nameErr = document.getElementById('sg-name-err');
+      const emailErr = document.getElementById('sg-email-err');
+      const msgErr = document.getElementById('sg-msg-err');
+      const statusEl = document.getElementById('sg-status');
+      const submitBtn = document.getElementById('sg-submit');
+
+      const name = nameEl.value.trim();
+      const email = emailEl.value.trim();
+      const msg = msgEl.value.trim();
+      const emailOk = email === '' || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+      nameErr.classList.toggle('show', name === '');
+      emailErr.classList.toggle('show', !emailOk);
+      msgErr.classList.toggle('show', msg === '');
+
+      if(name === '' || !emailOk || msg === ''){
+        statusEl.textContent = '';
+        statusEl.className = 'suggest-status';
+        return;
+      }
+
+      submitBtn.disabled = true;
+      statusEl.className = 'suggest-status';
+      statusEl.textContent = 'جارِ الإرسال...';
+
+      try{
+        const res = await fetch('https://formsubmit.co/ajax/uae.protocol262@gmail.com', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({
+            name: name,
+            email: email || 'لم يُكتب',
+            message: msg,
+            _subject: 'مقترح جديد من تطبيق البروتوكول الإماراتي'
+          })
+        });
+        if(res.ok){
+          statusEl.classList.add('ok');
+          statusEl.textContent = '✅ تم إرسال مقترحك، شاكرين لك تعاونك!';
+          suggestForm.reset();
+        } else {
+          throw new Error('failed');
+        }
+      } catch(err){
+        statusEl.classList.add('bad');
+        statusEl.textContent = '⚠️ تعذّر الإرسال، تأكد من الاتصال بالإنترنت وحاول مرة ثانية.';
+      } finally {
+        submitBtn.disabled = false;
+      }
+    });
   }
 }
 
