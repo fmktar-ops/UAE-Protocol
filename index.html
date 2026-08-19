@@ -376,26 +376,52 @@ const mbzQuotes = [
 ];
 
 const landmarksData = [
-  {icon:"🏰", name:"قصر الإمارات", body:"أبوظبي", url:"https://www.mandarinoriental.com/en/abu-dhabi/emirates-palace"},
-  {icon:"🖼️", name:"برواز دبي", body:"دبي", url:"https://www.dubaiframe.ae"},
-  {icon:"🌷", name:"حديقة دبي المعجزة", body:"دبي", url:"https://www.dubaimiraclegarden.com"},
-  {icon:"🌊", name:"ياس ووتر وورلد", body:"أبوظبي", url:"https://www.yaswaterworld.com"},
-  {icon:"🎪", name:"القرية العالمية", body:"دبي", url:"https://www.globalvillage.ae"},
-  {icon:"🐠", name:"دبي أكواريوم وحديقة الحيوانات المائية", body:"دبي", url:"https://www.visitdubai.com/en/places-to-visit/dubai-aquarium-and-underwater-zoo"},
-  {icon:"⛷️", name:"سكي دبي", body:"دبي", url:"https://www.skidxb.com"},
-  {icon:"🐳", name:"سي وورلد جزيرة ياس", body:"أبوظبي", url:"https://www.seaworldabudhabi.com"},
-  {icon:"🏄", name:"حديقة أكوافنتشر", body:"دبي", url:"https://www.aquaventureworld.com"},
-  {icon:"⛲", name:"نافورة دبي", body:"دبي", url:"https://www.visitdubai.com/en/places-to-visit/the-dubai-fountain"},
-  {icon:"🌴", name:"جزيرة النخلة", body:"دبي", url:"https://www.visitdubai.com/en/places-to-visit/palm-jumeirah"},
-  {icon:"📖", name:"الحديقة القرآنية", body:"دبي", url:"https://www.visitdubai.com/en/places-to-visit/dubai-quran-park"},
-  {icon:"🏺", name:"متحف الشندغة", body:"دبي", url:"https://www.dubaiculture.gov.ae/en/attractions/museums/al-shindagha-museum"},
-  {icon:"🕌", name:"قصر الوطن", body:"أبوظبي", url:"https://www.qasralwatan.ae"},
-  {icon:"🏎️", name:"عالم فيراري", body:"أبوظبي", url:"https://www.ferrariworldabudhabi.com"},
-  {icon:"🎬", name:"وورنر براذرز وورلد", body:"أبوظبي", url:"https://www.wbworldabudhabi.com"},
-  {icon:"🦸", name:"آي إم جي وورلدز أوف أدفنتشر", body:"دبي", url:"https://www.imgworlds.com"},
-  {icon:"🦋", name:"حديقة الفراشات", body:"دبي", url:"https://www.dubaibutterflygarden.com"},
-  {icon:"⛵", name:"برج العرب", body:"دبي", url:"https://www.jumeirah.com/en/stay/dubai/burj-al-arab"},
-  {icon:"🏙️", name:"أبراج الاتحاد", body:"أبوظبي", url:"https://etihadtowers.ae"}
+  {icon:"🏰", name:"قصر الإمارات", body:"أبوظبي", desc:"فندق فخم بقبة ذهبية، يُعد من أفخم فنادق العالم.", url:"https://www.mandarinoriental.com/en/abu-dhabi/emirates-palace"},
+  {icon:"🖼️", name:"برواز دبي", body:"دبي", desc:"معلم معماري ضخم يوفر إطلالة بانورامية على دبي القديمة والحديثة.", url:"https://www.dubaiframe.ae"},
+  {icon:"🌷", name:"حديقة دبي المعجزة", body:"دبي", desc:"أكبر حديقة زهور طبيعية بالعالم بتصاميم فنية مذهلة.", url:"https://www.dubaimiraclegarden.com"},
+  {icon:"🌊", name:"ياس ووتر وورلد", body:"أبوظبي", desc:"أكبر مدينة ألعاب مائية بالمنطقة، بجزيرة ياس.", url:"https://www.yaswaterworld.com"},
+  {icon:"🎪", name:"القرية العالمية", body:"دبي", desc:"وجهة ترفيهية وثقافية موسمية تجمع أجنحة من دول العالم.", url:"https://www.globalvillage.ae"},
+  {icon:"🐠", name:"دبي أكواريوم وحديقة الحيوانات المائية", body:"دبي", desc:"أحد أكبر أحواض الأسماك المعلّقة بالعالم، داخل دبي مول.", url:"https://www.visitdubai.com/en/places-to-visit/dubai-aquarium-and-underwater-zoo"},
+  {icon:"⛷️", name:"سكي دبي", body:"دبي", desc:"منتجع تزلج داخلي بثلوج حقيقية وسط أجواء الصحراء.", url:"https://www.skidxb.com"},
+  {icon:"🐳", name:"سي وورلد جزيرة ياس", body:"أبوظبي", desc:"أول منتزه بحري متكامل بالمنطقة يجمع الترفيه والحفاظ على الحياة البحرية.", url:"https://www.seaworldabudhabi.com"},
+  {icon:"🏄", name:"حديقة أكوافنتشر", body:"دبي", desc:"منتزه مائي بجزيرة النخلة يضم منزلقات ومسابح وحياة بحرية.", url:"https://www.aquaventureworld.com"},
+  {icon:"⛲", name:"نافورة دبي", body:"دبي", desc:"أكبر نافورة راقصة بالعالم، بجوار برج خليفة.", url:"https://www.visitdubai.com/en/places-to-visit/the-dubai-fountain"},
+  {icon:"🌴", name:"جزيرة النخلة", body:"دبي", desc:"جزيرة اصطناعية على شكل نخلة، تضم فنادق ومنتجعات فاخرة.", url:"https://www.visitdubai.com/en/places-to-visit/palm-jumeirah"},
+  {icon:"📖", name:"الحديقة القرآنية", body:"دبي", desc:"حديقة نباتية مستوحاة من نباتات ذُكرت في القرآن الكريم.", url:"https://www.visitdubai.com/en/places-to-visit/dubai-quran-park"},
+  {icon:"🏺", name:"متحف الشندغة", body:"دبي", desc:"يروي تاريخ دبي وحياة أهلها قديماً على ضفاف الخور.", url:"https://www.dubaiculture.gov.ae/en/attractions/museums/al-shindagha-museum"},
+  {icon:"🕌", name:"قصر الوطن", body:"أبوظبي", desc:"مقر رئاسي فخم يعكس عمارة إسلامية أصيلة، مفتوح لزوار.", url:"https://www.qasralwatan.ae"},
+  {icon:"🏎️", name:"عالم فيراري", body:"أبوظبي", desc:"أكبر منتزه فيراري مغطى بالعالم، يضم أسرع أفعوانية.", url:"https://www.ferrariworldabudhabi.com"},
+  {icon:"🎬", name:"وورنر براذرز وورلد", body:"أبوظبي", desc:"منتزه مغطى بشخصيات وورنر براذرز الكرتونية الشهيرة.", url:"https://www.wbworldabudhabi.com"},
+  {icon:"🦸", name:"آي إم جي وورلدز أوف أدفنتشر", body:"دبي", desc:"أكبر منتزه ترفيهي مغطى بالعالم، بشخصيات مارفل وكرتون نتورك.", url:"https://www.imgworlds.com"},
+  {icon:"🦋", name:"حديقة الفراشات", body:"دبي", desc:"أكبر حديقة فراشات مغطاة بالعالم، تضم آلاف الفراشات الملوّنة.", url:"https://www.dubaibutterflygarden.com"},
+  {icon:"⛵", name:"برج العرب", body:"دبي", desc:"فندق شراعي الشكل، من أفخم وأشهر فنادق العالم.", url:"https://www.jumeirah.com/en/stay/dubai/burj-al-arab"},
+  {icon:"🏙️", name:"أبراج الاتحاد", body:"أبوظبي", desc:"برجان توأمان بتصميم معماري مستوحى من سعف النخيل.", url:"https://etihadtowers.ae"},
+
+  {icon:"🏰", name:"قلعة الجاهلي", body:"العين، أبوظبي", desc:"من أكبر القلاع الطينية التاريخية، بُنيت أواخر القرن التاسع عشر وكانت مقر إقامة صيفي للأسرة الحاكمة.", url:"https://abudhabiculture.ae/ar/Cultural-Sites/Historic-Buildings-And-Cultural-Landscapes/Al-Jahili-Fort"},
+  {icon:"⛰️", name:"جبل حفيت", body:"العين، أبوظبي", desc:"أعلى قمة في أبوظبي، تضم مدافن أثرية عمرها آلاف السنين وإطلالة بانورامية على المدينة.", url:"https://abudhabiculture.ae/ar/cultural-sites/pre-history-and-paleontology/jebel-hafit-desert-park"},
+  {icon:"🌴", name:"واحة العين", body:"العين، أبوظبي", desc:"أكبر واحات العين ومدرجة على قائمة التراث العالمي لليونسكو، تضم نظام الأفلاج التقليدي ومزارع النخيل."},
+  {icon:"🏯", name:"قصر المويجعي", body:"العين، أبوظبي", desc:"قصر تاريخي كان ديوان الشيخ زايد بن سلطان آل نهيان منذ توليه نيابة الحكم بالعين عام 1946.", url:"https://dct.gov.ae/ar/what.we.do/culture/museums/qasr.al.muwaiji.aspx"},
+
+  {icon:"🏛️", name:"متحف عجمان", body:"عجمان", desc:"يقع داخل قلعة عجمان القديمة ويعرض تاريخ الإمارة عبر مقتنيات وأسلحة وأدوات تراثية.", url:"https://visit-ajman.ae/ar/%D8%A7%D9%84%D9%88%D8%AC%D9%87%D8%A7%D8%AA/%D9%85%D8%AF%D9%8A%D9%86%D8%A9-%D8%B9%D8%AC%D9%85%D8%A7%D9%86/%D9%85%D8%AA%D8%AD%D9%81-%D8%B9%D8%AC%D9%85%D8%A7%D9%86"},
+  {icon:"🦩", name:"محمية الزوراء الطبيعية", body:"عجمان", desc:"محمية للأراضي الرطبة ضمن اتفاقية رامسار، موطن لأكثر من 60 نوعاً من الطيور وأشجار القرم."},
+  {icon:"🏺", name:"الحي التراثي بعجمان", body:"عجمان", desc:"سوق بطابع تراثي يضم محال ومجالس وساحات مخصصة للفعاليات والمناسبات الوطنية."},
+  {icon:"⛰️", name:"منطقة مصفوت", body:"عجمان", desc:"منطقة جبلية تابعة لعجمان تشتهر بقلعتها التاريخية وطبيعتها الجبلية الخلابة."},
+
+  {icon:"🏰", name:"قلعة أم القيوين", body:"أم القيوين", desc:"حصن تاريخي يعكس عمارة الإمارة القديمة وطابعها الدفاعي."},
+  {icon:"🦅", name:"جزيرة السينية", body:"أم القيوين", desc:"محمية طبيعية يفصلها خور أم القيوين عن المدينة، موطن للظباء وطيور الفلامنجو ومواقع أثرية عريقة."},
+  {icon:"🌊", name:"خور أم القيوين", body:"أم القيوين", desc:"خليج مائي بين المدينة وجزيرة السينية، بيئة غنية بالحياة البحرية والطيور المهاجرة."},
+
+  {icon:"🏔️", name:"جبل جيس", body:"رأس الخيمة", desc:"أعلى قمة جبلية في الإمارات، يشتهر بأطول مسار زيبلاين (انزلاقي) في العالم."},
+  {icon:"🏰", name:"قلعة ضاية", body:"رأس الخيمة", desc:"حصن تاريخي على تلة مرتفعة، من آخر الحصون التلية المتبقية بالإمارات وله دور بارز في معارك 1819."},
+  {icon:"🏘️", name:"الجزيرة الحمراء القديمة", body:"رأس الخيمة", desc:"قرية أثرية اشتهرت قديماً بالغوص على اللؤلؤ وعمارتها التقليدية المطلة على الساحل."},
+
+  {icon:"🐚", name:"جزيرة سنوبي", body:"الفجيرة", desc:"جزيرة صخرية ساحلية سُميت لشبهها بشخصية سنوبي، مقصد شهير للغوص والسباحة قرب دبا الفجيرة."},
+  {icon:"🕌", name:"مسجد البدية", body:"الفجيرة", desc:"أقدم مسجد قائم في الإمارات، يعود بناؤه لأكثر من 600 سنة ويتميز بقبابه الأربع الفريدة.", url:"https://tourism.fujairah.ae/ar/destinations/al-bidya-mosque"},
+  {icon:"🏰", name:"قلعة الفجيرة", body:"الفجيرة", desc:"أكبر وأقدم قلاع الإمارة، بُنيت بالقرن السادس عشر وتطل على المدينة من تلة مرتفعة.", url:"https://tourism.fujairah.ae/ar/destinations/fujairah-fort"},
+
+  {icon:"🕌", name:"متحف الشارقة للحضارة الإسلامية", body:"الشارقة", desc:"يعرض أكثر من 5 آلاف قطعة أثرية تحكي تاريخ الحضارة الإسلامية وعلومها وفنونها.", url:"https://www.sharjahmuseums.ae/ar-AE/Museums/Sharjah-Museum-of-Islamic-Civilization"},
+  {icon:"🌉", name:"واجهة المجاز المائية", body:"الشارقة", desc:"ممشى ووجهة ترفيهية عائلية على بحيرة خالد وسط مدينة الشارقة، بها عجلة عين الشارقة."},
+  {icon:"🦆", name:"محمية الأراضي الرطبة", body:"الشارقة", desc:"محمية طبيعية تحتضن بحيرات وسبخات ملحية، وتوفر ملاذاً للطيور المهاجرة والحياة البرية."}
 ];
 
 const nationalDays = [
@@ -894,7 +920,7 @@ function renderHeritage(){
   } else if(heritageSection === 'landmarks'){
     body = landmarksData.map(l => `
       <div class="tourist-row">
-        <div class="t-txt"><b>${l.icon} ${escapeHtml(l.name)}</b><span class="en">📍 ${escapeHtml(l.body)}</span></div>
+        <div class="t-txt"><b>${l.icon} ${escapeHtml(l.name)}</b><span class="en">📍 ${escapeHtml(l.body)}</span>${l.desc ? `<span class="en" style="display:block; margin-top:2px;">${escapeHtml(l.desc)}</span>` : ''}</div>
         ${l.url ? `<a class="icon-btn" href="${escapeHtml(l.url)}" target="_blank" rel="noopener" title="زيارة الموقع الرسمي">🔗</a>` : ''}
       </div>
     `).join('');
