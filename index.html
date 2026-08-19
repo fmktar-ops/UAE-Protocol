@@ -55,6 +55,21 @@
   .status-bar .flagchip svg{ width:16px; height:11px; border-radius:2px; box-shadow:0 0 0 1px rgba(0,0,0,.1); }
 
   .content{ flex:1; overflow-y:auto; padding: 4px 18px 100px; scrollbar-width:none; }
+
+  .scroll-hint{
+    position:absolute; left:50%; bottom:78px; transform:translateX(-50%);
+    width:34px; height:34px; border-radius:50%; background:var(--green);
+    color:#fff; display:flex; align-items:center; justify-content:center;
+    box-shadow:0 4px 12px rgba(0,0,0,.25); pointer-events:none;
+    opacity:0; transition:opacity .25s ease; animation:scrollBounce 1.6s ease-in-out infinite;
+    z-index:5;
+  }
+  .scroll-hint svg{ width:18px; height:18px; }
+  .scroll-hint.show{ opacity:.92; }
+  @keyframes scrollBounce{
+    0%, 100% { transform:translateX(-50%) translateY(0); }
+    50% { transform:translateX(-50%) translateY(6px); }
+  }
   .content::-webkit-scrollbar{ display:none; }
 
   /* Bottom nav */
@@ -234,6 +249,9 @@
     </div>
 
     <div class="content" id="content"></div>
+    <div class="scroll-hint" id="scrollHint">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>
+    </div>
 
     <div class="bottom-nav">
       <div class="nav-item" data-tab="home"><span class="ic">🏠</span>الرئيسية</div>
@@ -1120,7 +1138,25 @@ function render(){
       }
     });
   }
+
+  updateScrollHint();
+  setTimeout(updateScrollHint, 50);
 }
+
+function updateScrollHint(){
+  const content = document.getElementById('content');
+  const hint = document.getElementById('scrollHint');
+  if(!content || !hint) return;
+  const hasMore = content.scrollHeight - content.scrollTop - content.clientHeight > 40;
+  hint.classList.toggle('show', hasMore);
+}
+
+document.getElementById('content').addEventListener('scroll', updateScrollHint);
+window.addEventListener('resize', updateScrollHint);
+document.getElementById('scrollHint').addEventListener('click', () => {
+  const content = document.getElementById('content');
+  content.scrollBy({ top: content.clientHeight * 0.75, behavior: 'smooth' });
+});
 
 document.querySelectorAll('.nav-item').forEach(el => {
   el.addEventListener('click', () => {
