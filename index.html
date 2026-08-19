@@ -405,7 +405,7 @@ const nationalDays = [
     say:"الله يعز علمنا ويرفعه دايم خفّاق", resp:"يارب، عزّ الوطن من عزّ علمه"},
   {icon:"🕊️", name:"يوم الشهيد", body:"30 نوفمبر — تكريم وتخليد أرواح شهداء الوطن الذين ضحّوا من أجله.", month:11, day:30,
     say:"الله يرحم شهداء الوطن ويسكنهم فسيح جناته", resp:"رحمة الله عليهم، تضحياتهم ما تُنسى"},
-  {icon:"🤲", name:"يوم زايد للعمل الإنساني", body:"19 أغسطس — ذكرى وفاة الشيخ زايد بن سلطان آل نهيان، تكريماً لمسيرته الإنسانية.", month:8, day:19,
+  {icon:"🤲", name:"يوم زايد للعمل الإنساني", body:"19 رمضان (تقويم هجري) — يوم معروف بذكرى الشيخ زايد بن سلطان آل نهيان، تكريماً لمسيرته ومآثره الإنسانية. بما أنه تاريخ هجري، فموعده الميلادي يتغيّر كل سنة (يوافق 26 فبراير 2027م تقريباً في المرة القادمة).", month:2, day:26, hijri:true,
     say:"الله يرحم الوالد زايد ويجزاه خير الجزاء", resp:"رحمه الله وأسكنه فسيح جناته، بصمته باقية للأبد"},
   {icon:"🏃", name:"اليوم الوطني للرياضة", body:"أول خميس من فبراير — يوم مجتمعي يشجّع أسلوب الحياة الصحي والنشاط الرياضي للجميع.", month:2, firstThursday:true,
     say:"يومكم رياضي وصحتكم دايم زينة", resp:"الله يعطيك العافية، وحياة صحية للجميع"}
@@ -845,28 +845,7 @@ function nationalDayCardHtml(n){
     <div class="heritage-card">
       <div class="h-top"><span class="h-ic">${n.icon}</span><h3>${escapeHtml(n.name)}</h3></div>
       <p>${escapeHtml(n.body)}</p>
-      ${n.say ? `
-      <div class="divider" style="margin:10px 0;"></div>
-      <div class="row1">
-        <div>
-          <div class="eyebrow" style="color:var(--green-deep); font-weight:700;">القول:</div>
-          <div class="say kufi">${escapeHtml(n.say)}</div>
-        </div>
-        <div class="actions">
-          <div class="icon-btn" data-speak="${escapeHtml(n.say)}">🔊</div>
-        </div>
-      </div>
-      <div class="divider"></div>
-      <div class="row2">
-        <div>
-          <div class="eyebrow" style="font-weight:700;">الرد:</div>
-          <div class="resp">${escapeHtml(n.resp)}</div>
-        </div>
-        <div class="actions">
-          <div class="icon-btn" data-speak="${escapeHtml(n.resp)}">🔊</div>
-        </div>
-      </div>
-      ` : ''}
+      ${n.hijri ? `<div class="detail-note" style="margin:8px 0 0;">🌙 هذي المناسبة بالتقويم الهجري، فتاريخها الميلادي يتقدّم نحو 10-11 يوماً كل سنة.</div>` : ''}
     </div>
   `;
 }
