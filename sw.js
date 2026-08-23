@@ -1,4 +1,4 @@
-const CACHE_NAME = 'emirati-protocol-v1';
+const CACHE_NAME = 'emirati-protocol-v2';
 const FILES_TO_CACHE = [
   './emirati_protocol.html',
   './manifest.json',
@@ -24,7 +24,24 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    caches.match(event.request).then((cached) => cached || fetch(event.request))
-  );
+  const url = new URL(event.request.url);
+  const isHtml = event.request.mode === 'navigate' || url.pathname.endsWith('.html');
+
+  if(isHtml){
+    // شبكة أولاً لملف HTML، حتى تصلك آخر التحديثات فوراً عند توفر إنترنت
+    event.respondWith(
+      fetch(event.request)
+        .then((res) => {
+          const resClone = res.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, resClone));
+          return res;
+        })
+        .catch(() => caches.match(event.request))
+    );
+  } else {
+    // كاش أولاً للملفات الثابتة (أيقونات، صوت) لتوفير البيانات وسرعة التحميل
+    event.respondWith(
+      caches.match(event.request).then((cached) => cached || fetch(event.request))
+    );
+  }
 });

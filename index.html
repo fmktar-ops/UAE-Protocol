@@ -212,6 +212,47 @@
   .suggest-status.ok{ color:var(--green-deep); font-weight:700; }
   .suggest-status.bad{ color:var(--red); font-weight:700; }
 
+  .star-rating{ display:flex; gap:6px; margin-bottom:18px; font-size:30px; line-height:1; direction:ltr; justify-content:flex-start; }
+  .star-rating .star{ color:#ddd; cursor:pointer; transition:color .15s ease, transform .1s ease; }
+  .star-rating .star:hover{ transform:scale(1.12); }
+  .star-rating .star.active{ color:#F5B942; }
+
+  .ai-fab{
+    position:absolute; left:16px; bottom:78px; width:52px; height:52px; border-radius:50%;
+    background: linear-gradient(135deg, var(--green) 0%, var(--green-deep) 100%); color:#fff;
+    display:flex; align-items:center; justify-content:center; font-size:24px;
+    box-shadow:0 6px 16px rgba(0,0,0,.3); cursor:pointer; z-index:6;
+    animation: fabPulse 2.4s ease-in-out infinite;
+    transition: opacity .2s ease, transform .2s ease;
+  }
+  .ai-fab.hidden{ opacity:0; transform:scale(.6); pointer-events:none; }
+  @keyframes fabPulse{
+    0%, 100% { box-shadow:0 6px 16px rgba(0,0,0,.3), 0 0 0 0 rgba(0,115,47,.4); }
+    50% { box-shadow:0 6px 16px rgba(0,0,0,.3), 0 0 0 8px rgba(0,115,47,0); }
+  }
+
+  .chat-wrap{ display:flex; flex-direction:column; height:100%; }
+  .chat-msgs{ display:flex; flex-direction:column; gap:10px; padding-bottom:8px; }
+  .chat-bubble{ max-width:82%; padding:10px 14px; border-radius:16px; font-size:13.5px; line-height:1.7; white-space:pre-line; }
+  .chat-bubble.bot{ background:var(--card); box-shadow:var(--shadow); align-self:flex-start; border-bottom-left-radius:4px; }
+  .chat-bubble.user{ background:var(--green); color:#fff; align-self:flex-end; border-bottom-right-radius:4px; }
+  .chat-suggest-row{ display:flex; flex-wrap:wrap; gap:6px; margin:10px 0 4px; }
+  .chat-chip{
+    background:var(--card); border:1px solid var(--line); border-radius:20px; padding:6px 12px;
+    font-size:11.5px; cursor:pointer; color:var(--green-deep); font-weight:700; box-shadow:var(--shadow);
+  }
+  .chat-input-row{
+    display:flex; gap:8px; padding:10px 0 4px; position:sticky; bottom:0; background:var(--sand);
+  }
+  .chat-input-row input{
+    flex:1; padding:12px 14px; border-radius:20px; border:1px solid var(--line);
+    background:#fff; font-family:'Tajawal',sans-serif; font-size:14px; outline:none;
+  }
+  .chat-send-btn{
+    width:44px; height:44px; border-radius:50%; border:none; background:var(--green); color:#fff;
+    font-size:18px; cursor:pointer; flex-shrink:0;
+  }
+
   .heritage-card{ background:var(--card); border-radius:16px; padding:16px; margin-bottom:12px; box-shadow:var(--shadow); }
   .heritage-card .h-top{ display:flex; align-items:center; gap:10px; margin-bottom:8px; }
   .heritage-card .h-ic{ font-size:20px; }
@@ -252,6 +293,7 @@
     <div class="scroll-hint" id="scrollHint">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>
     </div>
+    <div class="ai-fab" id="aiFab" title="المساعد الذكي">🤖</div>
 
     <div class="bottom-nav">
       <div class="nav-item" data-tab="home"><span class="ic">🏠</span>الرئيسية</div>
@@ -598,6 +640,30 @@ const heritageWords = [
   {w:"ربيعي", m:"صديقي"}
 ];
 
+/* ===================== قاعدة معرفة عامة للمساعد الذكي ===================== */
+const generalKnowledge = [
+  {q:"تأسيس دولة الإمارات الاتحاد", a:"قامت دولة الإمارات العربية المتحدة في 2 ديسمبر 1971 باتحاد ست إمارات (أبوظبي، دبي، الشارقة، عجمان، أم القيوين، الفجيرة)، وانضمت رأس الخيمة رسمياً في فبراير 1972 لتكتمل الإمارات السبع."},
+  {q:"عاصمة الإمارات", a:"عاصمة دولة الإمارات العربية المتحدة هي مدينة أبوظبي."},
+  {q:"عملة الإمارات النقد", a:"العملة الرسمية لدولة الإمارات هي الدرهم الإماراتي (AED)."},
+  {q:"اللغة الرسمية لغة الدولة", a:"اللغة العربية هي اللغة الرسمية لدولة الإمارات، وتُستخدم الإنجليزية بشكل واسع أيضاً في الحياة اليومية والأعمال."},
+  {q:"الشيخ زايد بن سلطان آل نهيان الأب المؤسس مؤسس الدولة", a:"الشيخ زايد بن سلطان آل نهيان هو الأب المؤسس لدولة الإمارات ورئيسها الأول من عام 1971 حتى وفاته عام 2004، وله دور محوري في قيام الاتحاد وتنمية البلاد."},
+  {q:"الشيخ راشد بن سعيد آل مكتوم حاكم دبي مؤسس دبي", a:"الشيخ راشد بن سعيد آل مكتوم كان حاكم دبي ونائب رئيس الدولة، ويُعتبر أحد أبرز مؤسسي الاتحاد وصاحب رؤية تطوير دبي الحديثة."},
+  {q:"برج خليفة أطول برج بالعالم دبي", a:"برج خليفة في دبي هو أطول برج في العالم بارتفاع يتجاوز 828 متراً، افتُتح رسمياً عام 2010."},
+  {q:"إكسبو 2020 دبي المعرض العالمي", a:"استضافت دبي معرض إكسبو 2020 (أُقيم فعلياً من أكتوبر 2021 إلى مارس 2022 بسبب جائحة كورونا)، بمشاركة أكثر من 190 دولة تحت شعار 'توصيل العقول وصناعة المستقبل'."},
+  {q:"الصقر رمز وطني صيد الصقور الصقارة", a:"الصقر رمز وطني مهم يظهر في شعار دولة الإمارات، والصقارة (رياضة الصيد بالصقور) من أعرق عناصر التراث الإماراتي والخليجي، وقد سُجّلت ضمن قوائم التراث الإنساني لليونسكو."},
+  {q:"الهجن الإبل سباق الهجن سفينة الصحراء", a:"الإبل (الهجن) تُلقّب بـ'سفينة الصحراء' لدورها التاريخي في حياة البدو، وسباقات الهجن من أبرز الرياضات التراثية الشعبية بالإمارات حتى اليوم."},
+  {q:"الخنجر سلاح تقليدي زي الرجال", a:"الخنجر سلاح تقليدي يرتديه الرجال في المناسبات الرسمية والاحتفالية، ويرمز للهيبة والرجولة والانتماء للتراث الخليجي."},
+  {q:"علم دولة الإمارات ألوان العلم تصميم العلم", a:"صمّم علم دولة الإمارات الشاب عبدالله محمد المعينة عام 1971، بألوانه الأربعة: الأخضر للخصب، الأبيض للسلام، الأسود للعزّة، والأحمر للوحدة والتضحية."},
+  {q:"الإمارات السبع أعضاء الاتحاد كم إمارة", a:"تتكوّن دولة الإمارات من سبع إمارات: أبوظبي، دبي، الشارقة، عجمان، أم القيوين، رأس الخيمة، والفجيرة."},
+  {q:"اكتشاف النفط تصدير النفط", a:"اكتُشف النفط في أبوظبي أواخر الخمسينيات وبدأ تصديره فعلياً عام 1962، ما غيّر مسار التنمية الاقتصادية في البلاد بشكل جذري."},
+  {q:"مهرجان الشيخ زايد التراثي", a:"مهرجان الشيخ زايد التراثي فعالية سنوية تُقام بأبوظبي، تحتفي بالتراث الإماراتي والعربي عبر الحرف والفعاليات الثقافية والأسواق الشعبية."},
+  {q:"المصافحة السلام التحية بين الناس", a:"من المعتاد إماراتياً تبادل السلام بعبارة 'السلام عليكم' مع مصافحة اليد اليمنى، مع مراعاة الأعراف المتعلقة بالتحية بين الجنسين حسب الموقف."},
+  {q:"رمضان شهر الصيام", a:"رمضان هو شهر الصيام عند المسلمين، وتشهد الإمارات خلاله تغيّراً بساعات الدوام وأجواء خاصة من موائد الإفطار الجماعية والقيم الروحانية."},
+  {q:"عيد الفطر عيد الأضحى الأعياد", a:"عيد الفطر وعيد الأضحى من أهم الأعياد الإسلامية التي تحتفل بها الإمارات بإجازات رسمية وتهاني 'عيدكم مبارك' و'كل عام وأنتم بخير'."},
+  {q:"من أنت وش تسوي مين انت", a:"أنا المساعد الذكي بتطبيق البروتوكول الإماراتي 🤖، مهمتي أساعدك تتعرف على آداب وعادات المجتمع الإماراتي، وتراثه، وهويته الوطنية، ومعالمه السياحية. اسألني أي شي!"}
+];
+
+
 /* ===================== STATE ===================== */
 let currentTab = 'home';
 let catDetail = null; // category name if viewing detail
@@ -605,6 +671,8 @@ let heritageSection = null; // 'stories' | 'food' | 'ahazeej' | 'words'
 let favorites = [];
 let favLoaded = false;
 let notifEnabled = false;
+let chatMessages = [];
+let chatIntroShown = false;
 
 async function loadNotifState(){
   notifEnabled = await isNotifEnabled();
@@ -752,6 +820,15 @@ function renderSuggest(){
     <div class="app-header"><div class="name kufi">💡 عندك اقتراح أو ملاحظة؟</div></div>
     <div class="detail-note">رأيك يساعدنا نطوّر التطبيق. الاسم إجباري، والإيميل والملاحظة تساعدنا نرد عليك إذا احتجنا.</div>
     <form id="suggestForm" class="suggest-form">
+      <label>تقييمك للتطبيق</label>
+      <div class="star-rating" id="sgStars" data-rating="0">
+        <span class="star" data-star="1">★</span>
+        <span class="star" data-star="2">★</span>
+        <span class="star" data-star="3">★</span>
+        <span class="star" data-star="4">★</span>
+        <span class="star" data-star="5">★</span>
+      </div>
+
       <label>الاسم <span class="req">*</span></label>
       <input type="text" id="sg-name" name="name" placeholder="اسمك" required>
       <div class="err" id="sg-name-err">فضلاً اكتب اسمك.</div>
@@ -771,6 +848,8 @@ function renderSuggest(){
 }
 
 function renderCategoriesList(filterText){
+
+
   const q = (filterText||'').trim();
   if(q){
     const all = allItemsFlat().filter(it => it.s.includes(q) || it.r.includes(q) || (it.se||'').toLowerCase().includes(q.toLowerCase()));
@@ -788,6 +867,173 @@ function renderCategoriesList(filterText){
     </div>
   `).join('');
 }
+
+/* ===================== المساعد الذكي: فهرس المعرفة ===================== */
+let __knowledgeBaseCache = null;
+function buildKnowledgeBase(){
+  if(__knowledgeBaseCache) return __knowledgeBaseCache;
+  const kb = [];
+  const add = (q, a) => kb.push({q: q, a: a});
+
+  // المناسبات وعبارات البروتوكول
+  Object.keys(protocolData).forEach(cat => {
+    const c = protocolData[cat];
+    const itemsTxt = c.items.map(it => `تقول: "${it.s}" ويكون الرد: "${it.r}"`).join(' — ');
+    add(`${cat} ${c.note}`, `في مناسبة "${cat}": ${c.note}\nمن العبارات المستخدمة: ${itemsTxt}`);
+  });
+
+  // عبارات للزوار
+  touristPhrases.forEach(p => {
+    add(`${p.s} ${p.se||''} عبارة سائح زائر`, `عبارة "${p.s}" (${p.se||''}) من العبارات المفيدة للزوار في الإمارات.`);
+  });
+
+  // بطاقات التراث العام (ألوان العلم، القهوة، اللباس، الغوص، المجلس)
+  heritageCards.forEach(h => {
+    const stepsTxt = h.steps ? (' خطواتها: ' + h.steps.join('، ')) : '';
+    add(`${h.title} ${h.body}`, `${h.title}: ${h.body}${stepsTxt}`);
+  });
+
+  // الأكلات الشعبية
+  traditionalFood.forEach(f => {
+    add(`${f.name} أكلة طبق شعبي طعام إماراتي`, `${f.name}: ${f.body}`);
+  });
+
+  // الأهازيج والفنون الشعبية
+  ahazeejList.forEach(a => {
+    add(`${a.name} هزيج رقصة فن شعبي`, `${a.name}: ${a.body}`);
+  });
+
+  // الأمثال الشعبية
+  folkProverbs.forEach(p => {
+    add(`مثل شعبي ${p.name}`, `المثل الشعبي "${p.name}" معناه: ${p.body}`);
+  });
+
+  // أقوال الشيخ زايد
+  zayedQuotes.forEach(q => {
+    add(`قول مقولة الشيخ زايد ${q.name}`, `من أقوال الشيخ زايد بن سلطان آل نهيان رحمه الله عن ${q.name}: "${q.body}"`);
+  });
+
+  // أقوال الشيخ محمد بن زايد
+  mbzQuotes.forEach(q => {
+    add(`قول مقولة الشيخ محمد بن زايد ${q.name}`, `من أقوال الشيخ محمد بن زايد آل نهيان حفظه الله عن ${q.name}: "${q.body}"`);
+  });
+
+  // المعالم السياحية
+  landmarksData.forEach(l => {
+    add(`${l.name} معلم سياحي ${l.body}`, `${l.name} (${l.body}): ${l.desc || 'من أبرز المعالم السياحية في الإمارات.'}`);
+  });
+
+  // المناسبات والأيام الوطنية
+  nationalDays.forEach(n => {
+    add(`${n.name} يوم وطني مناسبة`, `${n.name}: ${n.body}`);
+  });
+
+  // النشيد الوطني
+  add(`النشيد الوطني عيشي بلادي السلام الوطني كلمات النشيد`,
+    `${nationalAnthem.title}\n${nationalAnthem.meta}\nمن كلماته: "${nationalAnthem.lines.slice(0,3).join(' ')}"`);
+
+  // نظام الحكم
+  add(`نظام الحكم القيادة الاتحاد المجلس الأعلى`, governanceInfo.intro + ' ' + governanceInfo.points.join(' '));
+  add(`رئيس الدولة من هو الرئيس`, `رئيس دولة الإمارات هو ${governanceInfo.president.name}، ${governanceInfo.president.title}.`);
+  governanceInfo.vicePresidents.forEach(v => add(`نائب رئيس الدولة ${v.name}`, `${v.name}: ${v.title}.`));
+  governanceInfo.emirates.forEach(e => add(`حاكم إمارة ${e.emirate} ولي عهد ${e.emirate}`, `حاكم إمارة ${e.emirate} هو ${e.ruler}، وولي عهدها ${e.crown}.`));
+
+  // مفردات ولهجة
+  heritageWords.forEach(w => add(`معنى كلمة ${w.w}`, `كلمة "${w.w}" تعني: ${w.m}`));
+
+  // معرفة عامة
+  generalKnowledge.forEach(g => add(g.q, g.a));
+
+  __knowledgeBaseCache = kb;
+  return kb;
+}
+
+function normalizeArabic(s){
+  return (s||'')
+    .replace(/[إأآا]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه')
+    .replace(/[ًٌٍَُِّْ]/g,'')
+    .replace(/[^\u0600-\u06FF\s]/g,' ')
+    .toLowerCase().trim();
+}
+
+const STOPWORDS = new Set(['ما','ماهو','ماهي','هو','هي','عن','في','من','الى','إلى','كيف','متى','اين','أين','مين','من','هل','لو','و','ثم','أو','او','يا','لي','لك','كم','اش','وش','شو','ايش','التطبيق','تطبيق']);
+
+function searchKnowledge(query){
+  const kb = buildKnowledgeBase();
+  const qNorm = normalizeArabic(query);
+  const words = qNorm.split(/\s+/).filter(w => w.length >= 2 && !STOPWORDS.has(w));
+  if(words.length === 0) return [];
+
+  const scored = kb.map(entry => {
+    const entryNorm = normalizeArabic(entry.q + ' ' + entry.a);
+    let score = 0;
+    words.forEach(w => { if(entryNorm.includes(w)) score += w.length; });
+    return {entry, score};
+  }).filter(x => x.score > 0);
+
+  scored.sort((a,b) => b.score - a.score);
+  return scored.slice(0, 2).map(x => x.entry);
+}
+
+const chatSuggestions = [
+  "شلون أرد على تستاهل اللوال؟",
+  "وش يعني كلمة وايد؟",
+  "احكيلي عن يوم زايد للعمل الإنساني",
+  "وين أروح في العين؟",
+  "من هو رئيس الدولة؟",
+  "قوللي قول من أقوال الشيخ زايد"
+];
+
+function chatBubbleHtml(msg){
+  return `<div class="chat-bubble ${msg.role}">${escapeHtml(msg.text)}</div>`;
+}
+
+function renderAssistant(){
+  if(!chatIntroShown){
+    chatMessages.push({role:'bot', text:'هلا وغلا 👋 أنا المساعد الذكي، حافظ كل محتوى تطبيق البروتوكول الإماراتي وملم بتراث وهوية الإمارات ومعالمها. اسألني عن أي مناسبة، عادة، كلمة، معلم، أو معلومة تخطر ببالك!'});
+    chatIntroShown = true;
+  }
+  const msgsHtml = chatMessages.map(chatBubbleHtml).join('');
+  const chipsHtml = chatMessages.length <= 1 ? `
+    <div class="chat-suggest-row">
+      ${chatSuggestions.map(s => `<div class="chat-chip" data-chat-suggest="${escapeHtml(s)}">${escapeHtml(s)}</div>`).join('')}
+    </div>
+  ` : '';
+  return `
+    <div class="back-row" data-back-suggest>
+      <span>→</span> العودة للرئيسية
+    </div>
+    <div class="app-header"><div class="name kufi">🤖 المساعد الذكي</div></div>
+    <div class="chat-wrap">
+      <div class="chat-msgs" id="chatMsgs">${msgsHtml}</div>
+      ${chipsHtml}
+      <form id="chatForm" class="chat-input-row">
+        <input type="text" id="chatInput" placeholder="اكتب سؤالك هنا..." autocomplete="off">
+        <button type="submit" class="chat-send-btn">➤</button>
+      </form>
+    </div>
+  `;
+}
+
+function askAssistant(text){
+  const q = text.trim();
+  if(!q) return;
+  chatMessages.push({role:'user', text:q});
+  const results = searchKnowledge(q);
+  let answer;
+  if(results.length === 0){
+    answer = "ما لقيت جواب دقيق لسؤالك 🤔 جرّب تسأل بكلمات ثانية، أو تصفّح تبويبات 'المناسبات' و'الإمارات' و'للزوار' بالتطبيق — أكيد بتلقى اللي تدور عليه.";
+  } else {
+    answer = results.map(r => r.a).join('\n\n');
+  }
+  chatMessages.push({role:'bot', text:answer});
+  render();
+  setTimeout(() => {
+    const content = document.getElementById('content');
+    if(content) content.scrollTop = content.scrollHeight;
+  }, 30);
+}
+
 
 function searchBoxHtml(val){
   return `<div class="searchbox">
@@ -1047,8 +1293,12 @@ function render(){
   else if(currentTab === 'heritage') html = renderHeritage();
   else if(currentTab === 'favorites') html = renderFavorites();
   else if(currentTab === 'suggest') html = renderSuggest();
+  else if(currentTab === 'assistant') html = renderAssistant();
   content.innerHTML = html;
   content.scrollTop = 0;
+
+  const aiFabEl = document.getElementById('aiFab');
+  if(aiFabEl) aiFabEl.classList.toggle('hidden', currentTab === 'assistant');
 
   document.querySelectorAll('.nav-item').forEach(el => el.classList.toggle('active', el.dataset.tab === currentTab));
 
@@ -1082,6 +1332,21 @@ function render(){
 
   const suggestForm = document.getElementById('suggestForm');
   if(suggestForm){
+    const starsEl = document.getElementById('sgStars');
+    const starEls = starsEl ? Array.from(starsEl.querySelectorAll('.star')) : [];
+    function paintStars(n){
+      starEls.forEach(s => s.classList.toggle('active', Number(s.dataset.star) <= n));
+    }
+    starEls.forEach(s => {
+      s.addEventListener('click', () => {
+        const val = Number(s.dataset.star);
+        const current = Number(starsEl.dataset.rating || 0);
+        const newVal = (current === val) ? 0 : val; // إعادة الضغط على نفس النجمة يلغي التقييم
+        starsEl.dataset.rating = newVal;
+        paintStars(newVal);
+      });
+    });
+
     suggestForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const nameEl = document.getElementById('sg-name');
@@ -1096,6 +1361,7 @@ function render(){
       const name = nameEl.value.trim();
       const email = emailEl.value.trim();
       const msg = msgEl.value.trim();
+      const rating = Number(starsEl ? starsEl.dataset.rating : 0);
       const emailOk = email === '' || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
       nameErr.classList.toggle('show', name === '');
@@ -1119,6 +1385,7 @@ function render(){
           body: JSON.stringify({
             name: name,
             email: email || 'لم يُكتب',
+            rating: rating > 0 ? (rating + ' / 5 ⭐') : 'لم يُقيّم',
             message: msg,
             _subject: 'مقترح جديد من تطبيق البروتوكول الإماراتي'
           })
@@ -1127,6 +1394,7 @@ function render(){
           statusEl.classList.add('ok');
           statusEl.textContent = '✅ تم إرسال مقترحك، شاكرين لك تعاونك!';
           suggestForm.reset();
+          if(starsEl){ starsEl.dataset.rating = 0; paintStars(0); }
         } else {
           throw new Error('failed');
         }
@@ -1139,6 +1407,20 @@ function render(){
     });
   }
 
+  const chatForm = document.getElementById('chatForm');
+  if(chatForm){
+    chatForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const inputEl = document.getElementById('chatInput');
+      const val = inputEl.value;
+      inputEl.value = '';
+      askAssistant(val);
+    });
+  }
+  content.querySelectorAll('[data-chat-suggest]').forEach(el => {
+    el.addEventListener('click', () => askAssistant(el.dataset.chatSuggest));
+  });
+
   updateScrollHint();
   setTimeout(updateScrollHint, 50);
 }
@@ -1147,6 +1429,7 @@ function updateScrollHint(){
   const content = document.getElementById('content');
   const hint = document.getElementById('scrollHint');
   if(!content || !hint) return;
+  if(currentTab === 'assistant'){ hint.classList.remove('show'); return; }
   const hasMore = content.scrollHeight - content.scrollTop - content.clientHeight > 40;
   hint.classList.toggle('show', hasMore);
 }
@@ -1162,6 +1445,10 @@ document.querySelectorAll('.nav-item').forEach(el => {
   el.addEventListener('click', () => {
     currentTab = el.dataset.tab; catDetail = null; heritageSection = null; window.__lastSearch=''; render();
   });
+});
+
+document.getElementById('aiFab').addEventListener('click', () => {
+  currentTab = 'assistant'; catDetail = null; heritageSection = null; render();
 });
 
 function tickClock(){
