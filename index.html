@@ -956,7 +956,7 @@ function normalizeArabic(s){
     .toLowerCase().trim();
 }
 
-const STOPWORDS = new Set(['ما','ماهو','ماهي','هو','هي','عن','في','من','الى','إلى','كيف','متى','اين','أين','مين','من','هل','لو','و','ثم','أو','او','يا','لي','لك','كم','اش','وش','شو','ايش','التطبيق','تطبيق']);
+const STOPWORDS = new Set(['ما','ماهو','ماهي','هو','هي','عن','في','من','الى','إلى','كيف','متى','اين','أين','مين','من','هل','لو','و','ثم','أو','او','يا','لي','لك','كم','اش','وش','شو','ايش','التطبيق','تطبيق','معني','معناه','معناها','كلمه','يعني','قول','مقوله','تقصد','ودي','ابي','ابغي','اريد']);
 
 function searchKnowledge(query){
   const kb = buildKnowledgeBase();
@@ -967,9 +967,10 @@ function searchKnowledge(query){
   const scored = kb.map(entry => {
     const entryNorm = normalizeArabic(entry.q + ' ' + entry.a);
     let score = 0;
-    words.forEach(w => { if(entryNorm.includes(w)) score += w.length; });
-    return {entry, score};
-  }).filter(x => x.score > 0);
+    let matchedWords = 0;
+    words.forEach(w => { if(entryNorm.includes(w)){ score += w.length; matchedWords++; } });
+    return {entry, score, matchedWords};
+  }).filter(x => x.score > 0 && x.matchedWords / words.length >= 0.5);
 
   scored.sort((a,b) => b.score - a.score);
   return scored.slice(0, 2).map(x => x.entry);
@@ -1007,10 +1008,10 @@ function renderAssistant(){
     <div class="chat-wrap">
       <div class="chat-msgs" id="chatMsgs">${msgsHtml}</div>
       ${chipsHtml}
-      <form id="chatForm" class="chat-input-row">
+      <div id="chatForm" class="chat-input-row">
         <input type="text" id="chatInput" placeholder="اكتب سؤالك هنا..." autocomplete="off">
-        <button type="submit" class="chat-send-btn">➤</button>
-      </form>
+        <button type="button" id="chatSendBtn" class="chat-send-btn">➤</button>
+      </div>
     </div>
   `;
 }
@@ -1407,14 +1408,23 @@ function render(){
     });
   }
 
-  const chatForm = document.getElementById('chatForm');
-  if(chatForm){
-    chatForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const inputEl = document.getElementById('chatInput');
-      const val = inputEl.value;
-      inputEl.value = '';
-      askAssistant(val);
+  const chatSendBtn = document.getElementById('chatSendBtn');
+  const chatInputEl = document.getElementById('chatInput');
+  function submitChat(){
+    if(!chatInputEl) return;
+    const val = chatInputEl.value;
+    chatInputEl.value = '';
+    askAssistant(val);
+  }
+  if(chatSendBtn){
+    chatSendBtn.addEventListener('click', submitChat);
+  }
+  if(chatInputEl){
+    chatInputEl.addEventListener('keydown', (e) => {
+      if(e.key === 'Enter'){
+        e.preventDefault();
+        submitChat();
+      }
     });
   }
   content.querySelectorAll('[data-chat-suggest]').forEach(el => {
