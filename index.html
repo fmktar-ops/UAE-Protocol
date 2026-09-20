@@ -53,6 +53,45 @@
   }
   .status-bar .flagchip{ display:flex; align-items:center; gap:5px; font-size:11px; font-weight:700; color:var(--ink-soft); }
   .status-bar .flagchip svg{ width:16px; height:11px; border-radius:2px; box-shadow:0 0 0 1px rgba(0,0,0,.1); }
+  .acct-btn{
+    width:26px; height:26px; border-radius:50%; background:var(--card); box-shadow:var(--shadow);
+    display:flex; align-items:center; justify-content:center; font-size:13px; cursor:pointer; flex-shrink:0;
+  }
+  .acct-btn.logged{ background:var(--green); color:#fff; font-weight:800; font-size:11px; }
+
+  .auth-form{ background:var(--card); border-radius:16px; padding:18px; box-shadow:var(--shadow); }
+  .auth-form label{ display:block; font-size:12.5px; font-weight:700; color:var(--ink-soft); margin:0 0 6px; }
+  .auth-form input{
+    width:100%; padding:12px 14px; border-radius:12px; border:1px solid var(--line);
+    background:#fff; font-family:'Tajawal',sans-serif; font-size:14px; outline:none; margin-bottom:14px; box-sizing:border-box;
+  }
+  .auth-form input:focus{ border-color:var(--green); }
+  .auth-btn{
+    width:100%; padding:13px; border:none; border-radius:14px; background:var(--green); color:#fff;
+    font-family:'Tajawal',sans-serif; font-weight:700; font-size:14.5px; cursor:pointer; margin-bottom:10px;
+  }
+  .auth-switch{ text-align:center; font-size:12.5px; color:var(--green-deep); font-weight:700; cursor:pointer; margin-top:6px; }
+  .auth-status{ text-align:center; font-size:12.5px; margin-top:10px; min-height:16px; }
+  .auth-status.ok{ color:var(--green-deep); font-weight:700; }
+  .auth-status.bad{ color:var(--red); font-weight:700; }
+
+  .profile-card{ background:var(--card); border-radius:16px; padding:16px; box-shadow:var(--shadow); text-align:center; }
+  .profile-card .avatar{ width:56px; height:56px; border-radius:50%; background:var(--green); color:#fff; display:flex; align-items:center; justify-content:center; font-size:22px; font-weight:800; margin:0 auto 10px; }
+  .profile-card .pname{ font-weight:800; font-size:15px; color:var(--ink); }
+  .profile-card .pemail{ font-size:12px; color:var(--ink-soft); margin-top:2px; }
+  .logout-btn{ margin-top:14px; padding:10px 18px; border-radius:12px; border:1px solid var(--red); background:#fff; color:var(--red); font-weight:700; font-size:13px; cursor:pointer; }
+  .admin-link{ margin-top:12px; display:inline-block; padding:10px 18px; border-radius:12px; background:var(--green-deep); color:#fff; font-weight:700; font-size:13px; cursor:pointer; }
+
+  .stat-row{ display:flex; gap:10px; margin-bottom:16px; }
+  .stat-box{ flex:1; background:var(--card); border-radius:14px; padding:14px; text-align:center; box-shadow:var(--shadow); }
+  .stat-box b{ display:block; font-size:22px; color:var(--green-deep); font-family:'Noto Kufi Arabic', sans-serif; }
+  .stat-box span{ font-size:11px; color:var(--ink-soft); }
+  .feedback-card{ background:var(--card); border-radius:14px; padding:12px 14px; margin-bottom:10px; box-shadow:var(--shadow); }
+  .feedback-card .fc-top{ display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; }
+  .feedback-card .fc-name{ font-weight:700; font-size:13px; color:var(--ink); }
+  .feedback-card .fc-stars{ font-size:12px; color:#F5B942; }
+  .feedback-card .fc-msg{ font-size:13px; color:var(--ink); line-height:1.6; }
+  .feedback-card .fc-date{ font-size:10.5px; color:var(--ink-soft); margin-top:6px; }
 
   .content{ flex:1; overflow-y:auto; padding: 4px 18px 100px; scrollbar-width:none; }
 
@@ -283,9 +322,12 @@
   <div class="screen">
     <div class="status-bar">
       <span id="clock">9:41</span>
-      <div class="flagchip">
-        <svg viewBox="0 0 60 40"><rect width="60" height="40" fill="#00732F"/><rect y="13.3" width="60" height="13.3" fill="#fff"/><rect y="26.6" width="60" height="13.4" fill="#000"/><rect width="15" height="40" fill="#CE1126"/></svg>
-        الإمارات
+      <div style="display:flex; align-items:center; gap:10px;">
+        <div class="flagchip">
+          <svg viewBox="0 0 60 40"><rect width="60" height="40" fill="#00732F"/><rect y="13.3" width="60" height="13.3" fill="#fff"/><rect y="26.6" width="60" height="13.4" fill="#000"/><rect width="15" height="40" fill="#CE1126"/></svg>
+          الإمارات
+        </div>
+        <div class="acct-btn" id="acctBtn" title="حسابي">👤</div>
       </div>
     </div>
 
@@ -305,6 +347,27 @@
   </div>
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+/* ===================== FIREBASE ===================== */
+const firebaseConfig = {
+  apiKey: "AIzaSyAdQ5z-lu4BFqpZ1fLHBjGuZi_I2ygdXRg",
+  authDomain: "uae-protocol.firebaseapp.com",
+  projectId: "uae-protocol",
+  storageBucket: "uae-protocol.firebasestorage.app",
+  messagingSenderId: "557453722169",
+  appId: "1:557453722169:web:cda8747623548087c303e8",
+  measurementId: "G-ZNEESX3S0P"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+const ADMIN_EMAIL = "uae.protocol262@gmail.com";
+let currentUser = null;
+let currentUserProfile = null;
+</script>
 <script>
 /* ===================== DATA ===================== */
 const protocolData = {
@@ -407,7 +470,25 @@ const folkProverbs = [
   {icon:"🪞", name:"عوقك في بطنك", body:"أي أن مشاكلك تأتي من نفسك."},
   {icon:"🐔", name:"من خلا نفسه سبوس لعبت به الدياي", body:"يُحذّر الإنسان من أن يجعل نفسه موضع اتهام وشبهات، فيفتح على نفسه باباً لا يمكن إغلاقه."},
   {icon:"🐟", name:"السمكة الخايسة تخيس السمك كله", body:"يدعو إلى عدم مخالطة الفاسدين وعديمي الأخلاق، لأن المرء على دين خليله."},
-  {icon:"⏳", name:"إذا ما طاعك الزمن طيّعه", body:"يدعو إلى التكيّف مع المتغيرات والتحديات في الحياة."}
+  {icon:"⏳", name:"إذا ما طاعك الزمن طيّعه", body:"يدعو إلى التكيّف مع المتغيرات والتحديات في الحياة."},
+  {icon:"✋", name:"كف صفعني نفعني", body:"يُقال عن الدرس القاسي أو الموقف المؤلم الذي يخرج منه الإنسان بعبرة وفائدة رغم ألمه."},
+  {icon:"🚪", name:"من دق الباب ياه الجواب", body:"من يسعى ويحاول، يصله الرد والنتيجة عاجلاً أو آجلاً؛ يحث على المبادرة وعدم التردد."},
+  {icon:"🤝", name:"الناس بالناس والكل بالله", body:"يؤكد على أن الناس بحاجة لبعضهم البعض ويتعاضدون فيما بينهم، لكن التوفيق والعون الحقيقي من الله وحده."},
+  {icon:"🐴", name:"أنت أمير وأنا أمير، من يقود الحمير؟", body:"يُقال حين يريد الجميع منصب الرئاسة أو التميّز ولا أحد يقبل بالأعمال البسيطة، فتتعطل الأمور."},
+  {icon:"📉", name:"من عاش بالحيلة مات بالفقر", body:"من يعتمد على الحيل والخداع بدل الجد والعمل الصادق، مصيره الخسارة والفقر في النهاية."},
+  {icon:"🌊", name:"إشلك بالبحر وأهواله، ورزق الله على السيف", body:"لا داعي لخوض المخاطر الكبيرة (كركوب البحر) ما دام الرزق متوفراً بأمان على الساحل؛ يحث على تجنّب المخاطرة غير الضرورية."},
+  {icon:"🌴", name:"الطول طول نخلة، والعقل عقل اصخلة", body:"يُقال لمن كبر جسمه دون أن يكبر عقله أو نضجه؛ نقد لمن لا يتناسب حكمه مع سنّه أو حجمه."},
+  {icon:"🥁", name:"على دق الطبل ترقص المينونة", body:"يصف من ينساق وراء أي حدث أو ضجة دون تفكير أو تمييز، فيتبع الجموع بلا وعي."},
+  {icon:"👁️", name:"العين بصيرة، واليد قصيرة", body:"يُقال حين يتمنى الإنسان أو يرغب بشيء لكنه غير قادر على تحقيقه أو بلوغه بإمكانياته."},
+  {icon:"🐓", name:"الديك يصقع في البيضة", body:"يُقال لمن يتباهى ويتفاخر قبل أن يثبت نفسه أو ينجز أي شيء فعلي."},
+  {icon:"🦪", name:"يوم الناس تقفل الخميس سار الغوص", body:"يصف من يخالف المألوف ويسير بعكس اتجاه الناس، فبينما يرتاح الجميع يذهب هو للعمل والكدح."},
+  {icon:"🏘️", name:"حيّك ما يروح لغيرك", body:"أهلك وأصلك وسندك يبقون لك دوماً، ولا يمكن أن يستبدلهم أحد أو يأخذهم عنك غيرك."},
+  {icon:"🧵", name:"مد ريولك على قد لحافك", body:"عِش ضمن إمكانياتك ومواردك المتاحة، ولا تنفق أو تطمح بأكثر مما تقدر عليه."},
+  {icon:"🐔", name:"تموت الدجاجة وعينها في السبوس", body:"يصف الطمع الذي يلازم بعض الناس حتى آخر لحظة في حياتهم، فلا يشبعون مهما ملكوا."},
+  {icon:"⚠️", name:"اللي ما يطيع يضيع", body:"من لا يستمع لنصيحة الكبار وأهل الخبرة، يقع في الخطأ ويندم لاحقاً."},
+  {icon:"💧", name:"لا تسرف لو من البحر تغرف", body:"يحث على الاقتصاد وعدم الإسراف حتى لو بدا المورد وفيراً أو غير محدود بالظاهر."},
+  {icon:"🧶", name:"حلاة الثوب رقعته منه وفيه", body:"يُقال حين يكون الإصلاح أو الترقيع من نفس أصل الشيء متقناً ومناسباً، فيزيده جمالاً بدل أن يعيبه."},
+  {icon:"🐎", name:"الفرس من خيّالها، والحرمة من ريّالها", body:"مثل قديم يربط قيمة الفرس بمهارة راكبها، وكذلك مكانة المرأة في المجتمع التقليدي بحسن اختيار زوجها."}
 ];
 
 const traditionalRaces = [
@@ -493,6 +574,32 @@ const landmarksData = [
   {icon:"🦆", name:"محمية الأراضي الرطبة", body:"الشارقة", desc:"محمية طبيعية تحتضن بحيرات وسبخات ملحية، وتوفر ملاذاً للطيور المهاجرة والحياة البرية."}
 ];
 
+const archaeologicalSites = [
+  {icon:"🏺", name:"موقع أم النار", body:"أبوظبي", desc:"مستوطنة تجارية من العصر البرونزي (حوالي 2500-2000 ق.م)، كشفت عن روابط تجارية قديمة مع حضارتي الرافدين ووادي السند."},
+  {icon:"⚱️", name:"موقع مليحة", body:"الشارقة", desc:"موقع أثري مهم يمتد من القرن الثالث ق.م حتى القرن الثالث الميلادي، يضم مدافن وقصوراً تدل على تواصل حضاري عريق."},
+  {icon:"🪨", name:"مواقع هلي وبدع بنت سعود ومدافن حفيت", body:"العين، أبوظبي", desc:"مواقع أثرية مدرجة على قائمة التراث العالمي لليونسكو، تضم مدافن حجرية دائرية وبقايا أنظمة الأفلاج القديمة لعصور ما قبل التاريخ."},
+  {icon:"🏯", name:"قصر الحصن", body:"أبوظبي", desc:"أقدم مبنى تاريخي في العاصمة، شُيد في القرن الثامن عشر كبرج مراقبة قبل أن يتحول لمقر حكم ثم متحف وطني.", url:"https://www.moet.gov.ae/tourist-attractions?delta=60"},
+  {icon:"🕌", name:"موقع جميرا الأثري", body:"دبي", desc:"موقع إسلامي يعود للعصر العباسي، يضم آثاراً ومباني حجرية تعكس النشاط التجاري والاجتماعي في تلك الحقبة."},
+  {icon:"⚔️", name:"موقع ساروق الحديد", body:"دبي", desc:"من أهم مواقع العصر الحديدي بجنوب شرق الجزيرة العربية، اكتشفه الشيخ محمد بن راشد آل مكتوم عام 2002، وضم آلاف القطع كالأسلحة والحلي الذهبية.", url:"https://dubaiculture.gov.ae/ar/about-us/Discover%20Our%20Heritage/Archeological%20sites/Saruq%20Al%20Hadid%20Archaeological%20Site"},
+  {icon:"🏛️", name:"موقع الدور الأثري", body:"أم القيوين", desc:"من أكبر المواقع الأثرية بالدولة (ما قبل الإسلام)، كان مدينة تجارية ومرفأً حيوياً، ويضم معبد الإله شمس ومئات المدافن."},
+  {icon:"⛰️", name:"جبل الفاية وجبل البحيص", body:"الشارقة", desc:"موقعان أدرجا ضمن التراث العالمي لليونسكو عام 2025، يوثقان استيطاناً بشرياً يمتد لأكثر من 200 ألف عام ومقابر من العصر الحجري حتى الهيلينستي."},
+
+  {icon:"🏰", name:"قلعة الفهيدي (متحف دبي)", body:"دبي", desc:"أقدم مبنى قائم في دبي، بُني عام 1787 كمقر للحاكم ومركز دفاعي، وتحول عام 1971 لأول متحف رسمي يروي تاريخ الإمارة.", url:"https://ar.wikipedia.org/wiki/%D8%AD%D8%B5%D9%86_%D8%A7%D9%84%D9%81%D9%87%D9%8A%D8%AF%D9%8A"},
+  {icon:"🪓", name:"موقع سهيلة", body:"الشارقة", desc:"عُثر فيه على فأس يدوية من الصوان بتقنية آشولية يعود عمرها لنحو 500 ألف عام، من أقدم شواهد الحضور البشري بالمنطقة."},
+  {icon:"🖼️", name:"خطمة ملاحة", body:"كلباء، الشارقة", desc:"من أكبر مواقع الفن الصخري بالإمارات، يضم مئات النقوش الصخرية ومنازل ومقابر حجرية من العصر الحجري الحديث حتى القرن التاسع عشر."},
+  {icon:"🏘️", name:"موقع الثقيبة", body:"الذيد، الشارقة", desc:"مستوطَن من العصر الحديدي (1000-600 ق.م) جنوب الذيد بواحة المدام، استفاد من مياه الأفلاج وحماية الجبال المحيطة كجبل البحيص."},
+  {icon:"🗼", name:"تل الأبرق", body:"بين الشارقة وأم القيوين", desc:"موقع يعود لنحو 5000 عام، يضم برجاً دائرياً ضخماً قطره 40 متراً كان مركزاً تجارياً واقتصادياً مزدهراً."},
+  {icon:"🛡️", name:"أبراج وحصون خورفكان", body:"الشارقة", desc:"منظومة دفاعية تاريخية متكاملة تعكس الأهمية الاستراتيجية للمدينة الساحلية عبر القرون، مدرجة على قائمة الإيسيسكو للتراث."},
+  {icon:"🏯", name:"قلعة دبا الحصن", body:"الشارقة", desc:"موقع أثري وحصن تاريخي على الساحل الشرقي، من المواقع الإماراتية المدرجة على قائمة الإيسيسكو للتراث المادي."},
+  {icon:"🏞️", name:"موقع وادي الحلو", body:"الشارقة", desc:"موقع أثري مدرج على قائمة الإيسيسكو للتراث المادي بالعالم الإسلامي، يشهد على استيطان بشري قديم بالمنطقة الداخلية."},
+  {icon:"🏰", name:"حصن فلج المعلا", body:"أم القيوين", desc:"حصن تاريخي يعود لأكثر من قرن، يتكون من برجين دائريين وساحة كبيرة، شهد أعمال ترميم حديثة."},
+  {icon:"⭕", name:"منطقة حتا الأثرية", body:"دبي", desc:"تضم نحو 28 مقبرة دائرية التخطيط بالطراز المعماري لحضارة أم النار، ويعود تاريخها للنصف الثاني من الألف الثالث ق.م."},
+  {icon:"🐴", name:"مدفن قدفع", body:"الفجيرة", desc:"مدفن أثري فريد الشكل يعود لنحو 500 عام ق.م، عُثر فيه على أسلحة برونزية وأوانٍ خزفية ومجوهرات معروضة بمتحف الفجيرة الوطني."},
+  {icon:"⛏️", name:"مواقع مسافي (1-4)", body:"الفجيرة", desc:"مواقع أثرية من العصرين الحديدي والبرونزي، نقّبت فيها بعثة أثرية فرنسية على مدى مواسم متعددة قرب وادي حام."},
+  {icon:"🏰", name:"قلعة البثنة", body:"الفجيرة", desc:"بُنيت عام 1735، وكانت عاصمة قديمة لإمارة الفجيرة وخط دفاع أمامي لحماية طرق جبال الحجر.", url:"https://tourism.fujairah.ae/ar/destinations/al-bithna-fort"},
+  {icon:"🏯", name:"قلعة الحيل", body:"الفجيرة", desc:"بُنيت عام 1830 في وادي الحيل، وكانت بيتاً لأسرة حاكمة محلية قبل ترميمها الشامل عام 2009 لتصبح موقعاً تراثياً."}
+];
+
 const nationalDays = [
   {icon:"🇦🇪", name:"اليوم الوطني", body:"2 ديسمبر — ذكرى قيام اتحاد دولة الإمارات العربية المتحدة عام 1971.", month:12, day:2,
     say:"كل عام ووطننا الغالي بألف خير 🇦🇪", resp:"الله يديم عزّه ورفعته، وكل عام وأنتم بخير"},
@@ -550,7 +657,7 @@ async function requestNationalDayNotifications(){
   }
   const perm = await Notification.requestPermission();
   if(perm === 'granted'){
-    await window.storage.set('notif-enabled', 'true', false);
+    try{ localStorage.setItem('notif-enabled', 'true'); }catch(e){}
     notifEnabled = true;
     checkAndFireNotification();
     render();
@@ -559,8 +666,7 @@ async function requestNationalDayNotifications(){
 
 async function isNotifEnabled(){
   try{
-    const r = await window.storage.get('notif-enabled', false);
-    return r && r.value === 'true' && Notification.permission === 'granted';
+    return localStorage.getItem('notif-enabled') === 'true' && Notification.permission === 'granted';
   }catch(e){ return false; }
 }
 
@@ -570,12 +676,12 @@ async function checkAndFireNotification(){
   if(soon.length === 0) return;
   const todayKey = new Date().toISOString().slice(0,10);
   let lastFired = null;
-  try{ const r = await window.storage.get('notif-last-fired', false); lastFired = r ? r.value : null; }catch(e){}
+  try{ lastFired = localStorage.getItem('notif-last-fired'); }catch(e){}
   if(lastFired === todayKey) return;
   const evt = soon[0];
   const msg = evt.daysUntil === 0 ? `اليوم! ${evt.name} 🇦🇪` : `${evt.name} بعد ${evt.daysUntil} ${evt.daysUntil===1?'يوم':'أيام'}`;
   new Notification('البروتوكول الإماراتي', { body: msg, icon: 'icon-192.png' });
-  try{ await window.storage.set('notif-last-fired', todayKey, false); }catch(e){}
+  try{ localStorage.setItem('notif-last-fired', todayKey); }catch(e){}
 }
 
 const nationalAnthem = {
@@ -682,26 +788,35 @@ let favLoaded = false;
 let notifEnabled = false;
 let chatMessages = [];
 let chatIntroShown = false;
+let authMode = 'login'; // 'login' | 'signup'
 
 async function loadNotifState(){
   notifEnabled = await isNotifEnabled();
 }
 
 async function loadFavorites(){
+  if(!currentUser){ favorites = []; favLoaded = true; updateFavBadge(); return; }
   try{
-    if(window.storage){
-      const r = await window.storage.get('favorites');
-      favorites = r ? JSON.parse(r.value) : [];
-    }
+    const doc = await db.collection('users').doc(currentUser.uid).get();
+    favorites = (doc.exists && doc.data().favorites) ? doc.data().favorites : [];
   }catch(e){ favorites = []; }
   favLoaded = true;
   updateFavBadge();
 }
 async function saveFavorites(){
-  try{ if(window.storage){ await window.storage.set('favorites', JSON.stringify(favorites)); } }catch(e){}
+  if(!currentUser) return;
+  try{
+    await db.collection('users').doc(currentUser.uid).set({ favorites }, { merge: true });
+  }catch(e){}
 }
 function isFav(id){ return favorites.includes(id); }
 function toggleFav(id){
+  if(!currentUser){
+    currentTab = 'account';
+    authMode = 'login';
+    render();
+    return;
+  }
   if(isFav(id)) favorites = favorites.filter(f => f !== id);
   else favorites.push(id);
   saveFavorites();
@@ -725,6 +840,24 @@ function speak(text){
 
 function escapeHtml(str){
   return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+function googleMapsUrl(name, place){
+  const q = encodeURIComponent(`${name} ${place} الإمارات`);
+  return `https://www.google.com/maps/search/?api=1&query=${q}`;
+}
+
+function translateAuthError(code){
+  const map = {
+    'auth/invalid-email': 'صيغة الإيميل غير صحيحة.',
+    'auth/user-not-found': 'ما فيه حساب بهذا الإيميل، سجّل حساب جديد.',
+    'auth/wrong-password': 'كلمة المرور غير صحيحة.',
+    'auth/invalid-credential': 'الإيميل أو كلمة المرور غير صحيحة.',
+    'auth/email-already-in-use': 'هذا الإيميل مسجّل من قبل، سجّل دخولك بدل إنشاء حساب جديد.',
+    'auth/weak-password': 'كلمة المرور لازم تكون 6 أحرف على الأقل.',
+    'auth/network-request-failed': 'تأكد من اتصالك بالإنترنت.'
+  };
+  return map[code] || 'صار خطأ غير متوقع، حاول مرة ثانية.';
 }
 
 /* ===================== RENDER ===================== */
@@ -821,13 +954,109 @@ function renderHome(){
   `;
 }
 
+function renderAccount(){
+  if(currentUser){
+    const initial = (currentUserProfile && currentUserProfile.displayName ? currentUserProfile.displayName[0] : currentUser.email[0]).toUpperCase();
+    const isAdmin = currentUser.email === ADMIN_EMAIL;
+    return `
+      <div class="app-header"><div class="name kufi">👤 حسابي</div></div>
+      <div class="profile-card">
+        <div class="avatar">${initial}</div>
+        <div class="pname">${escapeHtml((currentUserProfile && currentUserProfile.displayName) || 'مستخدم')}</div>
+        <div class="pemail">${escapeHtml(currentUser.email)}</div>
+        ${isAdmin ? `<div class="admin-link" data-go-admin="1">📊 لوحة التحكّم</div>` : ''}
+        <div><button class="logout-btn" id="logoutBtn">تسجيل الخروج</button></div>
+      </div>
+    `;
+  }
+  const isLogin = authMode === 'login';
+  return `
+    <div class="app-header"><div class="name kufi">👤 ${isLogin ? 'تسجيل الدخول' : 'إنشاء حساب جديد'}</div></div>
+    <div class="detail-note">سجّل دخولك عشان تضيف عبارات للمفضلة، وتشارك رأيك وتقييمك للتطبيق — وتقدر تشوفهم من أي جهاز.</div>
+    <div class="auth-form">
+      ${!isLogin ? `
+      <label>الاسم</label>
+      <input type="text" id="auth-name" placeholder="اسمك">
+      ` : ''}
+      <label>الإيميل</label>
+      <input type="email" id="auth-email" placeholder="example@email.com">
+      <label>كلمة المرور</label>
+      <input type="password" id="auth-password" placeholder="6 أحرف على الأقل">
+      <button class="auth-btn" id="authSubmitBtn">${isLogin ? 'تسجيل الدخول' : 'إنشاء الحساب'}</button>
+      <div class="auth-switch" id="authSwitchBtn">${isLogin ? 'ما عندك حساب؟ سجّل جديد' : 'عندك حساب؟ سجّل دخولك'}</div>
+      <div class="auth-status" id="authStatus"></div>
+    </div>
+  `;
+}
+
+let adminStats = null;
+async function loadAdminStats(){
+  try{
+    const feedbackSnap = await db.collection('feedback').orderBy('createdAt', 'desc').get();
+    const usersSnap = await db.collection('users').get();
+    const items = feedbackSnap.docs.map(d => d.data());
+    const ratings = items.filter(i => i.rating > 0).map(i => i.rating);
+    const avg = ratings.length ? (ratings.reduce((a,b)=>a+b,0) / ratings.length) : 0;
+    adminStats = { items, total: items.length, avg: avg.toFixed(1), usersCount: usersSnap.size };
+  }catch(e){
+    adminStats = { error: true };
+  }
+  render();
+}
+
+function renderAdmin(){
+  if(!currentUser || currentUser.email !== ADMIN_EMAIL){
+    return `<div class="app-header"><div class="name kufi">🔒 غير مصرّح</div></div><div class="empty-state">هذي الصفحة خاصة بمالك التطبيق فقط.</div>`;
+  }
+  if(adminStats === null){
+    loadAdminStats();
+    return `<div class="app-header"><div class="name kufi">📊 لوحة التحكّم</div></div><div class="empty-state">جارِ تحميل البيانات...</div>`;
+  }
+  if(adminStats.error){
+    return `<div class="app-header"><div class="name kufi">📊 لوحة التحكّم</div></div><div class="empty-state">⚠️ تعذّر تحميل البيانات، تأكد من قواعد الحماية بـ Firestore.</div>`;
+  }
+  return `
+    <div class="back-row" data-back-admin><span>→</span> العودة</div>
+    <div class="app-header"><div class="name kufi">📊 لوحة التحكّم</div></div>
+    <div class="stat-row">
+      <div class="stat-box"><b>${adminStats.usersCount}</b><span>مستخدم مسجّل</span></div>
+      <div class="stat-box"><b>${adminStats.total}</b><span>تقييم ورأي</span></div>
+      <div class="stat-box"><b>${adminStats.avg} ⭐</b><span>متوسط التقييم</span></div>
+    </div>
+    <div class="section-title">💬 كل الآراء والتقييمات</div>
+    ${adminStats.items.length === 0 ? `<div class="empty-state">ما فيه أي تقييمات بعد.</div>` :
+      adminStats.items.map(it => `
+        <div class="feedback-card">
+          <div class="fc-top">
+            <span class="fc-name">${escapeHtml(it.name || 'مستخدم')} <span style="font-weight:400;color:var(--ink-soft);font-size:11px;">(${escapeHtml(it.email||'')})</span></span>
+            <span class="fc-stars">${it.rating ? '⭐'.repeat(it.rating) : '—'}</span>
+          </div>
+          <div class="fc-msg">${escapeHtml(it.message || '')}</div>
+          <div class="fc-date">${it.createdAt && it.createdAt.toDate ? it.createdAt.toDate().toLocaleString('ar-AE') : ''}</div>
+        </div>
+      `).join('')
+    }
+  `;
+}
+
 function renderSuggest(){
+  if(!currentUser){
+    return `
+      <div class="back-row" data-back-suggest>
+        <span>→</span> العودة للرئيسية
+      </div>
+      <div class="app-header"><div class="name kufi">💡 عندك اقتراح أو ملاحظة؟</div></div>
+      <div class="empty-state"><span class="em-ic">🔒</span>سجّل دخولك عشان تقدر تشارك رأيك وتقييمك للتطبيق.<br><br>
+      <span class="auth-switch" data-go-account="1">سجّل دخولك الآن ‹</span></div>
+    `;
+  }
+  const defaultName = (currentUserProfile && currentUserProfile.displayName) || '';
   return `
     <div class="back-row" data-back-suggest>
       <span>→</span> العودة للرئيسية
     </div>
     <div class="app-header"><div class="name kufi">💡 عندك اقتراح أو ملاحظة؟</div></div>
-    <div class="detail-note">رأيك يساعدنا نطوّر التطبيق. الاسم إجباري، والإيميل والملاحظة تساعدنا نرد عليك إذا احتجنا.</div>
+    <div class="detail-note">رأيك يساعدنا نطوّر التطبيق. راح يُرسل باسم حسابك (${escapeHtml(currentUser.email)}).</div>
     <form id="suggestForm" class="suggest-form">
       <label>تقييمك للتطبيق</label>
       <div class="star-rating" id="sgStars" data-rating="0">
@@ -839,12 +1068,8 @@ function renderSuggest(){
       </div>
 
       <label>الاسم <span class="req">*</span></label>
-      <input type="text" id="sg-name" name="name" placeholder="اسمك" required>
+      <input type="text" id="sg-name" name="name" placeholder="اسمك" value="${escapeHtml(defaultName)}" required>
       <div class="err" id="sg-name-err">فضلاً اكتب اسمك.</div>
-
-      <label>الإيميل</label>
-      <input type="email" id="sg-email" name="email" placeholder="example@email.com">
-      <div class="err" id="sg-email-err">فضلاً اكتب إيميل صحيح.</div>
 
       <label>المقترح <span class="req">*</span></label>
       <textarea id="sg-msg" name="message" placeholder="اكتب اقتراحك أو ملاحظتك هنا..." required></textarea>
@@ -937,6 +1162,11 @@ function buildKnowledgeBase(){
     add(`${l.name} معلم سياحي ${l.body}`, `${l.name} (${l.body}): ${l.desc || 'من أبرز المعالم السياحية في الإمارات.'}`);
   });
 
+  // المواقع والمعالم الأثرية
+  archaeologicalSites.forEach(l => {
+    add(`${l.name} موقع أثري تاريخي ${l.body}`, `${l.name} (${l.body}): ${l.desc || 'من المواقع الأثرية المهمة في الإمارات.'}`);
+  });
+
   // المناسبات والأيام الوطنية
   nationalDays.forEach(n => {
     add(`${n.name} يوم وطني مناسبة`, `${n.name}: ${n.body}`);
@@ -945,6 +1175,9 @@ function buildKnowledgeBase(){
   // النشيد الوطني
   add(`النشيد الوطني عيشي بلادي السلام الوطني كلمات النشيد`,
     `${nationalAnthem.title}\n${nationalAnthem.meta}\nمن كلماته: "${nationalAnthem.lines.slice(0,3).join(' ')}"`);
+
+  // فيديو تاريخي
+  add(`فيديو وثائقي الإمارات عبر التاريخ`, `فيه فيديو وثائقي بعنوان "الإمارات عبر التاريخ" يستعرض مسيرة الدولة، تلقاه بقسم "الهوية الوطنية" ضمن تبويب "الإمارات".`);
 
   // نظام الحكم
   add(`نظام الحكم القيادة الاتحاد المجلس الأعلى`, governanceInfo.intro + ' ' + governanceInfo.points.join(' '));
@@ -1110,7 +1343,6 @@ function renderTourist(){
           <b>${escapeHtml(t.ar)}</b>
           <span class="translit">${escapeHtml(t.tr)}</span> · <span class="en">${escapeHtml(t.en)}</span>
         </div>
-        <div class="icon-btn" data-speak="${escapeHtml(t.ar)}">🔊</div>
       </div>
     `).join('')}
   `;
@@ -1130,7 +1362,9 @@ const nationalIdentityMenu = [
   {key:'governance', icon:'🏛️', title:'نظام الحكم والقيادة', desc:'الاتحاد، الرئاسة، وحكام الإمارات'},
   {key:'mbz', icon:'👑', title:'أقوال الشيخ محمد بن زايد', desc:'من رؤية القيادة الرشيدة حفظه الله'},
   {key:'anthem', icon:'🎵', title:'السلام الوطني', desc:'كلمات عيشي بلادي واستماع'},
+  {key:'history_video', icon:'🎬', title:'الإمارات عبر التاريخ', desc:'فيديو وثائقي عن مسيرة الدولة'},
   {key:'landmarks', icon:'🏙️', title:'المعالم السياحية', desc:'أبرز وجهات الإمارات ومواقعها'},
+  {key:'archaeology', icon:'⛏️', title:'المواقع والمعالم الأثرية', desc:'حضارات وعصور ما قبل التاريخ بالإمارات'},
   {key:'national', icon:'🇦🇪', title:'الأحداث الوطنية', desc:'اليوم الوطني، يوم العلم، وغيرها'}
 ];
 
@@ -1203,7 +1437,20 @@ function renderHeritage(){
     body = landmarksData.map(l => `
       <div class="tourist-row">
         <div class="t-txt"><b>${l.icon} ${escapeHtml(l.name)}</b><span class="en">📍 ${escapeHtml(l.body)}</span>${l.desc ? `<span class="en" style="display:block; margin-top:2px;">${escapeHtml(l.desc)}</span>` : ''}</div>
-        ${l.url ? `<a class="icon-btn" href="${escapeHtml(l.url)}" target="_blank" rel="noopener" title="زيارة الموقع الرسمي">🔗</a>` : ''}
+        <div style="display:flex; gap:6px; flex-shrink:0;">
+          <a class="icon-btn" href="${googleMapsUrl(l.name, l.body)}" target="_blank" rel="noopener" title="فتح الموقع على خرائط قوقل">🗺️</a>
+          ${l.url ? `<a class="icon-btn" href="${escapeHtml(l.url)}" target="_blank" rel="noopener" title="زيارة الموقع الرسمي">🔗</a>` : ''}
+        </div>
+      </div>
+    `).join('');
+  } else if(heritageSection === 'archaeology'){
+    body = archaeologicalSites.map(l => `
+      <div class="tourist-row">
+        <div class="t-txt"><b>${l.icon} ${escapeHtml(l.name)}</b><span class="en">📍 ${escapeHtml(l.body)}</span>${l.desc ? `<span class="en" style="display:block; margin-top:2px;">${escapeHtml(l.desc)}</span>` : ''}</div>
+        <div style="display:flex; gap:6px; flex-shrink:0;">
+          <a class="icon-btn" href="${googleMapsUrl(l.name, l.body)}" target="_blank" rel="noopener" title="فتح الموقع على خرائط قوقل">🗺️</a>
+          ${l.url ? `<a class="icon-btn" href="${escapeHtml(l.url)}" target="_blank" rel="noopener" title="زيارة الموقع الرسمي">🔗</a>` : ''}
+        </div>
       </div>
     `).join('');
   } else if(heritageSection === 'national'){
@@ -1239,6 +1486,18 @@ function renderHeritage(){
           <a class="icon-btn" href="${escapeHtml(nationalAnthem.refUrl)}" target="_blank" rel="noopener" style="width:auto; border-radius:999px; padding:0 14px;">🔗 المصدر الرسمي للكلمات</a>
         </div>
         <p style="margin-top:10px; font-size:11px; color:var(--ink-soft);">🎵 تشغيل السلام الرسمي بلحنه الكامل. زر "قراءة الكلمات" منفصل وينطق النص فقط بدون لحن.</p>
+      </div>
+    `;
+  } else if(heritageSection === 'history_video'){
+    body = `
+      <div class="heritage-card">
+        <div class="h-top"><span class="h-ic">🎬</span><h3>الإمارات عبر التاريخ</h3></div>
+        <p style="margin-bottom:10px;">فيديو وثائقي يستعرض مسيرة دولة الإمارات العربية المتحدة عبر التاريخ، من الجذور والتراث حتى النهضة الحديثة.</p>
+        <video controls playsinline preload="none" style="width:100%; border-radius:12px; background:#000;" poster="icon-512.png">
+          <source src="uae-history.mp4" type="video/mp4">
+          متصفحك لا يدعم تشغيل الفيديو مباشرة.
+        </video>
+        <p style="margin-top:10px; font-size:11px; color:var(--ink-soft);">📶 حجم الفيديو كبير نسبياً، يُفضّل التشغيل بشبكة واي فاي لتوفير بيانات الجوال.</p>
       </div>
     `;
   } else if(heritageSection === 'governance'){
@@ -1287,6 +1546,11 @@ function renderHeritage(){
 }
 
 function renderFavorites(){
+  if(!currentUser){
+    return `<div class="app-header"><div class="name kufi">❤️ المفضلة</div></div>
+    <div class="empty-state"><span class="em-ic">🔒</span>سجّل دخولك عشان تضيف عبارات للمفضلة وتشوفها من أي جهاز.<br><br>
+    <span class="auth-switch" data-go-account="1">سجّل دخولك الآن ‹</span></div>`;
+  }
   if(favorites.length === 0){
     return `<div class="app-header"><div class="name kufi">❤️ المفضلة</div></div>
     <div class="empty-state"><span class="em-ic">💔</span>ما حفظت أي عبارة بعد.<br>اضغط على ❤ بأي عبارة عشان تضيفها هنا.</div>`;
@@ -1312,6 +1576,8 @@ function render(){
   else if(currentTab === 'favorites') html = renderFavorites();
   else if(currentTab === 'suggest') html = renderSuggest();
   else if(currentTab === 'assistant') html = renderAssistant();
+  else if(currentTab === 'account') html = renderAccount();
+  else if(currentTab === 'admin') html = renderAdmin();
   content.innerHTML = html;
   content.scrollTop = 0;
 
@@ -1335,6 +1601,62 @@ function render(){
   if(backHeritageEl) backHeritageEl.addEventListener('click', () => { heritageSection = null; render(); });
   const backSuggestEl = content.querySelector('[data-back-suggest]');
   if(backSuggestEl) backSuggestEl.addEventListener('click', () => { currentTab = 'home'; render(); });
+  const backAdminEl = content.querySelector('[data-back-admin]');
+  if(backAdminEl) backAdminEl.addEventListener('click', () => { currentTab = 'account'; render(); });
+  content.querySelectorAll('[data-go-account]').forEach(el => el.addEventListener('click', () => { currentTab = 'account'; authMode = 'login'; render(); }));
+  const goAdminEl = content.querySelector('[data-go-admin]');
+  if(goAdminEl) goAdminEl.addEventListener('click', () => { adminStats = null; currentTab = 'admin'; render(); });
+  const logoutBtnEl = document.getElementById('logoutBtn');
+  if(logoutBtnEl) logoutBtnEl.addEventListener('click', () => { auth.signOut(); });
+  const authSwitchBtnEl = document.getElementById('authSwitchBtn');
+  if(authSwitchBtnEl) authSwitchBtnEl.addEventListener('click', () => {
+    authMode = (authMode === 'login') ? 'signup' : 'login'; render();
+  });
+  const authSubmitBtnEl = document.getElementById('authSubmitBtn');
+  if(authSubmitBtnEl){
+    authSubmitBtnEl.addEventListener('click', async () => {
+      const emailEl = document.getElementById('auth-email');
+      const passEl = document.getElementById('auth-password');
+      const nameEl = document.getElementById('auth-name');
+      const statusEl = document.getElementById('authStatus');
+      const email = emailEl.value.trim();
+      const password = passEl.value;
+      statusEl.className = 'auth-status';
+      statusEl.textContent = '';
+
+      if(!email || !password){
+        statusEl.classList.add('bad');
+        statusEl.textContent = 'فضلاً عبّي الإيميل وكلمة المرور.';
+        return;
+      }
+
+      authSubmitBtnEl.disabled = true;
+      statusEl.textContent = 'جارِ المعالجة...';
+
+      try{
+        if(authMode === 'login'){
+          await auth.signInWithEmailAndPassword(email, password);
+        } else {
+          const name = nameEl ? nameEl.value.trim() : '';
+          const cred = await auth.createUserWithEmailAndPassword(email, password);
+          await db.collection('users').doc(cred.user.uid).set({
+            email: email,
+            displayName: name || email.split('@')[0],
+            favorites: [],
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          }, { merge: true });
+        }
+        currentTab = 'account';
+      } catch(err){
+        statusEl.classList.add('bad');
+        statusEl.textContent = translateAuthError(err.code);
+      } finally {
+        authSubmitBtnEl.disabled = false;
+        render();
+      }
+    });
+  }
+
   content.querySelectorAll('[data-speak]').forEach(el => el.addEventListener('click', () => speak(el.dataset.speak)));
   content.querySelectorAll('[data-fav]').forEach(el => el.addEventListener('click', () => toggleFav(el.dataset.fav)));
   const nationalAlertEl = content.querySelector('[data-open-national]');
@@ -1368,25 +1690,21 @@ function render(){
     suggestForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const nameEl = document.getElementById('sg-name');
-      const emailEl = document.getElementById('sg-email');
       const msgEl = document.getElementById('sg-msg');
       const nameErr = document.getElementById('sg-name-err');
-      const emailErr = document.getElementById('sg-email-err');
       const msgErr = document.getElementById('sg-msg-err');
       const statusEl = document.getElementById('sg-status');
       const submitBtn = document.getElementById('sg-submit');
 
       const name = nameEl.value.trim();
-      const email = emailEl.value.trim();
+      const email = currentUser ? currentUser.email : '';
       const msg = msgEl.value.trim();
       const rating = Number(starsEl ? starsEl.dataset.rating : 0);
-      const emailOk = email === '' || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
       nameErr.classList.toggle('show', name === '');
-      emailErr.classList.toggle('show', !emailOk);
       msgErr.classList.toggle('show', msg === '');
 
-      if(name === '' || !emailOk || msg === ''){
+      if(name === '' || msg === '' || !currentUser){
         statusEl.textContent = '';
         statusEl.className = 'suggest-status';
         return;
@@ -1397,25 +1715,33 @@ function render(){
       statusEl.textContent = 'جارِ الإرسال...';
 
       try{
-        const res = await fetch('https://formsubmit.co/ajax/uae.protocol262@gmail.com', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-          body: JSON.stringify({
-            name: name,
-            email: email || 'لم يُكتب',
-            rating: rating > 0 ? (rating + ' / 5 ⭐') : 'لم يُقيّم',
-            message: msg,
-            _subject: 'مقترح جديد من تطبيق البروتوكول الإماراتي'
-          })
+        await db.collection('feedback').add({
+          uid: currentUser.uid,
+          name: name,
+          email: email,
+          rating: rating,
+          message: msg,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
-        if(res.ok){
-          statusEl.classList.add('ok');
-          statusEl.textContent = '✅ تم إرسال مقترحك، شاكرين لك تعاونك!';
-          suggestForm.reset();
-          if(starsEl){ starsEl.dataset.rating = 0; paintStars(0); }
-        } else {
-          throw new Error('failed');
-        }
+
+        try{
+          await fetch('https://formsubmit.co/ajax/uae.protocol262@gmail.com', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify({
+              name: name,
+              email: email,
+              rating: rating > 0 ? (rating + ' / 5 ⭐') : 'لم يُقيّم',
+              message: msg,
+              _subject: 'مقترح جديد من تطبيق البروتوكول الإماراتي'
+            })
+          });
+        }catch(emailErr){ /* الإرسال الرئيسي عبر Firestore، الإيميل ثانوي */ }
+
+        statusEl.classList.add('ok');
+        statusEl.textContent = '✅ تم إرسال مقترحك، شاكرين لك تعاونك!';
+        suggestForm.reset();
+        if(starsEl){ starsEl.dataset.rating = 0; paintStars(0); }
       } catch(err){
         statusEl.classList.add('bad');
         statusEl.textContent = '⚠️ تعذّر الإرسال، تأكد من الاتصال بالإنترنت وحاول مرة ثانية.';
@@ -1478,13 +1804,38 @@ document.getElementById('aiFab').addEventListener('click', () => {
   currentTab = 'assistant'; catDetail = null; heritageSection = null; render();
 });
 
+document.getElementById('acctBtn').addEventListener('click', () => {
+  currentTab = 'account'; catDetail = null; heritageSection = null; render();
+});
+
 function tickClock(){
   const d = new Date();
   document.getElementById('clock').textContent = d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',hour12:false});
 }
 tickClock(); setInterval(tickClock, 30000);
 
-loadFavorites().then(render);
+auth.onAuthStateChanged(async (user) => {
+  currentUser = user;
+  currentUserProfile = null;
+  const acctBtnEl = document.getElementById('acctBtn');
+  if(acctBtnEl){
+    acctBtnEl.classList.toggle('logged', !!user);
+    acctBtnEl.textContent = user ? (user.email[0].toUpperCase()) : '👤';
+  }
+  if(user){
+    try{
+      const doc = await db.collection('users').doc(user.uid).get();
+      if(doc.exists) currentUserProfile = doc.data();
+    }catch(e){}
+  } else {
+    favorites = [];
+    adminStats = null;
+    if(currentTab === 'admin') currentTab = 'account';
+  }
+  await loadFavorites();
+  render();
+});
+
 loadNotifState().then(() => { render(); checkAndFireNotification(); });
 
 if('serviceWorker' in navigator){
