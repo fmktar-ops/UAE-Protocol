@@ -855,9 +855,10 @@ function translateAuthError(code){
     'auth/invalid-credential': 'الإيميل أو كلمة المرور غير صحيحة.',
     'auth/email-already-in-use': 'هذا الإيميل مسجّل من قبل، سجّل دخولك بدل إنشاء حساب جديد.',
     'auth/weak-password': 'كلمة المرور لازم تكون 6 أحرف على الأقل.',
-    'auth/network-request-failed': 'تأكد من اتصالك بالإنترنت.'
+    'auth/network-request-failed': 'تأكد من اتصالك بالإنترنت.',
+    'auth/unauthorized-domain': '⚠️ نطاق هذا الموقع غير مضاف بقائمة Firebase الموثوقة. روح Firebase Console → Authentication → Settings → Authorized domains وضيف نطاق موقعك.'
   };
-  return map[code] || 'صار خطأ غير متوقع، حاول مرة ثانية.';
+  return map[code] || 'صار خطأ غير متوقع (' + code + ')، حاول مرة ثانية.';
 }
 
 /* ===================== RENDER ===================== */
