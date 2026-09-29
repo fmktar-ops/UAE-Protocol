@@ -186,6 +186,40 @@
   }
   .list-item .li-txt b{ font-size:14px; color:var(--ink); display:block; }
   .list-item .li-txt span{ font-size:11px; color:var(--ink-soft); }
+
+  .grid-tiles{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:6px; }
+  .grid-tile{
+    background:var(--card); border:1px solid var(--line); border-radius:16px;
+    padding:14px 10px; text-align:center; cursor:pointer; box-shadow:var(--shadow);
+    transition: transform .12s ease; display:flex; flex-direction:column; align-items:center; gap:6px;
+  }
+  .grid-tile:active{ transform: scale(.96); }
+  .grid-tile .gt-ic{
+    width:44px; height:44px; border-radius:13px; background:var(--sand);
+    display:flex; align-items:center; justify-content:center; font-size:20px;
+  }
+  .grid-tile .gt-title{ font-size:12.5px; font-weight:700; color:var(--ink); line-height:1.3; }
+  .grid-tile .gt-desc{ font-size:10px; color:var(--ink-soft); line-height:1.3; }
+
+  .onboarding-overlay{
+    position:absolute; inset:0; z-index:50; background:rgba(20,24,22,.55);
+    display:flex; align-items:flex-end; justify-content:center; border-radius:34px; overflow:hidden;
+  }
+  .onboarding-card{
+    background:var(--sand); width:100%; border-radius:28px 28px 0 0; padding:28px 24px 24px;
+    display:flex; flex-direction:column; align-items:center; text-align:center; gap:10px;
+    animation: obSlideUp .3s ease;
+  }
+  @keyframes obSlideUp{ from{ transform:translateY(30px); opacity:0; } to{ transform:translateY(0); opacity:1; } }
+  .onboarding-card .ob-ic{ font-size:52px; line-height:1; margin-bottom:6px; }
+  .onboarding-card .ob-title{ font-family:'Noto Kufi Arabic', sans-serif; font-weight:800; font-size:19px; color:var(--green-deep); }
+  .onboarding-card .ob-desc{ font-size:13.5px; color:var(--ink); line-height:1.7; max-width:280px; }
+  .ob-dots{ display:flex; gap:6px; margin:14px 0 18px; }
+  .ob-dots span{ width:7px; height:7px; border-radius:50%; background:var(--line); }
+  .ob-dots span.active{ background:var(--green); width:20px; border-radius:4px; }
+  .ob-actions{ display:flex; gap:10px; width:100%; }
+  .ob-next-btn{ flex:1; padding:13px; border:none; border-radius:14px; background:var(--green); color:#fff; font-family:'Tajawal',sans-serif; font-weight:700; font-size:14px; cursor:pointer; }
+  .ob-skip-btn{ padding:13px 16px; border:none; background:transparent; color:var(--ink-soft); font-family:'Tajawal',sans-serif; font-weight:600; font-size:13px; cursor:pointer; }
   .list-item .chev{ color:var(--ink-soft); }
 
   .back-row{ display:flex; align-items:center; gap:8px; margin: 10px 0 14px; cursor:pointer; color:var(--green-deep); font-weight:700; font-size:13.5px; }
@@ -350,6 +384,8 @@
       <div class="nav-item" data-tab="heritage"><span class="ic">🏺</span>الإمارات</div>
       <div class="nav-item" data-tab="favorites"><span class="ic">❤️</span>المفضلة<span class="nav-badge" id="favBadge" style="display:none">0</span></div>
     </div>
+
+    <div class="onboarding-overlay" id="onboardingOverlay" style="display:none"></div>
   </div>
 </div>
 
@@ -917,6 +953,51 @@ let chatMessages = [];
 let chatIntroShown = false;
 let authMode = 'login'; // 'login' | 'signup'
 
+/* ===================== الجولة التعريفية لأول استخدام ===================== */
+let onboardingStep = 0;
+const onboardingSlides = [
+  {icon:"🕌", title:"هلا وغلا في إرث", desc:"تطبيقك اليومي لتتعلّم فن التخاطب الإماراتي، وتتعرّف على تراث وهوية دولة الإمارات بطريقة سهلة وممتعة."},
+  {icon:"💬", title:"فن القول ورد القول", desc:"لكل مناسبة عبارة مناسبة ورد عليها — من الترحيب والضيافة إلى الأعياد والمناسبات، بالعامية الإماراتية الأصيلة."},
+  {icon:"🏺", title:"تراث وهوية بلا حدود", desc:"قصص، أمثال، أكلات، أهازيج، سباقات، ألعاب، وأقوال القيادة الرشيدة — كل هذا وأكثر بانتظارك بتبويب 'الإمارات'."},
+  {icon:"🤖", title:"مساعدك الذكي دايم جاهز", desc:"اسأله عن أي شي تخطر ببالك، وسجّل حسابك لتحفظ عباراتك المفضّلة وتشاركنا رأيك — من أي جهاز."}
+];
+
+function shouldShowOnboarding(){
+  try{ return localStorage.getItem('onboarding-seen') !== 'true'; }catch(e){ return false; }
+}
+function dismissOnboarding(){
+  try{ localStorage.setItem('onboarding-seen', 'true'); }catch(e){}
+  const el = document.getElementById('onboardingOverlay');
+  if(el){ el.style.display = 'none'; el.innerHTML = ''; }
+}
+function renderOnboardingStep(){
+  const el = document.getElementById('onboardingOverlay');
+  if(!el) return;
+  const s = onboardingSlides[onboardingStep];
+  const isLast = onboardingStep === onboardingSlides.length - 1;
+  el.style.display = 'flex';
+  el.innerHTML = `
+    <div class="onboarding-card">
+      <div class="ob-ic">${s.icon}</div>
+      <div class="ob-title kufi">${escapeHtml(s.title)}</div>
+      <div class="ob-desc">${escapeHtml(s.desc)}</div>
+      <div class="ob-dots">${onboardingSlides.map((_,i) => `<span class="${i===onboardingStep?'active':''}"></span>`).join('')}</div>
+      <div class="ob-actions">
+        ${!isLast ? `<button class="ob-skip-btn" id="obSkipBtn">تخطي</button>` : ''}
+        <button class="ob-next-btn" id="obNextBtn">${isLast ? 'ابدأ الآن' : 'التالي'}</button>
+      </div>
+    </div>
+  `;
+  const nextBtn = document.getElementById('obNextBtn');
+  if(nextBtn) nextBtn.addEventListener('click', () => {
+    if(isLast){ dismissOnboarding(); }
+    else { onboardingStep++; renderOnboardingStep(); }
+  });
+  const skipBtn = document.getElementById('obSkipBtn');
+  if(skipBtn) skipBtn.addEventListener('click', dismissOnboarding);
+}
+
+
 async function loadNotifState(){
   notifEnabled = await isNotifEnabled();
 }
@@ -1053,32 +1134,18 @@ function renderHome(){
       ${cats.map(c => `<div class="chip" data-open-cat="${escapeHtml(c)}">${protocolData[c].icon} ${escapeHtml(c)}</div>`).join('')}
     </div>
 
-    <div class="section-title">🧭 هل أنت زائر للإمارات؟</div>
-    <div class="list-item" data-tab-link="tourist">
-      <div class="li-main">
-        <div class="li-ic">🧭</div>
-        <div class="li-txt"><b>عبارات أساسية للزوار</b><span>ترجمة ونطق فوري بالإنجليزية</span></div>
+    <div class="section-title">🧭 اكتشف أكثر</div>
+    <div class="grid-tiles">
+      <div class="grid-tile" data-tab-link="tourist">
+        <div class="gt-ic">🧭</div>
+        <div class="gt-title">للزوار</div>
+        <div class="gt-desc">عبارات أساسية مترجمة</div>
       </div>
-      <div class="chev">‹</div>
-    </div>
-
-    <div class="section-title">🏺 اكتشف التراث</div>
-    <div class="list-item" data-tab-link="heritage">
-      <div class="li-main">
-        <div class="li-ic">🏺</div>
-        <div class="li-txt"><b>قصص وعادات إماراتية</b><span>القهوة، اللباس، اللؤلؤ، والمجلس</span></div>
+      <div class="grid-tile" data-tab-link="heritage">
+        <div class="gt-ic">🏺</div>
+        <div class="gt-title">الإمارات</div>
+        <div class="gt-desc">التراث والهوية الوطنية</div>
       </div>
-      <div class="chev">‹</div>
-    </div>
-    <div class="note-banner">🔊 ميزة النطق تعتمد على محرك المتصفح، للحصول على لهجة إماراتية أصيلة يُفضّل لاحقاً تسجيل أصوات حقيقية.</div>
-
-    <div class="section-title">💡 رأيك يهمنا</div>
-    <div class="list-item" data-tab-link="suggest">
-      <div class="li-main">
-        <div class="li-ic">💡</div>
-        <div class="li-txt"><b>عندك اقتراح أو ملاحظة؟</b><span>أرسلها لنا وبنسمعها بعين الاعتبار</span></div>
-      </div>
-      <div class="chev">‹</div>
     </div>
   `;
 }
@@ -1095,6 +1162,15 @@ function renderAccount(){
         <div class="pemail">${escapeHtml(currentUser.email)}</div>
         ${isAdmin ? `<div class="admin-link" data-go-admin="1">📊 لوحة التحكّم</div>` : ''}
         <div><button class="logout-btn" id="logoutBtn">تسجيل الخروج</button></div>
+      </div>
+
+      <div class="section-title">💡 رأيك يهمنا</div>
+      <div class="list-item" data-tab-link="suggest">
+        <div class="li-main">
+          <div class="li-ic">💡</div>
+          <div class="li-txt"><b>عندك اقتراح أو ملاحظة؟</b><span>أرسلها لنا وبنسمعها بعين الاعتبار</span></div>
+        </div>
+        <div class="chev">‹</div>
       </div>
     `;
   }
@@ -1548,18 +1624,42 @@ function heritageListItems(list){
   `).join('');
 }
 
+function heritageGridTiles(list){
+  if(list.length === 0) return `<div class="empty-state">🔍 ما فيه نتائج مطابقة، جرّب كلمة ثانية.</div>`;
+  return `<div class="grid-tiles">` + list.map(m => `
+    <div class="grid-tile" data-open-heritage="${m.key}">
+      <div class="gt-ic">${m.icon}</div>
+      <div class="gt-title">${escapeHtml(m.title)}</div>
+      <div class="gt-desc">${escapeHtml(m.desc)}</div>
+    </div>
+  `).join('') + `</div>`;
+}
+
 function renderHeritage(){
   if(!heritageSection){
+    const q = normalizeArabic(window.__heritageSearch || '');
+    const filterFn = m => !q || normalizeArabic(m.title).includes(q) || normalizeArabic(m.desc).includes(q);
+    const filteredHeritage = heritageMenu.filter(filterFn);
+    const filteredIdentity = nationalIdentityMenu.filter(filterFn);
+    const heritageSearchBox = `<div class="searchbox">
+      <input id="heritageSearchInput" type="text" value="${escapeHtml(window.__heritageSearch || '')}" placeholder="ابحث بالتراث والهوية عن أي قسم...">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+    </div>`;
     return `
       <div class="app-header"><div class="name kufi">🏺 الإمارات — تراث وهوية</div></div>
+      ${heritageSearchBox}
 
+      ${filteredHeritage.length ? `
       <div class="section-title" style="margin-top:4px;">🎨 التراث الشعبي</div>
-      <div class="detail-note">عادات وفنون متوارثة من كبار السن</div>
-      ${heritageListItems(heritageMenu)}
+      ${heritageGridTiles(filteredHeritage)}
+      ` : ''}
 
+      ${filteredIdentity.length ? `
       <div class="section-title">🇦🇪 الهوية الوطنية</div>
-      <div class="detail-note">رموز الدولة ونظام حكمها ووجهاتها</div>
-      ${heritageListItems(nationalIdentityMenu)}
+      ${heritageGridTiles(filteredIdentity)}
+      ` : ''}
+
+      ${(filteredHeritage.length === 0 && filteredIdentity.length === 0) ? `<div class="empty-state">🔍 ما فيه نتائج مطابقة، جرّب كلمة ثانية.</div>` : ''}
     `;
   }
 
@@ -1718,7 +1818,6 @@ function renderHeritage(){
       : filtered.map(w => `
       <div class="tourist-row">
         <div class="t-txt"><b>${escapeHtml(w.w)}</b><span class="en">${escapeHtml(w.m)}</span></div>
-        <div class="icon-btn" data-speak="${escapeHtml(w.w)}">🔊</div>
       </div>
     `).join(''));
   }
@@ -1861,6 +1960,10 @@ function render(){
   const wordsSearchEl = document.getElementById('wordsSearchInput');
   if(wordsSearchEl){
     wordsSearchEl.addEventListener('input', (e) => { window.__wordsSearch = e.target.value; render(); setTimeout(()=>{ const s=document.getElementById('wordsSearchInput'); if(s){ s.focus(); s.selectionStart=s.selectionEnd=s.value.length; } },0); });
+  }
+  const heritageSearchEl = document.getElementById('heritageSearchInput');
+  if(heritageSearchEl){
+    heritageSearchEl.addEventListener('input', (e) => { window.__heritageSearch = e.target.value; render(); setTimeout(()=>{ const s=document.getElementById('heritageSearchInput'); if(s){ s.focus(); s.selectionStart=s.selectionEnd=s.value.length; } },0); });
   }
 
   const suggestForm = document.getElementById('suggestForm');
@@ -2030,6 +2133,11 @@ auth.onAuthStateChanged(async (user) => {
 });
 
 loadNotifState().then(() => { render(); checkAndFireNotification(); });
+
+if(shouldShowOnboarding()){
+  onboardingStep = 0;
+  renderOnboardingStep();
+}
 
 if('serviceWorker' in navigator){
   window.addEventListener('load', () => {
