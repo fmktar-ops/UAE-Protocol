@@ -1300,6 +1300,14 @@ function renderAccount(){
         </div>
         <div class="chev">‹</div>
       </div>
+
+      <div class="list-item" data-replay-onboarding="1">
+        <div class="li-main">
+          <div class="li-ic">🎬</div>
+          <div class="li-txt"><b>${appLang==='ar'?'شاهد الجولة التعريفية مرة ثانية':'Replay the intro tour'}</b><span>${appLang==='ar'?'استعراض سريع لأهم ميزات التطبيق':'A quick tour of the app’s main features'}</span></div>
+        </div>
+        <div class="chev">‹</div>
+      </div>
     `;
   }
   const isLogin = authMode === 'login';
@@ -1318,6 +1326,14 @@ function renderAccount(){
       <button class="auth-btn" id="authSubmitBtn">${isLogin ? t('account_login_btn') : t('account_signup_btn')}</button>
       <div class="auth-switch" id="authSwitchBtn">${isLogin ? t('account_switch_to_signup') : t('account_switch_to_login')}</div>
       <div class="auth-status" id="authStatus"></div>
+    </div>
+
+    <div class="list-item" data-replay-onboarding="1" style="margin-top:14px;">
+      <div class="li-main">
+        <div class="li-ic">🎬</div>
+        <div class="li-txt"><b>${appLang==='ar'?'شاهد الجولة التعريفية مرة ثانية':'Replay the intro tour'}</b><span>${appLang==='ar'?'استعراض سريع لأهم ميزات التطبيق':'A quick tour of the app’s main features'}</span></div>
+      </div>
+      <div class="chev">‹</div>
     </div>
   `;
 }
@@ -2091,6 +2107,8 @@ function render(){
   content.querySelectorAll('[data-go-account]').forEach(el => el.addEventListener('click', () => { currentTab = 'account'; authMode = 'login'; render(); }));
   const goAdminEl = content.querySelector('[data-go-admin]');
   if(goAdminEl) goAdminEl.addEventListener('click', () => { adminStats = null; currentTab = 'admin'; render(); });
+  const replayObEl = content.querySelector('[data-replay-onboarding]');
+  if(replayObEl) replayObEl.addEventListener('click', () => { onboardingStep = 0; renderOnboardingStep(); });
   const logoutBtnEl = document.getElementById('logoutBtn');
   if(logoutBtnEl) logoutBtnEl.addEventListener('click', () => { auth.signOut(); });
   const authSwitchBtnEl = document.getElementById('authSwitchBtn');
