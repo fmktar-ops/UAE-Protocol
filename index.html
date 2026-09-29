@@ -1430,15 +1430,13 @@ function renderCategoriesList(filterText){
     return catsHeaderHtml + searchBoxHtml(q) + all.map(it => phraseCardHtml(it.cat, it.idx, it)).join('');
   }
   const cats = Object.keys(protocolData);
-  return catsHeaderHtml + searchBoxHtml('') + cats.map(c => `
-    <div class="list-item" data-open-cat="${escapeHtml(c)}">
-      <div class="li-main">
-        <div class="li-ic">${protocolData[c].icon}</div>
-        <div class="li-txt"><b>${escapeHtml(c)}</b></div>
-      </div>
-      <div class="chev">‹</div>
+  return catsHeaderHtml + searchBoxHtml('') + `<div class="grid-tiles">` + cats.map(c => `
+    <div class="grid-tile" data-open-cat="${escapeHtml(c)}">
+      <div class="gt-ic">${protocolData[c].icon}</div>
+      <div class="gt-title">${escapeHtml(c)}</div>
+      <div class="gt-desc">${escapeHtml(protocolData[c].note)}</div>
     </div>
-  `).join('');
+  `).join('') + `</div>`;
 }
 
 /* ===================== المساعد الذكي: فهرس المعرفة ===================== */
