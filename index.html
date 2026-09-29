@@ -365,8 +365,10 @@
       <div style="display:flex; align-items:center; gap:10px;">
         <div class="flagchip">
           <svg viewBox="0 0 60 40"><rect width="60" height="40" fill="#00732F"/><rect y="13.3" width="60" height="13.3" fill="#fff"/><rect y="26.6" width="60" height="13.4" fill="#000"/><rect width="15" height="40" fill="#CE1126"/></svg>
-          الإمارات
+          <span id="flagLabel">الإمارات</span>
         </div>
+        <div class="acct-btn" id="globalSearchBtn" title="البحث الشامل">🔍</div>
+        <div class="acct-btn" id="langBtn" title="Language / اللغة" style="font-size:10px; font-weight:800;">EN</div>
         <div class="acct-btn" id="acctBtn" title="حسابي">👤</div>
       </div>
     </div>
@@ -378,11 +380,11 @@
     <div class="ai-fab" id="aiFab" title="المساعد الذكي">🤖</div>
 
     <div class="bottom-nav">
-      <div class="nav-item" data-tab="home"><span class="ic">🏠</span>الرئيسية</div>
-      <div class="nav-item" data-tab="categories"><span class="ic">📖</span>المناسبات</div>
-      <div class="nav-item" data-tab="tourist"><span class="ic">🧭</span>للزوار</div>
-      <div class="nav-item" data-tab="heritage"><span class="ic">🏺</span>الإمارات</div>
-      <div class="nav-item" data-tab="favorites"><span class="ic">❤️</span>المفضلة<span class="nav-badge" id="favBadge" style="display:none">0</span></div>
+      <div class="nav-item" data-tab="home"><span class="ic">🏠</span><span class="nav-label" id="navLabelHome">الرئيسية</span></div>
+      <div class="nav-item" data-tab="categories"><span class="ic">📖</span><span class="nav-label" id="navLabelCats">المناسبات</span></div>
+      <div class="nav-item" data-tab="tourist"><span class="ic">🧭</span><span class="nav-label" id="navLabelTourist">للزوار</span></div>
+      <div class="nav-item" data-tab="heritage"><span class="ic">🏺</span><span class="nav-label" id="navLabelHeritage">الإمارات</span></div>
+      <div class="nav-item" data-tab="favorites"><span class="ic">❤️</span><span class="nav-label" id="navLabelFav">المفضلة</span><span class="nav-badge" id="favBadge" style="display:none">0</span></div>
     </div>
 
     <div class="onboarding-overlay" id="onboardingOverlay" style="display:none"></div>
@@ -953,6 +955,97 @@ let chatMessages = [];
 let chatIntroShown = false;
 let authMode = 'login'; // 'login' | 'signup'
 
+/* ===================== دعم اللغة الإنجليزية لهيكل التطبيق ===================== */
+let appLang = (function(){ try{ return localStorage.getItem('app-lang') || 'ar'; }catch(e){ return 'ar'; } })();
+
+const I18N = {
+  nav_home: {ar:'الرئيسية', en:'Home'},
+  nav_categories: {ar:'المناسبات', en:'Occasions'},
+  nav_tourist: {ar:'للزوار', en:'Visitors'},
+  nav_heritage: {ar:'الإمارات', en:'Emirates'},
+  nav_favorites: {ar:'المفضلة', en:'Favorites'},
+  status_uae: {ar:'الإمارات', en:'UAE'},
+  greet_morning: {ar:'صباح الخير', en:'Good morning'},
+  greet_evening: {ar:'مساء الخير', en:'Good evening'},
+  home_quote_of_day: {ar:'👑 مقولة اليوم', en:'👑 Quote of the Day'},
+  home_phrase_of_day: {ar:'💬 عبارة اليوم', en:'💬 Phrase of the Day'},
+  home_discover_more: {ar:'🧭 اكتشف أكثر', en:'🧭 Discover More'},
+  home_tile_tourist_desc: {ar:'عبارات أساسية مترجمة', en:'Essential translated phrases'},
+  home_tile_heritage_title: {ar:'الإمارات', en:'Emirates'},
+  home_tile_heritage_desc: {ar:'التراث والهوية الوطنية', en:'Heritage & national identity'},
+  potd_say: {ar:'القول:', en:'Say:'},
+  potd_resp: {ar:'الرد:', en:'Reply:'},
+  cats_title: {ar:'البروتوكول الإماراتي', en:'The Emirati Protocol'},
+  cats_tagline: {ar:'فن القول ورد القول في السنع الإماراتي', en:'The art of speech & reply in Emirati etiquette'},
+  search_placeholder_cats: {ar:'ابحث عن قول أو رد أو بالإنجليزي...', en:'Search a phrase or reply...'},
+  back_generic: {ar:'→ العودة', en:'→ Back'},
+  back_to_home: {ar:'→ العودة للرئيسية', en:'→ Back to Home'},
+  back_to_cats: {ar:'→ العودة للمناسبات', en:'→ Back to Occasions'},
+  back_to_heritage: {ar:'→ العودة للتراث', en:'→ Back'},
+  tourist_title: {ar:'🧭 عبارات للزوار والمقيمين', en:'🧭 Phrases for Visitors & Residents'},
+  tourist_note: {ar:"عبارات أساسية بالعامية الإماراتية، بالنطق اللاتيني ومعناها بالإنجليزي — تكفيك لأول أسبوع بالإمارات.", en:"Essential Emirati dialect phrases, with Latin transliteration and English meaning — enough for your first week in the UAE."},
+  heritage_title: {ar:'🏺 الإمارات — تراث وهوية', en:'🏺 Emirates — Heritage & Identity'},
+  heritage_search_ph: {ar:'ابحث بالتراث والهوية عن أي قسم...', en:'Search heritage & identity sections...'},
+  heritage_folk_title: {ar:'🎨 التراث الشعبي', en:'🎨 Folk Heritage'},
+  heritage_identity_title: {ar:'🇦🇪 الهوية الوطنية', en:'🇦🇪 National Identity'},
+  favorites_title: {ar:'❤️ المفضلة', en:'❤️ Favorites'},
+  favorites_empty: {ar:'ما حفظت أي عبارة بعد.', en:"You haven't saved any phrases yet."},
+  favorites_empty_hint: {ar:'اضغط على ❤ بأي عبارة عشان تضيفها هنا.', en:'Tap ❤ on any phrase to add it here.'},
+  favorites_locked: {ar:'سجّل دخولك عشان تضيف عبارات للمفضلة وتشوفها من أي جهاز.', en:'Log in to save phrases to favorites and view them on any device.'},
+  login_now: {ar:'سجّل دخولك الآن ‹', en:'Log in now ‹'},
+  account_title: {ar:'👤 حسابي', en:'👤 My Account'},
+  account_login_title: {ar:'👤 تسجيل الدخول', en:'👤 Log In'},
+  account_signup_title: {ar:'👤 إنشاء حساب جديد', en:'👤 Create Account'},
+  account_login_btn: {ar:'تسجيل الدخول', en:'Log In'},
+  account_signup_btn: {ar:'إنشاء الحساب', en:'Create Account'},
+  account_logout: {ar:'تسجيل الخروج', en:'Log Out'},
+  account_dashboard: {ar:'📊 لوحة التحكّم', en:'📊 Dashboard'},
+  account_switch_to_signup: {ar:'ما عندك حساب؟ سجّل جديد', en:"Don't have an account? Sign up"},
+  account_switch_to_login: {ar:'عندك حساب؟ سجّل دخولك', en:'Already have an account? Log in'},
+  field_name: {ar:'الاسم', en:'Name'},
+  field_email: {ar:'الإيميل', en:'Email'},
+  field_password: {ar:'كلمة المرور', en:'Password'},
+  search_global_title: {ar:'🔍 البحث الشامل', en:'🔍 Search Everything'},
+  search_global_ph: {ar:'ابحث عن أي شي بالتطبيق...', en:'Search anything in the app...'},
+  search_global_empty: {ar:'اكتب أي كلمة... عبارة، مثل، كلمة تراثية، معلم، أو أي شي تدور عليه.', en:'Type anything… a phrase, proverb, heritage word, landmark — whatever you\'re looking for.'},
+  assistant_title: {ar:'المساعد الذكي', en:'Smart Assistant'},
+  suggest_title: {ar:'💡 عندك اقتراح أو ملاحظة؟', en:'💡 Have a suggestion or feedback?'},
+};
+
+function t(key){
+  const e = I18N[key];
+  if(!e) return key;
+  return e[appLang] || e.ar;
+}
+
+function toggleAppLang(){
+  appLang = (appLang === 'ar') ? 'en' : 'ar';
+  try{ localStorage.setItem('app-lang', appLang); }catch(e){}
+  applyLangDirection();
+  render();
+}
+
+function applyLangDirection(){
+  const html = document.documentElement;
+  if(appLang === 'en'){
+    html.setAttribute('dir', 'ltr');
+    html.setAttribute('lang', 'en');
+  } else {
+    html.setAttribute('dir', 'rtl');
+    html.setAttribute('lang', 'ar');
+  }
+  const btn = document.getElementById('langBtn');
+  if(btn) btn.textContent = appLang === 'ar' ? 'EN' : 'AR';
+  const setText = (id, key) => { const el = document.getElementById(id); if(el) el.textContent = t(key); };
+  setText('navLabelHome', 'nav_home');
+  setText('navLabelCats', 'nav_categories');
+  setText('navLabelTourist', 'nav_tourist');
+  setText('navLabelHeritage', 'nav_heritage');
+  setText('navLabelFav', 'nav_favorites');
+  setText('flagLabel', 'status_uae');
+}
+
+
 /* ===================== الجولة التعريفية لأول استخدام ===================== */
 let onboardingStep = 0;
 const onboardingSlides = [
@@ -1081,8 +1174,8 @@ function allItemsFlat(){
 
 function getGreeting(){
   const hour = new Date().getHours();
-  if(hour >= 0 && hour < 12) return {text:"صباح الخير", icon:"☀️"};
-  return {text:"مساء الخير", icon:"🌙"};
+  if(hour >= 0 && hour < 12) return {text:t('greet_morning'), icon:"☀️"};
+  return {text:t('greet_evening'), icon:"🌙"};
 }
 
 function renderHome(){
@@ -1112,41 +1205,71 @@ function renderHome(){
 
     ${notifBanner}
 
-    <div class="section-title">👑 مقولة اليوم</div>
+    <div class="section-title">${t('home_quote_of_day')}</div>
     <div class="mbz-quote">
       <div class="mq-ic">${mq.icon}</div>
       <div class="mq-body">${escapeHtml(mq.body)}</div>
       <div class="mq-attr">— الشيخ محمد بن زايد آل نهيان، حفظه الله ورعاه</div>
     </div>
 
-    <div class="section-title">💬 عبارة اليوم</div>
+    <div class="section-title">${t('home_phrase_of_day')}</div>
     <div class="potd">
       <div class="eyebrow">${escapeHtml(p.cat)}</div>
-      <div class="eyebrow" style="margin-top:4px;">القول:</div>
+      <div class="eyebrow" style="margin-top:4px;">${t('potd_say')}</div>
       <div class="say kufi">${escapeHtml(p.s)}</div>
-      <div class="eyebrow" style="margin-top:2px;">الرد:</div>
+      <div class="eyebrow" style="margin-top:2px;">${t('potd_resp')}</div>
       <div class="resp">${escapeHtml(p.r)}</div>
       <div class="en">${escapeHtml(p.se)}</div>
     </div>
 
-    <div class="section-title">📚 تصفح سريع</div>
+    <div class="section-title">📚 ${appLang==='ar'?'تصفح سريع':'Quick Browse'}</div>
     <div class="chip-row">
       ${cats.map(c => `<div class="chip" data-open-cat="${escapeHtml(c)}">${protocolData[c].icon} ${escapeHtml(c)}</div>`).join('')}
     </div>
 
-    <div class="section-title">🧭 اكتشف أكثر</div>
+    <div class="section-title">${t('home_discover_more')}</div>
     <div class="grid-tiles">
       <div class="grid-tile" data-tab-link="tourist">
         <div class="gt-ic">🧭</div>
-        <div class="gt-title">للزوار</div>
-        <div class="gt-desc">عبارات أساسية مترجمة</div>
+        <div class="gt-title">${t('nav_tourist')}</div>
+        <div class="gt-desc">${t('home_tile_tourist_desc')}</div>
       </div>
       <div class="grid-tile" data-tab-link="heritage">
         <div class="gt-ic">🏺</div>
-        <div class="gt-title">الإمارات</div>
-        <div class="gt-desc">التراث والهوية الوطنية</div>
+        <div class="gt-title">${t('home_tile_heritage_title')}</div>
+        <div class="gt-desc">${t('home_tile_heritage_desc')}</div>
       </div>
     </div>
+  `;
+}
+
+function renderSearch(){
+  const q = window.__globalSearch || '';
+  const results = q.trim() ? searchGlobalIndex(q) : [];
+  __lastSearchResults = results;
+  return `
+    <div class="back-row" data-back-suggest>
+      ${t('back_to_home')}
+    </div>
+    <div class="app-header"><div class="name kufi">${t('search_global_title')}</div></div>
+    <div class="searchbox">
+      <input id="globalSearchInput" type="text" value="${escapeHtml(q)}" placeholder="${t('search_global_ph')}">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+    </div>
+    ${!q.trim()
+      ? `<div class="empty-state">🔍 ${t('search_global_empty')}</div>`
+      : results.length === 0
+        ? `<div class="empty-state">😕 ${appLang==='ar'?`ما لقينا نتائج لـ"${escapeHtml(q)}"`:`No results for "${escapeHtml(q)}"`}</div>`
+        : results.map((r,i) => `
+          <div class="list-item" data-search-result="${i}">
+            <div class="li-main">
+              <div class="li-ic">${r.icon}</div>
+              <div class="li-txt"><b>${escapeHtml(r.title)}</b><span>${escapeHtml((r.snippet||'').slice(0,55))}${(r.snippet||'').length>55?'…':''} · ${escapeHtml(r.category)}</span></div>
+            </div>
+            <div class="chev">‹</div>
+          </div>
+        `).join('')
+    }
   `;
 }
 
@@ -1155,20 +1278,20 @@ function renderAccount(){
     const initial = (currentUserProfile && currentUserProfile.displayName ? currentUserProfile.displayName[0] : currentUser.email[0]).toUpperCase();
     const isAdmin = currentUser.email === ADMIN_EMAIL;
     return `
-      <div class="app-header"><div class="name kufi">👤 حسابي</div></div>
+      <div class="app-header"><div class="name kufi">${t('account_title')}</div></div>
       <div class="profile-card">
         <div class="avatar">${initial}</div>
-        <div class="pname">${escapeHtml((currentUserProfile && currentUserProfile.displayName) || 'مستخدم')}</div>
+        <div class="pname">${escapeHtml((currentUserProfile && currentUserProfile.displayName) || (appLang==='ar'?'مستخدم':'User'))}</div>
         <div class="pemail">${escapeHtml(currentUser.email)}</div>
-        ${isAdmin ? `<div class="admin-link" data-go-admin="1">📊 لوحة التحكّم</div>` : ''}
-        <div><button class="logout-btn" id="logoutBtn">تسجيل الخروج</button></div>
+        ${isAdmin ? `<div class="admin-link" data-go-admin="1">${t('account_dashboard')}</div>` : ''}
+        <div><button class="logout-btn" id="logoutBtn">${t('account_logout')}</button></div>
       </div>
 
-      <div class="section-title">💡 رأيك يهمنا</div>
+      <div class="section-title">💡 ${appLang==='ar'?'رأيك يهمنا':'We value your feedback'}</div>
       <div class="list-item" data-tab-link="suggest">
         <div class="li-main">
           <div class="li-ic">💡</div>
-          <div class="li-txt"><b>عندك اقتراح أو ملاحظة؟</b><span>أرسلها لنا وبنسمعها بعين الاعتبار</span></div>
+          <div class="li-txt"><b>${t('suggest_title').replace('💡 ','')}</b><span>${appLang==='ar'?'أرسلها لنا وبنسمعها بعين الاعتبار':"Send it to us — we're listening"}</span></div>
         </div>
         <div class="chev">‹</div>
       </div>
@@ -1176,19 +1299,19 @@ function renderAccount(){
   }
   const isLogin = authMode === 'login';
   return `
-    <div class="app-header"><div class="name kufi">👤 ${isLogin ? 'تسجيل الدخول' : 'إنشاء حساب جديد'}</div></div>
-    <div class="detail-note">سجّل دخولك عشان تضيف عبارات للمفضلة، وتشارك رأيك وتقييمك للتطبيق — وتقدر تشوفهم من أي جهاز.</div>
+    <div class="app-header"><div class="name kufi">${isLogin ? t('account_login_title') : t('account_signup_title')}</div></div>
+    <div class="detail-note">${appLang==='ar'?'سجّل دخولك عشان تضيف عبارات للمفضلة، وتشارك رأيك وتقييمك للتطبيق — وتقدر تشوفهم من أي جهاز.':'Log in to save favorite phrases and share your feedback — and access them from any device.'}</div>
     <div class="auth-form">
       ${!isLogin ? `
-      <label>الاسم</label>
-      <input type="text" id="auth-name" placeholder="اسمك">
+      <label>${t('field_name')}</label>
+      <input type="text" id="auth-name" placeholder="${appLang==='ar'?'اسمك':'Your name'}">
       ` : ''}
-      <label>الإيميل</label>
+      <label>${t('field_email')}</label>
       <input type="email" id="auth-email" placeholder="example@email.com">
-      <label>كلمة المرور</label>
-      <input type="password" id="auth-password" placeholder="6 أحرف على الأقل">
-      <button class="auth-btn" id="authSubmitBtn">${isLogin ? 'تسجيل الدخول' : 'إنشاء الحساب'}</button>
-      <div class="auth-switch" id="authSwitchBtn">${isLogin ? 'ما عندك حساب؟ سجّل جديد' : 'عندك حساب؟ سجّل دخولك'}</div>
+      <label>${t('field_password')}</label>
+      <input type="password" id="auth-password" placeholder="${appLang==='ar'?'6 أحرف على الأقل':'At least 6 characters'}">
+      <button class="auth-btn" id="authSubmitBtn">${isLogin ? t('account_login_btn') : t('account_signup_btn')}</button>
+      <div class="auth-switch" id="authSwitchBtn">${isLogin ? t('account_switch_to_signup') : t('account_switch_to_login')}</div>
       <div class="auth-status" id="authStatus"></div>
     </div>
   `;
@@ -1248,22 +1371,22 @@ function renderSuggest(){
   if(!currentUser){
     return `
       <div class="back-row" data-back-suggest>
-        <span>→</span> العودة للرئيسية
+        ${t('back_to_home')}
       </div>
-      <div class="app-header"><div class="name kufi">💡 عندك اقتراح أو ملاحظة؟</div></div>
-      <div class="empty-state"><span class="em-ic">🔒</span>سجّل دخولك عشان تقدر تشارك رأيك وتقييمك للتطبيق.<br><br>
-      <span class="auth-switch" data-go-account="1">سجّل دخولك الآن ‹</span></div>
+      <div class="app-header"><div class="name kufi">${t('suggest_title')}</div></div>
+      <div class="empty-state"><span class="em-ic">🔒</span>${appLang==='ar'?'سجّل دخولك عشان تقدر تشارك رأيك وتقييمك للتطبيق.':'Log in to share your feedback and rating for the app.'}<br><br>
+      <span class="auth-switch" data-go-account="1">${t('login_now')}</span></div>
     `;
   }
   const defaultName = (currentUserProfile && currentUserProfile.displayName) || '';
   return `
     <div class="back-row" data-back-suggest>
-      <span>→</span> العودة للرئيسية
+      ${t('back_to_home')}
     </div>
-    <div class="app-header"><div class="name kufi">💡 عندك اقتراح أو ملاحظة؟</div></div>
-    <div class="detail-note">رأيك يساعدنا نطوّر التطبيق. راح يُرسل باسم حسابك (${escapeHtml(currentUser.email)}).</div>
+    <div class="app-header"><div class="name kufi">${t('suggest_title')}</div></div>
+    <div class="detail-note">${appLang==='ar'?`رأيك يساعدنا نطوّر التطبيق. راح يُرسل باسم حسابك (${escapeHtml(currentUser.email)}).`:`Your feedback helps us improve the app. It will be sent under your account (${escapeHtml(currentUser.email)}).`}</div>
     <form id="suggestForm" class="suggest-form">
-      <label>تقييمك للتطبيق</label>
+      <label>${appLang==='ar'?'تقييمك للتطبيق':'Rate the app'}</label>
       <div class="star-rating" id="sgStars" data-rating="0">
         <span class="star" data-star="1">★</span>
         <span class="star" data-star="2">★</span>
@@ -1272,15 +1395,15 @@ function renderSuggest(){
         <span class="star" data-star="5">★</span>
       </div>
 
-      <label>الاسم <span class="req">*</span></label>
-      <input type="text" id="sg-name" name="name" placeholder="اسمك" value="${escapeHtml(defaultName)}" required>
-      <div class="err" id="sg-name-err">فضلاً اكتب اسمك.</div>
+      <label>${t('field_name')} <span class="req">*</span></label>
+      <input type="text" id="sg-name" name="name" placeholder="${appLang==='ar'?'اسمك':'Your name'}" value="${escapeHtml(defaultName)}" required>
+      <div class="err" id="sg-name-err">${appLang==='ar'?'فضلاً اكتب اسمك.':'Please enter your name.'}</div>
 
-      <label>المقترح <span class="req">*</span></label>
-      <textarea id="sg-msg" name="message" placeholder="اكتب اقتراحك أو ملاحظتك هنا..." required></textarea>
-      <div class="err" id="sg-msg-err">فضلاً اكتب المقترح.</div>
+      <label>${appLang==='ar'?'المقترح':'Suggestion'} <span class="req">*</span></label>
+      <textarea id="sg-msg" name="message" placeholder="${appLang==='ar'?'اكتب اقتراحك أو ملاحظتك هنا...':'Write your suggestion or feedback here...'}" required></textarea>
+      <div class="err" id="sg-msg-err">${appLang==='ar'?'فضلاً اكتب المقترح.':'Please write your suggestion.'}</div>
 
-      <button type="submit" class="suggest-btn" id="sg-submit">إرسال المقترح</button>
+      <button type="submit" class="suggest-btn" id="sg-submit">${appLang==='ar'?'إرسال المقترح':'Send Suggestion'}</button>
       <div class="suggest-status" id="sg-status"></div>
     </form>
   `;
@@ -1290,15 +1413,15 @@ function renderCategoriesList(filterText){
 
   const catsHeaderHtml = `
     <div class="cats-header">
-      <div class="cats-title kufi">البروتوكول الإماراتي</div>
-      <div class="cats-tagline">فن القول ورد القول في السنع الإماراتي</div>
+      <div class="cats-title kufi">${t('cats_title')}</div>
+      <div class="cats-tagline">${t('cats_tagline')}</div>
     </div>
   `;
 
   const q = (filterText||'').trim();
   if(q){
     const all = allItemsFlat().filter(it => it.s.includes(q) || it.r.includes(q) || (it.se||'').toLowerCase().includes(q.toLowerCase()));
-    if(all.length===0) return catsHeaderHtml + searchBoxHtml(q) + `<div class="empty-state"><span class="em-ic">🔍</span>ما فيه نتائج تطابق "${escapeHtml(q)}"</div>`;
+    if(all.length===0) return catsHeaderHtml + searchBoxHtml(q) + `<div class="empty-state"><span class="em-ic">🔍</span>${appLang==='ar'?`ما فيه نتائج تطابق "${escapeHtml(q)}"`:`No results match "${escapeHtml(q)}"`}</div>`;
     return catsHeaderHtml + searchBoxHtml(q) + all.map(it => phraseCardHtml(it.cat, it.idx, it)).join('');
   }
   const cats = Object.keys(protocolData);
@@ -1314,6 +1437,78 @@ function renderCategoriesList(filterText){
 }
 
 /* ===================== المساعد الذكي: فهرس المعرفة ===================== */
+let __searchIndexCache = null;
+let __lastSearchResults = [];
+function buildSearchIndex(){
+  if(__searchIndexCache) return __searchIndexCache;
+  const idx = [];
+  const add = (icon, title, snippet, category, target) => idx.push({icon, title, snippet: snippet||'', category, target});
+
+  Object.keys(protocolData).forEach(cat => {
+    const c = protocolData[cat];
+    c.items.forEach(it => {
+      add('💬', it.s, `الرد: ${it.r}`, cat, {tab:'categories', catDetail:cat});
+    });
+  });
+
+  touristPhrases.forEach(t => add('🧭', t.ar, t.en, 'للزوار', {tab:'tourist'}));
+
+  heritageCards.forEach(h => add(h.icon, h.title, h.body, 'قصص وعادات', {tab:'heritage', heritageSection:'stories'}));
+  traditionalFood.forEach(f => add(f.icon, f.name, f.body, 'أكلات تراثية', {tab:'heritage', heritageSection:'food'}));
+  ahazeejList.forEach(a => add(a.icon, a.name, a.body, 'أهازيج', {tab:'heritage', heritageSection:'ahazeej'}));
+  traditionalRaces.forEach(r => add(r.icon, r.name, r.body, 'سباقات تراثية', {tab:'heritage', heritageSection:'races'}));
+  traditionalGames.forEach(g => add(g.icon, g.name, g.body, 'ألعاب تراثية', {tab:'heritage', heritageSection:'games'}));
+  folkProverbs.forEach(p => add(p.icon, p.name, p.body, 'أمثال شعبية', {tab:'heritage', heritageSection:'proverbs'}));
+  heritageWords.forEach(w => add('📖', w.w, w.m, 'كلمات تراثية', {tab:'heritage', heritageSection:'words', wordsSearch:w.w}));
+  zayedQuotes.forEach(q => add(q.icon, q.name, q.body, 'أقوال الشيخ زايد', {tab:'heritage', heritageSection:'zayed'}));
+  mbzQuotes.forEach(q => add(q.icon, q.name, q.body, 'أقوال الشيخ محمد بن زايد', {tab:'heritage', heritageSection:'mbz'}));
+  landmarksData.forEach(l => add(l.icon, l.name, l.desc||l.body, 'معالم سياحية', {tab:'heritage', heritageSection:'landmarks'}));
+  archaeologicalSites.forEach(l => add(l.icon, l.name, l.desc||l.body, 'مواقع أثرية', {tab:'heritage', heritageSection:'archaeology'}));
+  nationalDays.forEach(n => add(n.icon, n.name, n.body, 'أحداث وطنية', {tab:'heritage', heritageSection:'national'}));
+
+  add('🏛️', 'نظام الحكم والقيادة', governanceInfo.intro, 'الهوية الوطنية', {tab:'heritage', heritageSection:'governance'});
+  add('🎵', 'السلام الوطني', nationalAnthem.title, 'الهوية الوطنية', {tab:'heritage', heritageSection:'anthem'});
+  add('📜', 'الميثاق الوطني للتعليم', 'دليل أولياء الأمور، دليل المدارس، وأسابيع الميثاق', 'الهوية الوطنية', {tab:'heritage', heritageSection:'charter'});
+  add('🎬', 'الإمارات عبر التاريخ', 'فيديو وثائقي عن مسيرة الدولة', 'الهوية الوطنية', {tab:'heritage', heritageSection:'history_video'});
+
+  // عناصر على مستوى الأقسام نفسها (لتغطية البحث بالاسم العام للقسم)
+  add('🏛️', 'قصص وعادات', 'القهوة، اللباس، اللؤلؤ، والمجلس', 'قسم تراثي', {tab:'heritage', heritageSection:'stories'});
+  add('🍚', 'الأكلات التراثية', 'أشهر الأطباق الإماراتية الأصيلة', 'قسم تراثي', {tab:'heritage', heritageSection:'food'});
+  add('⚔️', 'الأهازيج الإماراتية', 'العيالة، اليولة، النهمة، والزفة', 'قسم تراثي', {tab:'heritage', heritageSection:'ahazeej'});
+  add('🏇', 'السباقات التراثية', 'الهجن، البحرية، الخيل والقدرة، الصقور، والسلوقي', 'قسم تراثي', {tab:'heritage', heritageSection:'races'});
+  add('🎯', 'الألعاب التراثية', 'الكرابي، الدسيس، التيلة، والمريحانة', 'قسم تراثي', {tab:'heritage', heritageSection:'games'});
+  add('📜', 'أمثال شعبية', 'حكم ومعانٍ متوارثة من كبار السن', 'قسم تراثي', {tab:'heritage', heritageSection:'proverbs'});
+  add('📖', 'كلمات تراثية ومعانيها', 'قاموس مصغّر للهجة الإماراتية', 'قسم تراثي', {tab:'heritage', heritageSection:'words'});
+  add('🕊️', 'أقوال الشيخ زايد رحمه الله', 'من حكمة القائد المؤسس', 'قسم تراثي', {tab:'heritage', heritageSection:'zayed'});
+  add('👑', 'أقوال الشيخ محمد بن زايد', 'من رؤية القيادة الرشيدة حفظه الله', 'الهوية الوطنية', {tab:'heritage', heritageSection:'mbz'});
+  add('🏙️', 'المعالم السياحية', 'أبرز وجهات الإمارات ومواقعها', 'الهوية الوطنية', {tab:'heritage', heritageSection:'landmarks'});
+  add('⛏️', 'المواقع والمعالم الأثرية', 'حضارات وعصور ما قبل التاريخ بالإمارات', 'الهوية الوطنية', {tab:'heritage', heritageSection:'archaeology'});
+  add('🇦🇪', 'الأحداث الوطنية', 'اليوم الوطني، يوم العلم، وغيرها', 'الهوية الوطنية', {tab:'heritage', heritageSection:'national'});
+
+  __searchIndexCache = idx;
+  return idx;
+}
+
+function searchGlobalIndex(query){
+  const q = normalizeArabic(query);
+  if(!q) return [];
+  const words = q.split(/\s+/).filter(w => w.length >= 2);
+  if(words.length === 0) return [];
+  const idx = buildSearchIndex();
+  const scored = idx.map(item => {
+    const tNorm = normalizeArabic(item.title);
+    const sNorm = normalizeArabic(item.snippet);
+    let score = 0;
+    words.forEach(w => {
+      if(tNorm.includes(w)) score += w.length * 2;
+      if(sNorm.includes(w)) score += w.length;
+    });
+    return {item, score};
+  }).filter(x => x.score > 0);
+  scored.sort((a,b) => b.score - a.score);
+  return scored.slice(0, 30).map(x => x.item);
+}
+
 let __knowledgeBaseCache = null;
 function buildKnowledgeBase(){
   if(__knowledgeBaseCache) return __knowledgeBaseCache;
@@ -1469,14 +1664,14 @@ function renderAssistant(){
   ` : '';
   return `
     <div class="back-row" data-back-suggest>
-      <span>→</span> العودة للرئيسية
+      ${t('back_to_home')}
     </div>
-    <div class="app-header"><div class="name kufi">🤖 المساعد الذكي</div></div>
+    <div class="app-header"><div class="name kufi">🤖 ${t('assistant_title')}</div></div>
     <div class="chat-wrap">
       <div class="chat-msgs" id="chatMsgs">${msgsHtml}</div>
       ${chipsHtml}
       <div id="chatForm" class="chat-input-row">
-        <input type="text" id="chatInput" placeholder="اكتب سؤالك هنا..." autocomplete="off">
+        <input type="text" id="chatInput" placeholder="${appLang==='ar'?'اكتب سؤالك هنا...':'Type your question (in Arabic)...'}" autocomplete="off">
         <button type="button" id="chatSendBtn" class="chat-send-btn">➤</button>
       </div>
     </div>
@@ -1505,7 +1700,7 @@ function askAssistant(text){
 
 function searchBoxHtml(val){
   return `<div class="searchbox">
-    <input id="searchInput" type="text" value="${escapeHtml(val)}" placeholder="ابحث عن قول أو رد أو بالإنجليزي...">
+    <input id="searchInput" type="text" value="${escapeHtml(val)}" placeholder="${t('search_placeholder_cats')}">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
   </div>`;
 }
@@ -1517,7 +1712,7 @@ function phraseCardHtml(cat, idx, it){
     <div class="phrase-card">
       <div class="row1">
         <div>
-          <div class="eyebrow" style="color:var(--green-deep); font-weight:700;">القول:</div>
+          <div class="eyebrow" style="color:var(--green-deep); font-weight:700;">${t('potd_say')}</div>
           <div class="say kufi">${escapeHtml(it.s)}</div>
           <div class="say-en">${escapeHtml(it.se||'')}</div>
         </div>
@@ -1529,7 +1724,7 @@ function phraseCardHtml(cat, idx, it){
       <div class="divider"></div>
       <div class="row2">
         <div>
-          <div class="eyebrow" style="font-weight:700;">الرد:</div>
+          <div class="eyebrow" style="font-weight:700;">${t('potd_resp')}</div>
           <div class="resp">${escapeHtml(it.r)}</div>
           <div class="resp-en">${escapeHtml(it.re||'')}</div>
         </div>
@@ -1545,7 +1740,7 @@ function renderCategoryDetail(cat){
   const data = protocolData[cat];
   return `
     <div class="back-row" data-back-cats>
-      <span>→</span> العودة للمناسبات
+      ${t('back_to_cats')}
     </div>
     <div class="detail-title"><h2 class="kufi">${data.icon} ${escapeHtml(cat)}</h2></div>
     <div class="detail-note">${escapeHtml(data.note)}</div>
@@ -1555,13 +1750,13 @@ function renderCategoryDetail(cat){
 
 function renderTourist(){
   return `
-    <div class="app-header"><div class="name kufi">🧭 عبارات للزوار والمقيمين</div></div>
-    <div class="detail-note">عبارات أساسية بالعامية الإماراتية، بالنطق اللاتيني ومعناها بالإنجليزي — تكفيك لأول أسبوع بالإمارات.</div>
-    ${touristPhrases.map(t => `
+    <div class="app-header"><div class="name kufi">${t('tourist_title')}</div></div>
+    <div class="detail-note">${t('tourist_note')}</div>
+    ${touristPhrases.map(tp => `
       <div class="tourist-row">
         <div class="t-txt">
-          <b>${escapeHtml(t.ar)}</b>
-          <span class="translit">${escapeHtml(t.tr)}</span> · <span class="en">${escapeHtml(t.en)}</span>
+          <b>${escapeHtml(tp.ar)}</b>
+          <span class="translit">${escapeHtml(tp.tr)}</span> · <span class="en">${escapeHtml(tp.en)}</span>
         </div>
       </div>
     `).join('')}
@@ -1642,24 +1837,24 @@ function renderHeritage(){
     const filteredHeritage = heritageMenu.filter(filterFn);
     const filteredIdentity = nationalIdentityMenu.filter(filterFn);
     const heritageSearchBox = `<div class="searchbox">
-      <input id="heritageSearchInput" type="text" value="${escapeHtml(window.__heritageSearch || '')}" placeholder="ابحث بالتراث والهوية عن أي قسم...">
+      <input id="heritageSearchInput" type="text" value="${escapeHtml(window.__heritageSearch || '')}" placeholder="${t('heritage_search_ph')}">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
     </div>`;
     return `
-      <div class="app-header"><div class="name kufi">🏺 الإمارات — تراث وهوية</div></div>
+      <div class="app-header"><div class="name kufi">${t('heritage_title')}</div></div>
       ${heritageSearchBox}
 
       ${filteredHeritage.length ? `
-      <div class="section-title" style="margin-top:4px;">🎨 التراث الشعبي</div>
+      <div class="section-title" style="margin-top:4px;">${t('heritage_folk_title')}</div>
       ${heritageGridTiles(filteredHeritage)}
       ` : ''}
 
       ${filteredIdentity.length ? `
-      <div class="section-title">🇦🇪 الهوية الوطنية</div>
+      <div class="section-title">${t('heritage_identity_title')}</div>
       ${heritageGridTiles(filteredIdentity)}
       ` : ''}
 
-      ${(filteredHeritage.length === 0 && filteredIdentity.length === 0) ? `<div class="empty-state">🔍 ما فيه نتائج مطابقة، جرّب كلمة ثانية.</div>` : ''}
+      ${(filteredHeritage.length === 0 && filteredIdentity.length === 0) ? `<div class="empty-state">🔍 ${appLang==='ar'?'ما فيه نتائج مطابقة، جرّب كلمة ثانية.':'No matches found, try another word.'}</div>` : ''}
     `;
   }
 
@@ -1824,7 +2019,7 @@ function renderHeritage(){
 
   return `
     <div class="back-row" data-back-heritage>
-      <span>→</span> العودة للتراث
+      ${t('back_to_heritage')}
     </div>
     <div class="detail-title"><h2 class="kufi">${menuItem.icon} ${escapeHtml(menuItem.title)}</h2></div>
     ${body}
@@ -1833,13 +2028,13 @@ function renderHeritage(){
 
 function renderFavorites(){
   if(!currentUser){
-    return `<div class="app-header"><div class="name kufi">❤️ المفضلة</div></div>
-    <div class="empty-state"><span class="em-ic">🔒</span>سجّل دخولك عشان تضيف عبارات للمفضلة وتشوفها من أي جهاز.<br><br>
-    <span class="auth-switch" data-go-account="1">سجّل دخولك الآن ‹</span></div>`;
+    return `<div class="app-header"><div class="name kufi">${t('favorites_title')}</div></div>
+    <div class="empty-state"><span class="em-ic">🔒</span>${t('favorites_locked')}<br><br>
+    <span class="auth-switch" data-go-account="1">${t('login_now')}</span></div>`;
   }
   if(favorites.length === 0){
-    return `<div class="app-header"><div class="name kufi">❤️ المفضلة</div></div>
-    <div class="empty-state"><span class="em-ic">💔</span>ما حفظت أي عبارة بعد.<br>اضغط على ❤ بأي عبارة عشان تضيفها هنا.</div>`;
+    return `<div class="app-header"><div class="name kufi">${t('favorites_title')}</div></div>
+    <div class="empty-state"><span class="em-ic">💔</span>${t('favorites_empty')}<br>${t('favorites_empty_hint')}</div>`;
   }
   const all = allItemsFlat();
   const favItems = favorites.map(id => {
@@ -1848,7 +2043,7 @@ function renderFavorites(){
     const it = protocolData[cat] && protocolData[cat].items[idx];
     return it ? {cat, idx, ...it} : null;
   }).filter(Boolean);
-  return `<div class="app-header"><div class="name kufi">❤️ المفضلة (${favItems.length})</div></div>
+  return `<div class="app-header"><div class="name kufi">${t('favorites_title')} (${favItems.length})</div></div>
     ${favItems.map(it => phraseCardHtml(it.cat, it.idx, it)).join('')}`;
 }
 
@@ -1863,6 +2058,7 @@ function render(){
   else if(currentTab === 'suggest') html = renderSuggest();
   else if(currentTab === 'assistant') html = renderAssistant();
   else if(currentTab === 'account') html = renderAccount();
+  else if(currentTab === 'search') html = renderSearch();
   else if(currentTab === 'admin') html = renderAdmin();
   content.innerHTML = html;
   content.scrollTop = 0;
@@ -1965,6 +2161,21 @@ function render(){
   if(heritageSearchEl){
     heritageSearchEl.addEventListener('input', (e) => { window.__heritageSearch = e.target.value; render(); setTimeout(()=>{ const s=document.getElementById('heritageSearchInput'); if(s){ s.focus(); s.selectionStart=s.selectionEnd=s.value.length; } },0); });
   }
+  const globalSearchEl = document.getElementById('globalSearchInput');
+  if(globalSearchEl){
+    globalSearchEl.addEventListener('input', (e) => { window.__globalSearch = e.target.value; render(); setTimeout(()=>{ const s=document.getElementById('globalSearchInput'); if(s){ s.focus(); s.selectionStart=s.selectionEnd=s.value.length; } },0); });
+  }
+  content.querySelectorAll('[data-search-result]').forEach(el => {
+    el.addEventListener('click', () => {
+      const r = __lastSearchResults[Number(el.dataset.searchResult)];
+      if(!r || !r.target) return;
+      currentTab = r.target.tab;
+      heritageSection = r.target.heritageSection || null;
+      catDetail = r.target.catDetail || null;
+      window.__wordsSearch = r.target.wordsSearch || '';
+      render();
+    });
+  });
 
   const suggestForm = document.getElementById('suggestForm');
   if(suggestForm){
@@ -2103,6 +2314,14 @@ document.getElementById('aiFab').addEventListener('click', () => {
 document.getElementById('acctBtn').addEventListener('click', () => {
   currentTab = 'account'; catDetail = null; heritageSection = null; render();
 });
+
+document.getElementById('globalSearchBtn').addEventListener('click', () => {
+  currentTab = 'search'; catDetail = null; heritageSection = null; window.__globalSearch = ''; render();
+  setTimeout(() => { const s=document.getElementById('globalSearchInput'); if(s) s.focus(); }, 50);
+});
+
+document.getElementById('langBtn').addEventListener('click', toggleAppLang);
+applyLangDirection();
 
 function tickClock(){
   const d = new Date();
