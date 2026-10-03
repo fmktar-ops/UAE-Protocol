@@ -2016,7 +2016,6 @@ function phraseCardHtml(cat, idx, it){
           <div class="say-en">${escapeHtml(it.se||'')}</div>
         </div>
         <div class="actions">
-          <div class="icon-btn" data-speak="${escapeHtml(it.s)}">🔊</div>
           <div class="icon-btn fav ${fav?'active':''}" data-fav="${escapeHtml(id)}">❤</div>
         </div>
       </div>
@@ -2026,9 +2025,6 @@ function phraseCardHtml(cat, idx, it){
           <div class="eyebrow" style="font-weight:700;">${t('potd_resp')}</div>
           <div class="resp">${escapeHtml(it.r)}</div>
           <div class="resp-en">${escapeHtml(it.re||'')}</div>
-        </div>
-        <div class="actions">
-          <div class="icon-btn" data-speak="${escapeHtml(it.r)}">🔊</div>
         </div>
       </div>
     </div>
@@ -2211,7 +2207,6 @@ function renderHeritage(){
     `;
     body = notifBtnHtml + nationalDays.map(n => nationalDayCardHtml(n)).join('');
   } else if(heritageSection === 'anthem'){
-    const fullAnthem = nationalAnthem.lines.join(' ');
     body = `
       <div class="heritage-card">
         <div class="h-top"><span class="h-ic">🎵</span><h3>${escapeHtml(nationalAnthem.title)}</h3></div>
@@ -2222,14 +2217,9 @@ function renderHeritage(){
           متصفحك لا يدعم تشغيل الصوت مباشرة.
         </audio>
 
-        <div style="background:var(--sand); border-radius:12px; padding:14px 16px; margin-bottom:10px;">
+        <div style="background:var(--sand); border-radius:12px; padding:14px 16px;">
           ${nationalAnthem.lines.map(l => `<div class="kufi" style="color:var(--green-deep); font-weight:700; font-size:14px; margin-bottom:8px; line-height:1.8;">${escapeHtml(l)}</div>`).join('')}
         </div>
-        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-          <div class="icon-btn" data-speak="${escapeHtml(fullAnthem)}" style="width:auto; border-radius:999px; padding:0 14px; gap:6px; display:flex;">🗣️ قراءة الكلمات</div>
-          <a class="icon-btn" href="${escapeHtml(nationalAnthem.refUrl)}" target="_blank" rel="noopener" style="width:auto; border-radius:999px; padding:0 14px;">🔗 المصدر الرسمي للكلمات</a>
-        </div>
-        <p style="margin-top:10px; font-size:11px; color:var(--ink-soft);">🎵 تشغيل السلام الرسمي بلحنه الكامل. زر "قراءة الكلمات" منفصل وينطق النص فقط بدون لحن.</p>
       </div>
     `;
   } else if(heritageSection === 'charter'){
