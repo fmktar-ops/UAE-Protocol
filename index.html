@@ -256,6 +256,36 @@
   .phrase-card .say{ font-family:'Noto Kufi Arabic', sans-serif; font-weight:700; font-size:15px; color:var(--green-deep); }
   .phrase-card .say-en{ font-size:10.5px; color:var(--ink-soft); font-style:italic; margin-top:2px; }
   .phrase-card .actions{ display:flex; gap:6px; flex-shrink:0; }
+  @font-face{ font-family:'IrthRuqaa'; font-weight:700; font-display:swap; src:url('fonts/aref-ruqaa-arabic-700-normal.woff2') format('woff2'); }
+  @font-face{ font-family:'IrthNaskh'; font-weight:500; font-display:swap; src:url('fonts/noto-naskh-arabic-arabic-500-normal.woff2') format('woff2'); }
+  @font-face{ font-family:'IrthNaskh'; font-weight:700; font-display:swap; src:url('fonts/noto-naskh-arabic-arabic-700-normal.woff2') format('woff2'); }
+  @font-face{ font-family:'IrthSans'; font-weight:500; font-display:swap; src:url('fonts/alexandria-arabic-500-normal.woff2') format('woff2'); }
+  @font-face{ font-family:'IrthSans'; font-weight:600; font-display:swap; src:url('fonts/alexandria-arabic-600-normal.woff2') format('woff2'); }
+  @font-face{ font-family:'IrthSans'; font-weight:700; font-display:swap; src:url('fonts/alexandria-arabic-700-normal.woff2') format('woff2'); }
+  @font-face{ font-family:'IrthSans'; font-weight:800; font-display:swap; src:url('fonts/alexandria-arabic-800-normal.woff2') format('woff2'); }
+  .card-picker{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:10px; }
+  .card-pick{ display:flex; flex-direction:column; align-items:center; gap:6px; padding:12px 6px; border-radius:14px; border:1px solid var(--line); background:var(--sand); cursor:pointer; font-family:inherit; }
+  .card-pick .cp-ic{ font-size:24px; } .card-pick .cp-t{ font-size:11.5px; font-weight:700; color:var(--green-deep); text-align:center; line-height:1.4; }
+  .card-row{ display:flex; gap:6px; flex-wrap:wrap; }
+  .card-chip.sm{ padding:8px 12px; font-size:12px; }
+  .card-chip b{ font-size:13px; color:var(--green-deep); } .card-chip span{ font-size:11.5px; color:var(--ink-soft); }
+  .card-msg{ width:100%; padding:10px 12px; border-radius:12px; border:1px solid var(--line); font-family:inherit; font-size:13px; resize:vertical; line-height:1.7; }
+  .card-check{ display:flex; align-items:center; gap:6px; margin-top:8px; font-size:12px; color:var(--ink-soft); }
+  .card-open-btn.alt{ background:#fff; color:var(--green-deep); border:1.5px solid var(--green-deep); }
+  .card-open-btn{ display:flex; align-items:center; justify-content:center; gap:8px; width:100%; margin:0 0 12px; padding:12px; border-radius:14px; border:none; background:var(--green-deep); color:#fff; font-family:'Noto Kufi Arabic', sans-serif; font-weight:700; font-size:14px; cursor:pointer; }
+  .card-modal{ position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:9999; display:flex; align-items:flex-end; justify-content:center; }
+  .card-panel{ position:relative; background:#fff; width:100%; max-width:480px; max-height:94vh; overflow-y:auto; border-radius:20px 20px 0 0; padding:16px 16px 22px; }
+  .card-close{ position:absolute; top:12px; left:12px; width:32px; height:32px; border-radius:50%; border:1px solid var(--line); background:var(--sand); cursor:pointer; font-size:14px; }
+  .card-title-row{ font-family:'Noto Kufi Arabic', sans-serif; font-weight:800; font-size:15px; color:var(--green-deep); margin:2px 0 12px; }
+  .card-canvas{ position:sticky; top:0; z-index:2; display:block; width:100%; max-height:36vh; object-fit:contain; border-radius:12px; box-shadow:var(--shadow); background:#eee; }
+  .card-lbl{ font-size:11.5px; color:var(--ink-soft); margin:12px 2px 6px; font-weight:600; }
+  .card-chips{ display:flex; flex-direction:column; gap:6px; }
+  .card-chip{ text-align:start; padding:9px 12px; border-radius:12px; border:1px solid var(--line); background:var(--sand); font-family:inherit; font-size:12.5px; color:var(--ink); cursor:pointer; line-height:1.6; }
+  .card-chip.on{ border-color:var(--green-deep); background:#fff; box-shadow:0 0 0 1.5px var(--green-deep) inset; font-weight:700; }
+  .card-name{ width:100%; padding:11px 12px; border-radius:12px; border:1px solid var(--line); font-family:inherit; font-size:14px; }
+  .card-actions{ display:flex; gap:8px; margin-top:14px; }
+  .card-btn{ flex:1; padding:12px 8px; border-radius:12px; border:1px solid var(--green-deep); background:#fff; color:var(--green-deep); font-family:inherit; font-weight:700; font-size:13px; cursor:pointer; }
+  .card-btn.primary{ background:var(--green-deep); color:#fff; }
   .icon-btn{
     width:30px; height:30px; border-radius:50%; border:1px solid var(--line); background:var(--sand);
     display:flex; align-items:center; justify-content:center; font-size:13px; cursor:pointer; color:var(--ink-soft);
@@ -1520,6 +1550,401 @@ function updateFavBadge(){
   else b.style.display='none';
 }
 
+/* ====================== نظام بطاقات المناسبات ====================== */
+const CW = 1080, CH = 1350;
+const CF = { ruq:'"IrthRuqaa","Aref Ruqaa",serif', nas:'"IrthNaskh","Noto Naskh Arabic",serif', sans:'"IrthSans",Alexandria,"Noto Kufi Arabic",sans-serif' };
+const CC = { teal:'#0F3D3E', gold:'#E0A94E', red:'#B9402B', cream:'#FBF8F0' };
+
+function cHexRgba(hex,a){const n=parseInt(hex.slice(1),16);return `rgba(${n>>16},${(n>>8)&255},${n&255},${a})`}
+function cMix(hex,t){const n=parseInt(hex.slice(1),16);const r=n>>16,g=(n>>8)&255,b=n&255;const m=v=>Math.round(v+(255-v)*t);return '#'+[m(r),m(g),m(b)].map(v=>v.toString(16).padStart(2,'0')).join('')}
+
+/* ---- البيانات ---- */
+const CARD_OCCASIONS = [
+  {k:'eid', name:'العيدين', icon:'🌙', cat:'مناسبة العيد', color:'#0F3D3E', motif:'crescent', label:'من', designs:['arch','poster','gold'], variants:[
+    {t:['عيدكم','مبارك'], m:'كل عام وأنتم بخير، تقبّل الله طاعتكم وأعاده علينا وعليكم بالخير والبركات'},
+    {t:['عيدكم','مبارك'], m:'كل عام وأنتم بخير وعساكم من عوّاده'},
+    {t:['عيد','سعيد'], m:'أسعد الله أيامكم بالفرح والمسرّات'}]},
+  {k:'ramadan', name:'رمضان', icon:'🕌', cat:'مناسبة رمضان', color:'#0F3D3E', motif:'crescent', label:'من', designs:['arch','poster'], variants:[
+    {t:['رمضان','مبارك'], m:'تقبّل الله صيامكم وقيامكم وصالح أعمالكم'},
+    {t:['رمضان','كريم'], m:'أعاده الله علينا وعليكم باليُمن والخير والبركات'},
+    {t:['شهر','مبارك'], m:'اللهم أهِلَّه علينا باليُمن والإيمان والسلامة والإسلام'}]},
+  {k:'wedding', name:'الزواج والخطوبة', icon:'💍', cat:'الأعراس والخطوبة', color:'#A93A2B', motif:'rings', label:'مع خالص التهاني', designs:['arch','poster'], variants:[
+    {t:['ألف','مبروك'], m:'بارك الله لكما وبارك عليكما وجمع بينكما في خير'},
+    {t:['مبروك','الزواج'], m:'الله يتمّم لكم فرحتكم ويسعد أيامكم'},
+    {t:['مبروك','الخطوبة'], m:'عساها خطوبة مباركة وتتمّ على خير بإذن الله'}]},
+  {k:'newborn', name:'المولود الجديد', icon:'👶', cat:'المباركة بالمواليد', color:'#3E7C74', motif:'heart', label:'مع خالص التهاني', designs:['arch','poster'], variants:[
+    {t:['مبروك','المولود'], m:'جعله الله من الصالحين وقرّة عين لوالديه'},
+    {t:['الحمد لله','على السلامة'], m:'الحمد لله على سلامة الوالدة وقدوم المولود، ربّاه الله لكم وجعله بارّاً بكم'},
+    {t:['مبارك','القادم الجديد'], m:'بارك الله لكم في الموهوب وشكرتم الواهب وبلغ أشدّه ورُزقتم بِرّه'}]},
+  {k:'condolence', name:'العزاء', icon:'🤲', cat:'العزاء', color:'#27403F', motif:'none', label:'مع خالص العزاء', muted:true, tf:'nas', designs:['dark','arch','poster'], variants:[
+    {t:['إنا لله وإنا','إليه راجعون'], m:'عظّم الله أجركم وأحسن عزاءكم وغفر لميتكم'},
+    {t:['إنا لله وإنا','إليه راجعون'], m:'البقاء لله، الله يرحمه ويسكنه فسيح جناته'},
+    {t:['إنا لله وإنا','إليه راجعون'], m:'أحسن الله عزاءكم وجبر مصابكم وربط على قلوبكم بالصبر'}]},
+  {k:'success', name:'النجاح والتخرج', icon:'🎓', color:'#1F4A72', motif:'cap', label:'مع خالص التهاني', designs:['arch','poster'], variants:[
+    {t:['ألف مبروك','النجاح'], m:'ثمرة جهدٍ وتعب، وفّقك الله دائماً'},
+    {t:['مبارك','التخرج'], m:'بداية مشرقة لمستقبل مليء بالإنجازات'},
+    {t:['مبروك','التفوّق'], m:'نفتخر بك وبإنجازك، وإلى مزيد من التقدّم'}]},
+  {k:'recovery', name:'الشفاء', icon:'🌿', cat:'عيادة المريض', color:'#2F7A5A', motif:'sprig', label:'مع تمنياتنا بالشفاء', designs:['arch','poster'], variants:[
+    {t:['سلامتك','ما تشوف شر'], m:'شفاك الله وعافاك وأعادك إلى أهلك سالماً'},
+    {t:['أجر','وعافية'], m:'طهور إن شاء الله، لا بأس عليك'},
+    {t:['الحمد لله','على سلامتك'], m:'الله يديم عليك الصحة والعافية'}]},
+  {k:'newhome', name:'المنزل الجديد', icon:'🏡', cat:'المباركة بالبيت', color:'#A5643A', motif:'house', label:'مع خالص التهاني', designs:['arch','poster'], variants:[
+    {t:['مبارك','المنزل الجديد'], m:'جعله الله بيت خير وبركة وسعادة'},
+    {t:['مبروك','البيت الجديد'], m:'عساه بيت أمن وهناء يجمعكم بالمحبة'},
+    {t:['ألف','مبروك'], m:'الله يبارك لكم في بيتكم ويعمره بالخير'}]},
+  {k:'national', name:'اليوم الوطني', icon:'🇦🇪', color:'#0F3D3E', motif:'flag', label:'من', designs:['arch','poster'], variants:[
+    {t:['دام عزك','يا وطن'], m:'كل عام والإمارات في عزٍّ ومجد وقيادتنا بخير'},
+    {t:['اليوم','الوطني'], m:'بالاتحاد نعلو، وبالولاء نبني، وبالإنجاز نفخر'},
+    {t:['فخورون','بالإمارات'], m:'نحتفل بالاتحاد وبالإنجاز وبوطنٍ نفخر به'}]},
+  {k:'promotion', name:'الترقية والمنصب', icon:'⭐', color:'#0F3D3E', motif:'star', label:'مع خالص التهاني', designs:['arch','poster'], variants:[
+    {t:['مبارك','المنصب الجديد'], m:'نسأل الله لك التوفيق والسداد في مسؤوليتك الجديدة'},
+    {t:['ألف مبروك','الترقية'], m:'تستاهل، والله يوفقك ويزيدك من فضله'},
+    {t:['مبروك','الثقة'], m:'ثقة تستحقها، وعساك على قدر المسؤولية'}]},
+  {k:'thanks', name:'الشكر والتقدير', icon:'💐', color:'#8A4B4B', motif:'heart', label:'مع خالص الشكر', designs:['arch','poster'], variants:[
+    {t:['شكراً','لك'], m:'جزاك الله خيراً على وقفتك الكريمة'},
+    {t:['شكراً','من القلب'], m:'لك منا كل الشكر والتقدير على ما قدّمت'},
+    {t:['جزاك الله','خيراً'], m:'ما قصّرت، والله يكثّر من أمثالك'}]},
+  {k:'return', name:'العودة من السفر', icon:'✈️', cat:'العودة من السفر', color:'#2D6A7A', motif:'plane', label:'من', designs:['arch','poster'], variants:[
+    {t:['الحمد لله','على السلامة'], m:'نوّرت الديرة، وعساك بخير وسلامة'},
+    {t:['تستاهل','السلامة'], m:'الله يسلمك، والله يردك بالسلامة دائماً'},
+    {t:['أهلاً','بعودتك'], m:'الله يردك بالسلامة وتنوّر الديرة'}]},
+  {k:'friday', name:'الجمعة المباركة', icon:'🕌', color:'#1F5E4B', motif:'crescent', label:'من', designs:['arch','poster'], variants:[
+    {t:['جمعة','مباركة'], m:'اللهم صلِّ وسلّم على نبينا محمد'},
+    {t:['جمعة','طيبة'], m:'جعلها الله جمعة خير وبركة عليكم وعلى أهلكم'},
+    {t:['جمعة','مباركة'], m:'لا تنسوا الصلاة على النبي، وقراءة سورة الكهف'}]},
+  {k:'hajj', name:'الحج والعمرة', icon:'🕋', cat:'الحج والعمرة', color:'#0F3D3E', motif:'cube', label:'من', designs:['arch','poster'], variants:[
+    {t:['حج','مبرور'], m:'وسعي مشكور وذنب مغفور، تقبّل الله منكم'},
+    {t:['الحمد لله','على السلامة'], m:'تقبّل الله حجكم وجعله حجاً مبروراً'},
+    {t:['عمرة','مقبولة'], m:'تقبّل الله عمرتكم وجعلها في ميزان حسناتكم'}]}
+];
+const CARD_DESIGN_NAMES = { arch:'قوس هادئ', poster:'قوس ملوّن', gold:'ذهبي احتفالي', dark:'أسود وقور' };
+
+/* ---- أدوات رسم ---- */
+function cWrap(ctx,text,maxW){const ws=text.split(' ');const L=[];let cur='';ws.forEach(w=>{const t=cur?cur+' '+w:w;if(cur&&ctx.measureText(t).width>maxW){L.push(cur);cur=w}else cur=t});if(cur)L.push(cur);return L}
+function cWrapBal(ctx,text,maxW){let L=cWrap(ctx,text,maxW);const n=L.length;if(n>1){for(let w=maxW-10;w>=maxW*0.45;w-=10){const l2=cWrap(ctx,text,w);if(l2.length>n)break;L=l2}}return L}
+function cFit(ctx,txt,maxW){let t=txt;while(ctx.measureText(t).width>maxW&&t.length>3)t=t.slice(0,-1);return t}
+function cDiamond(ctx,x,y,r,c){ctx.fillStyle=c;ctx.beginPath();ctx.moveTo(x,y-r);ctx.lineTo(x+r,y);ctx.lineTo(x,y+r);ctx.lineTo(x-r,y);ctx.closePath();ctx.fill()}
+function cBand(ctx,y,muted){
+  const step=44;for(let i=0;i*step<CW+step;i++){const x=i*step+step/2,cy=y+18;
+    if(i%2===0){ctx.fillStyle=muted?'#9DB0AD':CC.gold;ctx.beginPath();ctx.moveTo(x,cy-15);ctx.lineTo(x+16,cy+13);ctx.lineTo(x-16,cy+13);ctx.closePath();ctx.fill()}
+    else cDiamond(ctx,x,cy+1,11,muted?'#C3CFCC':CC.red);}
+}
+function cLattice(ctx,col,r){ctx.strokeStyle=col;ctx.lineWidth=2;const dx=r*1.732,dy=r*1.5;
+  for(let row=-1;row*dy<CH+r;row++)for(let c=-1;c*dx<CW+dx;c++){const x=c*dx+(row%2?dx/2:0),y=row*dy;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.stroke()}}
+function cRosette(ctx,cx,cy,R,col,col2){
+  ctx.save();ctx.translate(cx,cy);ctx.strokeStyle=col;ctx.fillStyle=col2;ctx.lineWidth=2.5;
+  for(let ring=0;ring<3;ring++){const n=12+ring*6,rr=R*(0.34+ring*0.3),pl=R*(0.22-ring*0.03);
+    for(let i=0;i<n;i++){ctx.save();ctx.rotate(i*2*Math.PI/n+ring*0.13);ctx.translate(0,-rr);ctx.beginPath();ctx.moveTo(0,0);ctx.quadraticCurveTo(pl*0.55,-pl*0.9,0,-pl*1.7);ctx.quadraticCurveTo(-pl*0.55,-pl*0.9,0,0);ctx.fill();ctx.stroke();ctx.restore()}}
+  [0.14,0.2,0.95,1].forEach(f=>{ctx.beginPath();ctx.arc(0,0,R*f,0,7);ctx.stroke()});
+  for(let i=0;i<48;i++){const a=i*Math.PI/24;ctx.beginPath();ctx.arc(Math.cos(a)*R*0.9,Math.sin(a)*R*0.9,3.5,0,7);ctx.fillStyle=col;ctx.fill()}
+  ctx.restore();
+}
+function cOgee(ctx){
+  const cx=CW/2;ctx.beginPath();ctx.moveTo(0,1140);ctx.lineTo(0,560);
+  ctx.bezierCurveTo(0,470,70,430,150,440);ctx.bezierCurveTo(215,448,250,420,262,360);ctx.bezierCurveTo(280,270,420,260,cx-18,175);
+  ctx.bezierCurveTo(cx-6,160,cx,150,cx,150);ctx.bezierCurveTo(cx,150,cx+6,160,cx+18,175);
+  ctx.bezierCurveTo(CW-420,260,CW-280,270,CW-262,360);ctx.bezierCurveTo(CW-250,420,CW-215,448,CW-150,440);ctx.bezierCurveTo(CW-70,430,CW,470,CW,560);
+  ctx.lineTo(CW,1140);ctx.closePath();
+}
+function cArchBlock(ctx,color,top,bottom){
+  const x0=90,x1=CW-90,r=(x1-x0)/2,cx=CW/2,cr=40;ctx.fillStyle=color;ctx.beginPath();ctx.moveTo(x0,top+r);ctx.arc(cx,top+r,r,Math.PI,0);
+  ctx.lineTo(x1,bottom-cr);ctx.arcTo(x1,bottom,x1-cr,bottom,cr);ctx.lineTo(x0+cr,bottom);ctx.arcTo(x0,bottom,x0,bottom-cr,cr);ctx.closePath();ctx.fill();
+}
+function cLogo(ctx,logo,x,y,h,align){const w=h*logo.width/logo.height;const lx=align==='center'?x-w/2:align==='left'?x:x-w;ctx.drawImage(logo,lx,y,w,h);return w}
+
+/* ---- الرموز الصغيرة فوق العنوان ---- */
+function cMotif(ctx,kind,cx,cy,c,c2){
+  ctx.save();ctx.lineCap='round';ctx.lineJoin='round';
+  if(kind==='crescent'){const oc=document.createElement('canvas');oc.width=oc.height=200;const o=oc.getContext('2d');o.fillStyle=c;o.beginPath();o.arc(100,100,64,0,7);o.fill();o.globalCompositeOperation='destination-out';o.beginPath();o.arc(124,86,56,0,7);o.fill();ctx.drawImage(oc,cx-100,cy-100);
+  } else if(kind==='rings'){ctx.lineWidth=9;ctx.strokeStyle=c;ctx.beginPath();ctx.arc(cx-24,cy,34,0,7);ctx.stroke();ctx.strokeStyle=CC.gold;ctx.beginPath();ctx.arc(cx+24,cy,34,0,7);ctx.stroke();
+  } else if(kind==='heart'){ctx.fillStyle=c;ctx.beginPath();ctx.moveTo(cx,cy+34);ctx.bezierCurveTo(cx-70,cy-6,cx-34,cy-52,cx,cy-20);ctx.bezierCurveTo(cx+34,cy-52,cx+70,cy-6,cx,cy+34);ctx.fill();cDiamond(ctx,cx-92,cy-4,10,CC.gold);cDiamond(ctx,cx+92,cy-4,10,CC.gold);
+  } else if(kind==='sprig'){ctx.strokeStyle=c;ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(cx,cy+40);ctx.quadraticCurveTo(cx+6,cy,cx,cy-40);ctx.stroke();
+    [[-1,-14],[1,6],[-1,26]].forEach(([s,dy],i)=>{ctx.save();ctx.translate(cx,cy+dy);ctx.rotate(s*-0.9);ctx.beginPath();ctx.moveTo(0,0);ctx.quadraticCurveTo(26,-16,48,0);ctx.quadraticCurveTo(26,16,0,0);ctx.fillStyle=cMix(c,0.15);ctx.fill();ctx.restore()});
+  } else if(kind==='house'){ctx.strokeStyle=c;ctx.lineWidth=7;ctx.beginPath();ctx.moveTo(cx-56,cy+6);ctx.lineTo(cx,cy-40);ctx.lineTo(cx+56,cy+6);ctx.moveTo(cx-42,cy-4);ctx.lineTo(cx-42,cy+44);ctx.lineTo(cx+42,cy+44);ctx.lineTo(cx+42,cy-4);ctx.stroke();
+    ctx.fillStyle=CC.gold;ctx.beginPath();ctx.moveTo(cx-13,cy+44);ctx.lineTo(cx-13,cy+22);ctx.arc(cx,cy+22,13,Math.PI,0);ctx.lineTo(cx+13,cy+44);ctx.fill();
+  } else if(kind==='cap'){ctx.fillStyle=c;ctx.beginPath();ctx.moveTo(cx,cy-30);ctx.lineTo(cx+70,cy-4);ctx.lineTo(cx,cy+22);ctx.lineTo(cx-70,cy-4);ctx.closePath();ctx.fill();
+    ctx.beginPath();ctx.moveTo(cx-38,cy+10);ctx.lineTo(cx-38,cy+34);ctx.quadraticCurveTo(cx,cy+54,cx+38,cy+34);ctx.lineTo(cx+38,cy+10);ctx.lineTo(cx,cy+24);ctx.closePath();ctx.fill();
+    ctx.strokeStyle=CC.gold;ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(cx+62,cy);ctx.lineTo(cx+62,cy+34);ctx.stroke();ctx.fillStyle=CC.gold;ctx.beginPath();ctx.arc(cx+62,cy+38,7,0,7);ctx.fill();
+  } else if(kind==='star'){ctx.fillStyle=CC.gold;ctx.beginPath();for(let i=0;i<16;i++){const a=i*Math.PI/8-Math.PI/2,r=i%2?26:46;ctx.lineTo(cx+Math.cos(a)*r,cy+Math.sin(a)*r)}ctx.closePath();ctx.fill();cDiamond(ctx,cx-80,cy,10,c);cDiamond(ctx,cx+80,cy,10,c);
+  } else if(kind==='flag'){const w=104,h=70,x=cx-w/2,y=cy-h/2;ctx.fillStyle='#00732F';ctx.fillRect(x+w*0.25,y,w*0.75,h/3);ctx.fillStyle='#fff';ctx.fillRect(x+w*0.25,y+h/3,w*0.75,h/3);ctx.fillStyle='#000';ctx.fillRect(x+w*0.25,y+2*h/3,w*0.75,h/3);ctx.fillStyle='#EF3340';ctx.fillRect(x,y,w*0.25,h);ctx.strokeStyle='rgba(0,0,0,.12)';ctx.lineWidth=1.5;ctx.strokeRect(x,y,w,h);
+  } else if(kind==='plane'){ctx.fillStyle=c;ctx.beginPath();ctx.moveTo(cx-60,cy+4);ctx.lineTo(cx+64,cy-34);ctx.lineTo(cx+22,cy+38);ctx.lineTo(cx+6,cy+8);ctx.closePath();ctx.fill();ctx.fillStyle=cMix(c,.45);ctx.beginPath();ctx.moveTo(cx+6,cy+8);ctx.lineTo(cx+64,cy-34);ctx.lineTo(cx-8,cy+22);ctx.closePath();ctx.fill();
+  } else if(kind==='cube'){ctx.fillStyle='#16191A';ctx.fillRect(cx-40,cy-38,80,76);ctx.fillStyle=CC.gold;ctx.fillRect(cx-40,cy-18,80,10);
+  } else { [[cx-50,c2||CC.gold],[cx,CC.red],[cx+50,c2||CC.gold]].forEach(([x,cc])=>cDiamond(ctx,x,cy,15,cc)); }
+  ctx.restore();
+}
+
+/* ---- عنوان بخط متوافق مع العرض ---- */
+function cTitle(ctx,lines,font,weight,startSize,maxW,baseY,lineGap,color){
+  let size=startSize;ctx.font=`${weight} ${size}px ${font}`;
+  while(size>60&&Math.max(...lines.map(l=>ctx.measureText(l).width))>maxW){size-=6;ctx.font=`${weight} ${size}px ${font}`}
+  ctx.fillStyle=color;ctx.textAlign='center';
+  const total=(lines.length-1)*size*lineGap;let y=baseY-total/2;
+  lines.forEach(l=>{ctx.fillText(l,CW/2,y);y+=size*lineGap});
+  return size;
+}
+function cMessage(ctx,msg,color,font,weight,startSize,maxW,y0,minSize){
+  ctx.fillStyle=color;ctx.textAlign='center';let ms=startSize,lines;
+  for(;ms>=minSize;ms-=3){ctx.font=`${weight} ${ms}px ${font}`;lines=cWrapBal(ctx,msg,maxW);if(lines.length<=2)break}
+  if(lines.length>3){ms=minSize;ctx.font=`${weight} ${ms}px ${font}`;lines=cWrapBal(ctx,msg,maxW)}
+  let y=y0;lines.forEach(l=>{ctx.fillText(l,CW/2,y);y+=ms*1.6});return y;
+}
+function cFooter(ctx,logo,name,label,o){
+  const lh=84,lx=90,ly=o.ly;const lw=cLogo(ctx,logo,lx,ly,lh,'left');
+  ctx.textAlign='center';ctx.fillStyle=CC.teal;ctx.font=`600 25px ${CF.sans}`;ctx.fillText('تراث وهوية',lx+lw/2,ly+lh+34);
+  if(name){ctx.textAlign='right';ctx.fillStyle=o.muted?'#6C7775':CC.red;ctx.font=`500 28px ${CF.sans}`;ctx.fillText(label,CW-90,o.ny-52);
+    ctx.fillStyle=CC.teal;ctx.font=`700 46px ${CF.sans}`;ctx.fillText(cFit(ctx,name,560),CW-90,o.ny);}
+}
+
+/* ---- التصميم: قوس هادئ ---- */
+function cDrawArch(ctx,logo,occ,v,name,msg){
+  const col=occ.color,outer=cMix(col,0.86),panel='#F7F9F9';
+  ctx.fillStyle=occ.muted?'#E4E9E6':outer;ctx.fillRect(0,0,CW,CH);
+  cLattice(ctx,'rgba(255,255,255,.55)',62);
+  [[170,230],[CW-170,230]].forEach(([x,y])=>cRosette(ctx,x,y,120,'rgba(255,255,255,.85)','rgba(255,255,255,.35)'));
+  ctx.save();ctx.shadowColor=cHexRgba(col,.28);ctx.shadowBlur=26;ctx.shadowOffsetY=6;cOgee(ctx);ctx.fillStyle=panel;ctx.fill();ctx.restore();
+  ctx.save();cOgee(ctx);ctx.clip();cRosette(ctx,CW/2,700,430,cHexRgba(col,.16),cHexRgba(col,.07));ctx.restore();
+  cOgee(ctx);ctx.lineWidth=8;ctx.strokeStyle='#fff';ctx.stroke();
+  const cx=CW/2;
+  const tg=ctx.createRadialGradient(cx,720,120,cx,720,470);tg.addColorStop(0,'rgba(247,249,249,.98)');tg.addColorStop(1,'rgba(247,249,249,0)');ctx.fillStyle=tg;ctx.fillRect(0,420,CW,640);
+  if(occ.motif!=='none')cMotif(ctx,occ.motif,cx,335,col,CC.gold);
+  else{ctx.strokeStyle=cHexRgba(col,.35);ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(cx-130,452);ctx.lineTo(cx-20,452);ctx.moveTo(cx+20,452);ctx.lineTo(cx+130,452);ctx.stroke();cDiamond(ctx,cx,452,9,cHexRgba(col,.5))}
+  const one=v.t.length===1;
+  if(occ.tf==='nas'){cTitle(ctx,v.t,CF.nas,700,112,800,740,1.45,col);}
+  else cTitle(ctx,v.t,CF.ruq,700,215,760,one?805:790,0.98,col);
+  ctx.fillStyle='#B8934A';ctx.fillRect(cx-60,960,120,4);
+  cMessage(ctx,msg,'#34413F',CF.nas,500,44,800,1030,34);
+  // التذييل
+  const fg=cMix(col,0.9);ctx.fillStyle=occ.muted?'#EDF0EE':fg;ctx.fillRect(0,1142,CW,CH-1142);
+  ctx.save();ctx.beginPath();ctx.rect(0,1142,CW,CH-1142);ctx.clip();cLattice(ctx,'rgba(255,255,255,.75)',62);cRosette(ctx,CW/2,1250,260,'rgba(255,255,255,.9)','rgba(255,255,255,.4)');ctx.restore();
+  cBand(ctx,0,occ.muted);cBand(ctx,1142,occ.muted);
+  cFooter(ctx,logo,name,occ.label,{ly:1196,ny:1302,muted:occ.muted});
+}
+/* ---- التصميم: قوس ملوّن ---- */
+function cDrawPoster(ctx,logo,occ,v,name,msg){
+  const col=occ.color;ctx.fillStyle=CC.cream;ctx.fillRect(0,0,CW,CH);cBand(ctx,0,occ.muted);
+  ctx.font=`600 36px ${CF.sans}`;const pt=occ.name;const pw=ctx.measureText(pt).width+88,ph=74,px=CW-90-pw,py=88,r=ph/2;
+  ctx.fillStyle=occ.muted?CC.teal:CC.red;ctx.beginPath();ctx.moveTo(px+r,py);ctx.arcTo(px+pw,py,px+pw,py+ph,r);ctx.arcTo(px+pw,py+ph,px,py+ph,r);ctx.arcTo(px,py+ph,px,py,r);ctx.arcTo(px,py,px+pw,py,r);ctx.fill();
+  ctx.fillStyle='#fff';ctx.textAlign='center';ctx.fillText(pt,px+pw/2,py+51);
+  cArchBlock(ctx,col,200,830);
+  const cx=CW/2;
+  if(occ.motif!=='none')cMotif(ctx,occ.motif,cx,385,CC.cream,CC.gold);else{cDiamond(ctx,cx-50,400,15,'rgba(251,248,240,.35)');cDiamond(ctx,cx,400,15,'rgba(251,248,240,.6)');cDiamond(ctx,cx+50,400,15,'rgba(251,248,240,.35)')}
+  if(occ.tf==='nas')cTitle(ctx,v.t,CF.nas,700,92,640,675,1.5,CC.cream);
+  else cTitle(ctx,v.t,CF.sans,800,150,640,v.t.length===1?640:675,1.18,CC.cream);
+  ctx.fillStyle=occ.muted?CC.teal:CC.red;ctx.font=`600 34px ${CF.sans}`;ctx.textAlign='center';ctx.fillText(occ.muted?'عزاء':'تهنئة',cx,908);
+  cMessage(ctx,msg,CC.teal,CF.sans,500,48,880,985,36);
+  ctx.fillStyle='#E3DCC8';ctx.fillRect(90,1160,CW-180,2);
+  cFooter(ctx,logo,name,occ.label,{ly:1182,ny:1288,muted:occ.muted});
+}
+/* ---- التصميم: ذهبي احتفالي (للعيد) ---- */
+function cGoldGrad(ctx,x0,y0,x1,y1){const g=ctx.createLinearGradient(x0,y0,x1,y1);g.addColorStop(0,'#F7E2A4');g.addColorStop(.45,'#D6A844');g.addColorStop(1,'#8F6420');return g}
+function cChain(ctx,x,y0,y1){ctx.strokeStyle='#B88A2E';ctx.lineWidth=3;for(let y=y0;y<y1;y+=16){ctx.beginPath();ctx.ellipse(x,y+8,4.5,8,0,0,Math.PI*2);ctx.stroke()}}
+function cLantern(ctx,x,topY,w,h){
+  cChain(ctx,x,-10,topY-6);
+  const gl=ctx.createRadialGradient(x,topY+h*0.5,5,x,topY+h*0.5,h*0.9);gl.addColorStop(0,'rgba(255,236,170,.55)');gl.addColorStop(1,'rgba(255,236,170,0)');ctx.fillStyle=gl;ctx.fillRect(x-h,topY-h*0.3,h*2,h*2);
+  ctx.fillStyle=cGoldGrad(ctx,x-w/2,topY,x+w/2,topY+h);ctx.strokeStyle='#8F6420';ctx.lineWidth=2.5;
+  ctx.beginPath();ctx.arc(x,topY,8,0,7);ctx.fill();ctx.stroke();
+  ctx.beginPath();ctx.moveTo(x-w*0.40,topY+h*0.17);ctx.quadraticCurveTo(x-w*0.3,topY+h*0.02,x,topY);ctx.quadraticCurveTo(x+w*0.3,topY+h*0.02,x+w*0.40,topY+h*0.17);ctx.closePath();ctx.fill();ctx.stroke();
+  ctx.beginPath();ctx.rect(x-w*0.44,topY+h*0.17,w*0.88,h*0.05);ctx.fill();ctx.stroke();
+  const by=topY+h*0.22,bb=topY+h*0.8;const gg=ctx.createLinearGradient(x,by,x,bb);gg.addColorStop(0,'#FFF1C2');gg.addColorStop(.6,'#F3C85F');gg.addColorStop(1,'#D9A237');
+  ctx.beginPath();ctx.moveTo(x-w*0.42,by);ctx.lineTo(x+w*0.42,by);ctx.lineTo(x+w*0.32,bb);ctx.lineTo(x-w*0.32,bb);ctx.closePath();ctx.fillStyle=gg;ctx.fill();ctx.strokeStyle='#8F6420';ctx.lineWidth=3;ctx.stroke();
+  ctx.lineWidth=2.5;[-0.14,0.14].forEach(f=>{ctx.beginPath();ctx.moveTo(x+w*f*1.2,by);ctx.lineTo(x+w*f*0.9,bb);ctx.stroke()});
+  [0.33,0.66].forEach(f=>{const yy=by+(bb-by)*f,hw=w*(0.42-0.10*f);ctx.beginPath();ctx.moveTo(x-hw,yy);ctx.lineTo(x+hw,yy);ctx.stroke()});
+  ctx.lineWidth=7;ctx.strokeStyle='#C99A3F';ctx.beginPath();ctx.moveTo(x-w*0.42,by);ctx.lineTo(x-w*0.32,bb);ctx.moveTo(x+w*0.42,by);ctx.lineTo(x+w*0.32,bb);ctx.stroke();
+  ctx.fillStyle=cGoldGrad(ctx,x-w/2,bb,x+w/2,bb+h*0.2);ctx.strokeStyle='#8F6420';ctx.lineWidth=2.5;
+  ctx.beginPath();ctx.moveTo(x-w*0.34,bb);ctx.lineTo(x+w*0.34,bb);ctx.lineTo(x+w*0.22,bb+h*0.1);ctx.lineTo(x-w*0.22,bb+h*0.1);ctx.closePath();ctx.fill();ctx.stroke();
+  ctx.beginPath();ctx.moveTo(x,bb+h*0.1);ctx.quadraticCurveTo(x+w*0.08,bb+h*0.16,x,bb+h*0.22);ctx.quadraticCurveTo(x-w*0.08,bb+h*0.16,x,bb+h*0.1);ctx.fill();ctx.stroke();
+}
+function cStar5(ctx,x,y,r){ctx.beginPath();for(let i=0;i<10;i++){const a=i*Math.PI/5-Math.PI/2,rad=i%2?r*0.45:r;i?ctx.lineTo(x+Math.cos(a)*rad,y+Math.sin(a)*rad):ctx.moveTo(x+Math.cos(a)*rad,y+Math.sin(a)*rad)}ctx.closePath();ctx.fillStyle=cGoldGrad(ctx,x-r,y-r,x+r,y+r);ctx.fill();ctx.strokeStyle='#9A6E22';ctx.lineWidth=2;ctx.stroke()}
+function cCrescentGold(ctx,cx,cy,R,rot){const oc=document.createElement('canvas');oc.width=oc.height=R*3;const o=oc.getContext('2d');const c=R*1.5;const g=o.createLinearGradient(c-R,c-R,c+R,c+R);g.addColorStop(0,'#FBE9B0');g.addColorStop(.5,'#D9AD49');g.addColorStop(1,'#8F6420');o.fillStyle=g;o.beginPath();o.arc(c,c,R,0,7);o.fill();o.globalCompositeOperation='destination-out';o.beginPath();o.arc(c+R*0.38,c-R*0.12,R*0.84,0,7);o.fill();ctx.save();ctx.translate(cx,cy);ctx.rotate(rot);ctx.shadowColor='rgba(120,80,10,.35)';ctx.shadowBlur=14;ctx.drawImage(oc,-c,-c);ctx.restore()}
+function cSparkle(ctx,x,y,r,a){ctx.save();ctx.globalAlpha=a;ctx.fillStyle='#FFF6D5';ctx.beginPath();for(let i=0;i<8;i++){const ang=i*Math.PI/4,rad=i%2?r*0.18:r;ctx.lineTo(x+Math.cos(ang)*rad,y+Math.sin(ang)*rad)}ctx.closePath();ctx.fill();ctx.restore()}
+function cDrawGold(ctx,logo,occ,v,name,msg){
+  const cx=CW/2;const bg=ctx.createRadialGradient(cx,560,80,cx,560,900);bg.addColorStop(0,'#F6E7C6');bg.addColorStop(1,'#DEC089');ctx.fillStyle=bg;ctx.fillRect(0,0,CW,CH);
+  ctx.save();cLattice(ctx,'rgba(255,255,255,.22)',70);cRosette(ctx,cx,700,470,'rgba(255,255,255,.35)','rgba(255,255,255,.12)');ctx.restore();
+  cLantern(ctx,150,330,170,330);cLantern(ctx,360,200,100,190);
+  cChain(ctx,720,-10,214);cStar5(ctx,720,250,36);cChain(ctx,880,-10,106);cStar5(ctx,880,150,44);cCrescentGold(ctx,880,430,105,-0.35);
+  let seed=7;const rnd=()=>{seed=(seed*16807)%2147483647;return seed/2147483647};
+  for(let i=0;i<34;i++){const x=rnd()*CW,y=40+rnd()*1060;cSparkle(ctx,x,y,6+rnd()*14,.35+rnd()*.5)}
+  const tg=ctx.createLinearGradient(0,600,0,900);tg.addColorStop(0,'#6E4510');tg.addColorStop(.55,'#A9771F');tg.addColorStop(1,'#7A4E12');
+  ctx.save();ctx.shadowColor='rgba(255,246,213,.9)';ctx.shadowBlur=18;cTitle(ctx,v.t,CF.ruq,700,220,800,v.t.length===1?820:825,0.96,tg);ctx.restore();
+  ctx.strokeStyle='#A9771F';ctx.lineWidth=2.5;ctx.beginPath();ctx.moveTo(cx-190,990);ctx.lineTo(cx-30,990);ctx.moveTo(cx+30,990);ctx.lineTo(cx+190,990);ctx.stroke();
+  cDiamond(ctx,cx-50,990,9,'#A9771F');cDiamond(ctx,cx,990,9,CC.red);cDiamond(ctx,cx+50,990,9,'#A9771F');
+  cMessage(ctx,msg,'#4A3410',CF.nas,500,42,780,1058,32);
+  ctx.save();ctx.beginPath();ctx.rect(0,1160,CW,CH-1160);ctx.clip();const fg=ctx.createLinearGradient(0,1160,0,CH);fg.addColorStop(0,'#F3E2BC');fg.addColorStop(1,'#E8CF9C');ctx.fillStyle=fg;ctx.fillRect(0,1160,CW,CH-1160);cLattice(ctx,'rgba(255,255,255,.3)',62);ctx.restore();
+  ctx.fillStyle=CC.cream;ctx.fillRect(0,0,CW,40);ctx.fillRect(0,1160,CW,40);cBand(ctx,2);cBand(ctx,1162);
+  cFooter(ctx,logo,name,occ.label,{ly:1214,ny:1316});
+}
+
+/* ---- التصميم: أسود وقور (للعزاء) ---- */
+function cCorner(ctx,x,y,sx,sy){
+  ctx.save();ctx.translate(x,y);ctx.scale(sx,sy);ctx.strokeStyle='rgba(255,255,255,.85)';ctx.lineWidth=2.5;ctx.lineJoin='miter';
+  for(let k=0;k<4;k++){const o=k*22;ctx.beginPath();ctx.moveTo(o,126);ctx.lineTo(o,o);ctx.lineTo(126,o);ctx.stroke();}
+  ctx.beginPath();ctx.moveTo(0,126);for(let i=0;i<6;i++){ctx.lineTo(i*21+10.5,126-i*21);ctx.lineTo(i*21+10.5,126-i*21-21)}ctx.stroke();
+  [[14,14],[36,36],[58,58]].forEach(([a,b])=>{ctx.strokeRect(a-5,b-5,10,10)});
+  ctx.restore();
+}
+function cDrawDark(ctx,logo,occ,v,name,msg){
+  const cx=CW/2;
+  ctx.fillStyle='#1b1b1b';ctx.fillRect(0,0,CW,CH);
+  cLattice(ctx,'rgba(255,255,255,.07)',70);
+  // البطاقة الداخلية
+  const x0=56,y0=62,w=CW-112,h=1226,r=70;
+  const rr=()=>{ctx.beginPath();ctx.moveTo(x0+r,y0);ctx.arcTo(x0+w,y0,x0+w,y0+h,r);ctx.arcTo(x0+w,y0+h,x0,y0+h,r);ctx.arcTo(x0,y0+h,x0,y0,r);ctx.arcTo(x0,y0,x0+w,y0,r);ctx.closePath()};
+  ctx.save();ctx.shadowColor='rgba(0,0,0,.6)';ctx.shadowBlur=30;rr();ctx.fillStyle='#050505';ctx.fill();ctx.restore();
+  ctx.save();rr();ctx.clip();const gl=ctx.createRadialGradient(cx,520,20,cx,520,560);gl.addColorStop(0,'rgba(95,95,95,.55)');gl.addColorStop(1,'rgba(40,40,40,0)');ctx.fillStyle=gl;ctx.fillRect(0,0,CW,CH);ctx.restore();
+  ctx.strokeStyle='rgba(255,255,255,.8)';ctx.lineWidth=2;ctx.beginPath();const m=24,xx=x0+m,yy=y0+m,ww=w-2*m,hh=h-2*m,rv=52;
+  ctx.moveTo(xx+rv,yy);ctx.arcTo(xx+ww,yy,xx+ww,yy+hh,rv);ctx.arcTo(xx+ww,yy+hh,xx,yy+hh,rv);ctx.arcTo(xx,yy+hh,xx,yy,rv);ctx.arcTo(xx,yy,xx+ww,yy,rv);ctx.closePath();ctx.stroke();
+  cCorner(ctx,xx+24,yy+24,1,1);cCorner(ctx,xx+ww-24,yy+24,-1,1);cCorner(ctx,xx+24,yy+hh-24,1,-1);cCorner(ctx,xx+ww-24,yy+hh-24,-1,-1);
+  // العنوان
+  cTitle(ctx,v.t,CF.nas,700,112,700,420,1.5,'#FFFFFF');
+  // الرسالة
+  const ye=cMessage(ctx,msg,'rgba(255,255,255,.92)',CF.nas,500,44,620,690,32);
+  // فاصل
+  const dy=Math.max(ye+10,860);ctx.strokeStyle='rgba(255,255,255,.75)';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(cx-200,dy);ctx.lineTo(cx+200,dy);ctx.stroke();
+  [-200,0,200].forEach(o=>cDiamond(ctx,cx+o,dy,8,'#fff'));
+  // الاسم في لوحة فاتحة
+  let ny=dy+60;
+  if(name){ctx.textAlign='center';ctx.fillStyle='rgba(255,255,255,.75)';ctx.font=`500 28px ${CF.sans}`;ctx.fillText(occ.label,cx,ny);
+    ctx.font=`700 48px ${CF.sans}`;const nm=cFit(ctx,name,560),tw=ctx.measureText(nm).width+90,ph=88,px=cx-tw/2,py=ny+22;
+    ctx.fillStyle='#E4E4E4';ctx.beginPath();const pr=ph/2;ctx.moveTo(px+pr,py);ctx.arcTo(px+tw,py,px+tw,py+ph,pr);ctx.arcTo(px+tw,py+ph,px,py+ph,pr);ctx.arcTo(px,py+ph,px,py,pr);ctx.arcTo(px,py,px+tw,py,pr);ctx.fill();
+    ctx.fillStyle=CC.teal;ctx.fillText(nm,cx,py+60);ny=py+ph;}
+  // لوحة الشعار
+  const lw0=300,lh0=150,lpx=cx-lw0/2,lpy=1288-lh0-70;
+  ctx.fillStyle='#EDEDED';ctx.beginPath();const lr=34;ctx.moveTo(lpx+lr,lpy);ctx.arcTo(lpx+lw0,lpy,lpx+lw0,lpy+lh0,lr);ctx.arcTo(lpx+lw0,lpy+lh0,lpx,lpy+lh0,lr);ctx.arcTo(lpx,lpy+lh0,lpx,lpy,lr);ctx.arcTo(lpx,lpy,lpx+lw0,lpy,lr);ctx.fill();
+  cLogo(ctx,logo,cx,lpy+14,92,'center');ctx.textAlign='center';ctx.fillStyle=CC.teal;ctx.font=`600 24px ${CF.sans}`;ctx.fillText('تراث وهوية',cx,lpy+lh0-14);
+  // شريط إرث خافت
+  [0,CH-36].forEach(y=>{const step=44;for(let i=0;i*step<CW+step;i++){const x=i*step+step/2,c2=y+18;if(i%2===0){ctx.fillStyle='rgba(255,255,255,.28)';ctx.beginPath();ctx.moveTo(x,c2-13);ctx.lineTo(x+14,c2+11);ctx.lineTo(x-14,c2+11);ctx.closePath();ctx.fill()}else cDiamond(ctx,x,c2,9,'rgba(255,255,255,.14)')}});
+}
+
+/* ---- الواجهة العامة للرسم ---- */
+let __cardLogo=null;
+function cLoadLogo(){if(__cardLogo)return Promise.resolve(__cardLogo);return new Promise(res=>{const im=new Image();im.onload=()=>{__cardLogo=im;res(im)};im.onerror=()=>res(null);im.src=IRTH_LOGO_URI})}
+async function cLoadFonts(){
+  try{await Promise.all(['700 80px IrthRuqaa','500 40px IrthNaskh','700 40px IrthNaskh','500 40px IrthSans','600 40px IrthSans','700 40px IrthSans','800 40px IrthSans'].map(f=>document.fonts.load(f,'عيد')))}catch(e){}
+}
+async function drawCard(canvas,occ,design,variantIdx,name,msg,format){
+  await cLoadFonts();const logo=await cLoadLogo();
+  const v=occ.variants[variantIdx];
+  const base=document.createElement('canvas');base.width=CW;base.height=CH;const ctx=base.getContext('2d');
+  ctx.direction='rtl';ctx.textBaseline='alphabetic';
+  const d=occ.designs.includes(design)?design:occ.designs[0];
+  if(logo){ (d==='poster'?cDrawPoster:d==='gold'?cDrawGold:d==='dark'?cDrawDark:cDrawArch)(ctx,logo,occ,v,name,msg); }
+  else { ctx.fillStyle=CC.cream;ctx.fillRect(0,0,CW,CH); }
+  if(format==='story'){
+    canvas.width=CW;canvas.height=1920;const c=canvas.getContext('2d');
+    c.fillStyle=d==='dark'?'#1b1b1b':d==='gold'?'#E8D2A0':d==='poster'?CC.cream:(occ.muted?'#E4E9E6':cMix(occ.color,0.86));c.fillRect(0,0,CW,1920);
+    c.save();c.shadowColor='rgba(0,0,0,.18)';c.shadowBlur=30;c.drawImage(base,0,285);c.restore();
+  } else { canvas.width=CW;canvas.height=CH;canvas.getContext('2d').drawImage(base,0,0); }
+}
+
+/* ---- واجهة المستخدم ---- */
+let __cardBlob = null;
+function cardAccountName(){
+  let n = (currentUserProfile && currentUserProfile.displayName) || '';
+  if(currentUser && currentUser.email && n === currentUser.email.split('@')[0]) n = '';
+  return n || '';
+}
+function cardFindOcc(key){ return CARD_OCCASIONS.find(o => o.k === key || o.cat === key); }
+
+function openCardPicker(){
+  const ov = document.createElement('div'); ov.className = 'card-modal';
+  ov.innerHTML = `
+    <div class="card-panel" role="dialog" aria-label="بطاقات المناسبات">
+      <button class="card-close" aria-label="إغلاق">✕</button>
+      <div class="card-title-row">🎴 بطاقات المناسبات</div>
+      <div class="card-lbl" style="margin-top:0">اختر المناسبة، ثم صمّم بطاقتك وأرسلها باسمك.</div>
+      <div class="card-picker">${CARD_OCCASIONS.map(o => `<button class="card-pick" data-k="${o.k}"><span class="cp-ic">${o.icon}</span><span class="cp-t">${escapeHtml(o.name)}</span></button>`).join('')}</div>
+    </div>`;
+  document.body.appendChild(ov);
+  ov.querySelector('.card-close').addEventListener('click', () => ov.remove());
+  ov.addEventListener('click', e => { if(e.target === ov) ov.remove(); });
+  ov.querySelectorAll('.card-pick').forEach(b => b.addEventListener('click', () => { ov.remove(); openCardModal(b.dataset.k); }));
+}
+
+function openCardModal(key){
+  const occ = cardFindOcc(key); if(!occ) return;
+  let custom = '', hide = false;
+  try{ custom = localStorage.getItem('irth-card-name') || ''; hide = localStorage.getItem('irth-card-hide') === '1'; }catch(e){}
+  let name = custom || cardAccountName();
+  let design = occ.designs[0], vi = 0, fmt = 'post', msg = occ.variants[0].m;
+  const ov = document.createElement('div'); ov.className = 'card-modal';
+  ov.innerHTML = `
+    <div class="card-panel" role="dialog" aria-label="بطاقة ${escapeHtml(occ.name)}">
+      <button class="card-close" aria-label="إغلاق">✕</button>
+      <div class="card-title-row">${occ.icon} بطاقة ${escapeHtml(occ.name)}</div>
+      <canvas class="card-canvas"></canvas>
+      <div class="card-lbl">التصميم</div>
+      <div class="card-row">${occ.designs.map((d,i)=>`<button class="card-chip sm${i===0?' on':''}" data-design="${d}">${CARD_DESIGN_NAMES[d]}</button>`).join('')}</div>
+      <div class="card-lbl">الصيغة</div>
+      <div class="card-chips">${occ.variants.map((v,i)=>`<button class="card-chip${i===0?' on':''}" data-vi="${i}"><b>${escapeHtml(v.t.join(' '))}</b><br><span>${escapeHtml(v.m)}</span></button>`).join('')}</div>
+      <div class="card-lbl">نص التهنئة (يمكنك تعديله)</div>
+      <textarea class="card-msg" rows="2" maxlength="140"></textarea>
+      <div class="card-lbl">الاسم الذي يظهر في البطاقة</div>
+      <input class="card-name" type="text" maxlength="30" placeholder="اكتب اسمك">
+      <label class="card-check"><input type="checkbox" class="card-hide"> إخفاء الاسم من البطاقة</label>
+      <div class="card-lbl">المقاس</div>
+      <div class="card-row">
+        <button class="card-chip sm on" data-fmt="post">منشور 4:5</button>
+        <button class="card-chip sm" data-fmt="story">قصة 9:16</button>
+      </div>
+      <div class="card-actions">
+        <button class="card-btn primary" data-act="share">📤 مشاركة البطاقة</button>
+        <button class="card-btn" data-act="save">⬇️ حفظ كصورة</button>
+      </div>
+    </div>`;
+  document.body.appendChild(ov);
+  const canvas = ov.querySelector('.card-canvas');
+  const nameInput = ov.querySelector('.card-name'), msgInput = ov.querySelector('.card-msg'), hideInput = ov.querySelector('.card-hide');
+  nameInput.value = name; msgInput.value = msg; hideInput.checked = hide;
+  let timer = null, seq = 0;
+  const redraw = () => {
+    const my = ++seq; __cardBlob = null;
+    const shown = hideInput.checked ? '' : nameInput.value.trim();
+    drawCard(canvas, occ, design, vi, shown, msgInput.value.trim() || occ.variants[vi].m, fmt).then(() => {
+      if(my === seq) canvas.toBlob(b => { if(my === seq) __cardBlob = b; }, 'image/png');
+    });
+  };
+  const later = () => { clearTimeout(timer); timer = setTimeout(redraw, 250); };
+  redraw();
+  ov.querySelector('.card-close').addEventListener('click', () => ov.remove());
+  ov.addEventListener('click', e => { if(e.target === ov) ov.remove(); });
+  ov.querySelectorAll('[data-design]').forEach(b => b.addEventListener('click', () => {
+    design = b.dataset.design; ov.querySelectorAll('[data-design]').forEach(x => x.classList.toggle('on', x === b)); redraw();
+  }));
+  ov.querySelectorAll('[data-fmt]').forEach(b => b.addEventListener('click', () => {
+    fmt = b.dataset.fmt; ov.querySelectorAll('[data-fmt]').forEach(x => x.classList.toggle('on', x === b)); redraw();
+  }));
+  ov.querySelectorAll('[data-vi]').forEach(b => b.addEventListener('click', () => {
+    vi = +b.dataset.vi; msgInput.value = occ.variants[vi].m;
+    ov.querySelectorAll('[data-vi]').forEach(x => x.classList.toggle('on', x === b)); redraw();
+  }));
+  msgInput.addEventListener('input', later);
+  nameInput.addEventListener('input', () => { try{ localStorage.setItem('irth-card-name', nameInput.value.trim()); }catch(e){} later(); });
+  hideInput.addEventListener('change', () => { try{ localStorage.setItem('irth-card-hide', hideInput.checked ? '1' : '0'); }catch(e){} redraw(); });
+  const download = blob => {
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'irth-card.png';
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  };
+  ov.querySelector('[data-act="save"]').addEventListener('click', () => { if(__cardBlob) download(__cardBlob); });
+  ov.querySelector('[data-act="share"]').addEventListener('click', () => {
+    if(!__cardBlob) return;
+    const file = new File([__cardBlob], 'irth-card.png', {type:'image/png'});
+    if(navigator.canShare && navigator.canShare({files:[file]})) navigator.share({files:[file]}).catch(()=>{});
+    else download(__cardBlob);
+  });
+}
+
+
+function shareText(text){
+  const full = text + '\n— من تطبيق إرث';
+  if(navigator.share){
+    navigator.share({text: full}).catch(()=>{});
+  } else if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(full).then(()=>alert('تم نسخ النص، يمكنك لصقه في أي تطبيق')).catch(()=>{});
+  } else {
+    prompt('انسخ النص:', full);
+  }
+}
+
 function speak(text){
   if(!('speechSynthesis' in window)){ alert('المتصفح لا يدعم النطق الصوتي حالياً'); return; }
   window.speechSynthesis.cancel();
@@ -1831,7 +2256,7 @@ function renderCategoriesList(filterText){
     return catsHeaderHtml + searchBoxHtml(q) + all.map(it => phraseCardHtml(it.cat, it.idx, it)).join('');
   }
   const cats = Object.keys(protocolData);
-  return catsHeaderHtml + searchBoxHtml('') + `<div class="grid-tiles">` + cats.map(c => `
+  return catsHeaderHtml + searchBoxHtml('') + `<button class="card-open-btn" data-card-picker="1">🎴 بطاقات المناسبات: صمّم بطاقتك وأرسلها باسمك</button><div class="grid-tiles">` + cats.map(c => `
     <div class="grid-tile" data-open-cat="${escapeHtml(c)}">
       <div class="gt-ic">${protocolData[c].icon}</div>
       <div class="gt-title">${escapeHtml(c)}</div>
@@ -2149,6 +2574,7 @@ function renderCategoryDetail(cat){
     </div>
     <div class="detail-title"><h2 class="kufi">${data.icon} ${escapeHtml(cat)}</h2></div>
     <div class="detail-note">${escapeHtml(data.note)}</div>
+    ${cardFindOcc(cat) ? `<button class="card-open-btn" data-card="${escapeHtml(cat)}">🎴 أرسل بطاقة ${escapeHtml(cardFindOcc(cat).name)}</button>` : ''}
     ${data.items.map((it,idx) => phraseCardHtml(cat, idx, it)).join('')}
   `;
 }
@@ -2193,10 +2619,10 @@ const nationalIdentityMenu = [
 
 const allHeritageEntries = heritageMenu.concat(nationalIdentityMenu);
 
-function simpleCardHtml(icon, title, body, steps){
+function simpleCardHtml(icon, title, body, steps, shareable){
   return `
     <div class="heritage-card">
-      <div class="h-top"><span class="h-ic">${icon}</span><h3>${escapeHtml(title)}</h3></div>
+      <div class="h-top"><span class="h-ic">${icon}</span><h3 style="flex:1">${escapeHtml(title)}</h3>${shareable ? `<button class="icon-btn" aria-label="مشاركة" data-share="${escapeHtml('«' + title + '»\n' + body)}">📤</button>` : ''}</div>
       <p>${escapeHtml(body)}</p>
       ${steps ? `<ol>${steps.map(s=>`<li>${escapeHtml(s)}</li>`).join('')}</ol>` : ''}
     </div>
@@ -2278,7 +2704,7 @@ function renderHeritage(){
   } else if(heritageSection === 'games'){
     body = traditionalGames.map(g => simpleCardHtml(g.icon, g.name, g.body)).join('');
   } else if(heritageSection === 'proverbs'){
-    body = folkProverbs.map(p => simpleCardHtml(p.icon, p.name, p.body)).join('');
+    body = folkProverbs.map(p => simpleCardHtml(p.icon, p.name, p.body, null, true)).join('');
   } else if(heritageSection === 'zayed'){
     body = zayedQuotes.map(q => simpleCardHtml(q.icon, q.name, q.body)).join('');
   } else if(heritageSection === 'mbz'){
@@ -2413,6 +2839,7 @@ function renderHeritage(){
       : filtered.map(w => `
       <div class="tourist-row">
         <div class="t-txt"><b>${escapeHtml(w.w)}</b><span class="en">${escapeHtml(w.m)}</span></div>
+        <button class="icon-btn" aria-label="مشاركة" data-share="${escapeHtml('كلمة «' + w.w + '» تعني: ' + w.m)}">📤</button>
       </div>
     `).join(''));
   } else if(heritageSection === 'kunya'){
@@ -2551,6 +2978,9 @@ function render(){
     });
   }
 
+  content.querySelectorAll('[data-card]').forEach(el => el.addEventListener('click', () => openCardModal(el.dataset.card)));
+  content.querySelectorAll('[data-card-picker]').forEach(el => el.addEventListener('click', () => openCardPicker()));
+  content.querySelectorAll('[data-share]').forEach(el => el.addEventListener('click', () => shareText(el.dataset.share)));
   content.querySelectorAll('[data-speak]').forEach(el => el.addEventListener('click', () => speak(el.dataset.speak)));
   content.querySelectorAll('[data-fav]').forEach(el => el.addEventListener('click', () => toggleFav(el.dataset.fav)));
   const nationalAlertEl = content.querySelector('[data-open-national]');

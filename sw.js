@@ -1,4 +1,4 @@
-const CACHE_NAME = 'emirati-protocol-v2';
+const CACHE_NAME = 'emirati-protocol-v3';
 const FILES_TO_CACHE = [
   './emirati_protocol.html',
   './manifest.json',
@@ -6,10 +6,21 @@ const FILES_TO_CACHE = [
   './icon-512.png',
   './uae-anthem.mp3'
 ];
+const OPTIONAL_FILES = [
+  './fonts/aref-ruqaa-arabic-700-normal.woff2',
+  './fonts/noto-naskh-arabic-arabic-500-normal.woff2',
+  './fonts/noto-naskh-arabic-arabic-700-normal.woff2',
+  './fonts/alexandria-arabic-500-normal.woff2',
+  './fonts/alexandria-arabic-600-normal.woff2',
+  './fonts/alexandria-arabic-700-normal.woff2',
+  './fonts/alexandria-arabic-800-normal.woff2'
+];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(FILES_TO_CACHE))
+    caches.open(CACHE_NAME).then((cache) =>
+      cache.addAll(FILES_TO_CACHE).then(() => Promise.all(OPTIONAL_FILES.map((f) => cache.add(f).catch(() => null))))
+    )
   );
   self.skipWaiting();
 });
