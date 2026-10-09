@@ -272,6 +272,8 @@
   .card-msg{ width:100%; padding:10px 12px; border-radius:12px; border:1px solid var(--line); font-family:inherit; font-size:13px; resize:vertical; line-height:1.7; }
   .card-check{ display:flex; align-items:center; gap:6px; margin-top:8px; font-size:12px; color:var(--ink-soft); }
   .card-open-btn.alt{ background:#fff; color:var(--green-deep); border:1.5px solid var(--green-deep); }
+  .share-ic{ display:block; }
+  .card-btn{ display:flex; align-items:center; justify-content:center; gap:7px; }
   .card-open-btn{ display:flex; align-items:center; justify-content:center; gap:8px; width:100%; margin:0 0 12px; padding:12px; border-radius:14px; border:none; background:var(--green-deep); color:#fff; font-family:'Noto Kufi Arabic', sans-serif; font-weight:700; font-size:14px; cursor:pointer; }
   .card-modal{ position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:9999; display:flex; align-items:flex-end; justify-content:center; }
   .card-panel{ position:relative; background:#fff; width:100%; max-width:480px; max-height:94vh; overflow-y:auto; border-radius:20px 20px 0 0; padding:16px 16px 22px; }
@@ -1550,6 +1552,7 @@ function updateFavBadge(){
   else b.style.display='none';
 }
 
+const SHARE_ICON = '<svg class="share-ic" viewBox="0 0 24 24" width="17" height="17" fill="currentColor" aria-hidden="true"><path d="M18.2 7.1L9.1 11.6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" fill="none"/><path d="M9.1 12.4l9.1 4.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" fill="none"/><circle cx="18.2" cy="6" r="3.1"/><circle cx="6" cy="12" r="3.1"/><circle cx="18.2" cy="18" r="3.1"/></svg>';
 /* ====================== نظام بطاقات المناسبات ====================== */
 const CW = 1080, CH = 1350;
 const CF = { ruq:'"IrthRuqaa","Aref Ruqaa",serif', nas:'"IrthNaskh","Noto Naskh Arabic",serif', sans:'"IrthSans",Alexandria,"Noto Kufi Arabic",sans-serif' };
@@ -1887,7 +1890,7 @@ function openCardModal(key){
         <button class="card-chip sm" data-fmt="story">قصة 9:16</button>
       </div>
       <div class="card-actions">
-        <button class="card-btn primary" data-act="share">📤 مشاركة البطاقة</button>
+        <button class="card-btn primary" data-act="share">${SHARE_ICON} مشاركة البطاقة</button>
         <button class="card-btn" data-act="save">⬇️ حفظ كصورة</button>
       </div>
     </div>`;
@@ -2622,7 +2625,7 @@ const allHeritageEntries = heritageMenu.concat(nationalIdentityMenu);
 function simpleCardHtml(icon, title, body, steps, shareable){
   return `
     <div class="heritage-card">
-      <div class="h-top"><span class="h-ic">${icon}</span><h3 style="flex:1">${escapeHtml(title)}</h3>${shareable ? `<button class="icon-btn" aria-label="مشاركة" data-share="${escapeHtml('«' + title + '»\n' + body)}">📤</button>` : ''}</div>
+      <div class="h-top"><span class="h-ic">${icon}</span><h3 style="flex:1">${escapeHtml(title)}</h3>${shareable ? `<button class="icon-btn" aria-label="مشاركة" data-share="${escapeHtml('«' + title + '»\n' + body)}">${SHARE_ICON}</button>` : ''}</div>
       <p>${escapeHtml(body)}</p>
       ${steps ? `<ol>${steps.map(s=>`<li>${escapeHtml(s)}</li>`).join('')}</ol>` : ''}
     </div>
@@ -2839,7 +2842,7 @@ function renderHeritage(){
       : filtered.map(w => `
       <div class="tourist-row">
         <div class="t-txt"><b>${escapeHtml(w.w)}</b><span class="en">${escapeHtml(w.m)}</span></div>
-        <button class="icon-btn" aria-label="مشاركة" data-share="${escapeHtml('كلمة «' + w.w + '» تعني: ' + w.m)}">📤</button>
+        <button class="icon-btn" aria-label="مشاركة" data-share="${escapeHtml('كلمة «' + w.w + '» تعني: ' + w.m)}">${SHARE_ICON}</button>
       </div>
     `).join(''));
   } else if(heritageSection === 'kunya'){
