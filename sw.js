@@ -1,10 +1,14 @@
-const CACHE_NAME = 'emirati-protocol-v3';
+const CACHE_NAME = 'irth-v4';
 const FILES_TO_CACHE = [
   './emirati_protocol.html',
   './manifest.json',
   './icon-192.png',
   './icon-512.png',
-  './uae-anthem.mp3'
+  './uae-anthem.mp3',
+  './privacy.html',
+  './vendor/firebase-app-compat.js',
+  './vendor/firebase-auth-compat.js',
+  './vendor/firebase-firestore-compat.js'
 ];
 const OPTIONAL_FILES = [
   './fonts/aref-ruqaa-arabic-700-normal.woff2',
@@ -13,7 +17,14 @@ const OPTIONAL_FILES = [
   './fonts/alexandria-arabic-500-normal.woff2',
   './fonts/alexandria-arabic-600-normal.woff2',
   './fonts/alexandria-arabic-700-normal.woff2',
-  './fonts/alexandria-arabic-800-normal.woff2'
+  './fonts/alexandria-arabic-800-normal.woff2',
+  './fonts/noto-kufi-arabic-arabic-400-normal.woff2',
+  './fonts/noto-kufi-arabic-arabic-600-normal.woff2',
+  './fonts/noto-kufi-arabic-arabic-700-normal.woff2',
+  './fonts/noto-kufi-arabic-arabic-800-normal.woff2',
+  './fonts/tajawal-arabic-400-normal.woff2',
+  './fonts/tajawal-arabic-500-normal.woff2',
+  './fonts/tajawal-arabic-700-normal.woff2'
 ];
 
 self.addEventListener('install', (event) => {
