@@ -6,25 +6,25 @@ const FILES_TO_CACHE = [
   './icon-512.png',
   './uae-anthem.mp3',
   './privacy.html',
-  './vendor/firebase-app-compat.js',
-  './vendor/firebase-auth-compat.js',
-  './vendor/firebase-firestore-compat.js'
+  './firebase-app-compat.js',
+  './firebase-auth-compat.js',
+  './firebase-firestore-compat.js'
 ];
 const OPTIONAL_FILES = [
-  './fonts/aref-ruqaa-arabic-700-normal.woff2',
-  './fonts/noto-naskh-arabic-arabic-500-normal.woff2',
-  './fonts/noto-naskh-arabic-arabic-700-normal.woff2',
-  './fonts/alexandria-arabic-500-normal.woff2',
-  './fonts/alexandria-arabic-600-normal.woff2',
-  './fonts/alexandria-arabic-700-normal.woff2',
-  './fonts/alexandria-arabic-800-normal.woff2',
-  './fonts/noto-kufi-arabic-arabic-400-normal.woff2',
-  './fonts/noto-kufi-arabic-arabic-600-normal.woff2',
-  './fonts/noto-kufi-arabic-arabic-700-normal.woff2',
-  './fonts/noto-kufi-arabic-arabic-800-normal.woff2',
-  './fonts/tajawal-arabic-400-normal.woff2',
-  './fonts/tajawal-arabic-500-normal.woff2',
-  './fonts/tajawal-arabic-700-normal.woff2'
+  './aref-ruqaa-arabic-700-normal.woff2',
+  './noto-naskh-arabic-arabic-500-normal.woff2',
+  './noto-naskh-arabic-arabic-700-normal.woff2',
+  './alexandria-arabic-500-normal.woff2',
+  './alexandria-arabic-600-normal.woff2',
+  './alexandria-arabic-700-normal.woff2',
+  './alexandria-arabic-800-normal.woff2',
+  './noto-kufi-arabic-arabic-400-normal.woff2',
+  './noto-kufi-arabic-arabic-600-normal.woff2',
+  './noto-kufi-arabic-arabic-700-normal.woff2',
+  './noto-kufi-arabic-arabic-800-normal.woff2',
+  './tajawal-arabic-400-normal.woff2',
+  './tajawal-arabic-500-normal.woff2',
+  './tajawal-arabic-700-normal.woff2'
 ];
 
 self.addEventListener('install', (event) => {
