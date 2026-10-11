@@ -56,7 +56,31 @@
     width:26px; height:26px; border-radius:50%; background:var(--card); box-shadow:var(--shadow);
     display:flex; align-items:center; justify-content:center; font-size:13px; cursor:pointer; flex-shrink:0;
   }
-  .acct-btn.logged{ background:var(--green); color:#fff; font-weight:800; font-size:11px; }
+  .acct-btn{ color:#7d8a82; }
+  .acct-btn.logged{ background:var(--green); color:#fff; }
+
+  /* ===== القائمة الجانبية للحساب ===== */
+  .drawer-ov{ position:absolute; inset:0; z-index:60; background:rgba(6,30,22,.5); opacity:0; transition:opacity .22s; }
+  .drawer-ov.open{ opacity:1; }
+  .drawer{ position:absolute; top:0; bottom:0; width:min(84%,320px); background:var(--sand); box-shadow:0 0 40px rgba(0,0,0,.35);
+    display:flex; flex-direction:column; transition:transform .25s ease; overflow-y:auto; -webkit-overflow-scrolling:touch;
+    padding-bottom:calc(14px + env(safe-area-inset-bottom)); }
+  .drawer.side-r{ right:0; transform:translateX(105%); border-radius:22px 0 0 22px; }
+  .drawer.side-l{ left:0; transform:translateX(-105%); border-radius:0 22px 22px 0; }
+  .drawer-ov.open .drawer{ transform:translateX(0); }
+  .drawer-head{ background:var(--green-deep); color:#fff; padding:calc(26px + env(safe-area-inset-top)) 20px 20px; text-align:center; position:relative; }
+  .drawer-close{ position:absolute; top:calc(10px + env(safe-area-inset-top)); inset-inline-start:12px; width:32px; height:32px; border-radius:50%; border:0; background:rgba(255,255,255,.14); color:#fff; font-size:15px; cursor:pointer; }
+  .drawer-av{ width:76px; height:76px; border-radius:50%; margin:0 auto 10px; background:#F1EAD9; color:#9aa89f; overflow:hidden; padding-top:8px; box-sizing:border-box; border:3px solid rgba(255,255,255,.55); display:flex; align-items:center; justify-content:center; font-size:32px; font-weight:800; font-family:'Noto Kufi Arabic',sans-serif; }
+  .drawer-name{ font-weight:800; font-size:17px; font-family:'Noto Kufi Arabic',sans-serif; }
+  .drawer-mail{ font-size:12.5px; opacity:.8; margin-top:3px; direction:ltr; word-break:break-all; }
+  .drawer-login{ margin-top:10px; background:#F1EAD9; color:var(--green-deep); border:0; border-radius:999px; padding:9px 22px; font-weight:800; font-family:'Tajawal',sans-serif; font-size:14px; cursor:pointer; }
+  .drawer-list{ padding:10px 12px; display:flex; flex-direction:column; gap:2px; }
+  .drawer-item{ display:flex; align-items:center; gap:12px; padding:13px 10px; border-radius:12px; cursor:pointer; font-weight:700; font-size:14.5px; color:var(--ink); background:none; border:0; width:100%; text-align:start; font-family:'Tajawal',sans-serif; }
+  .drawer-item:active,.drawer-item:hover{ background:rgba(6,61,44,.07); }
+  .drawer-item .di-ic{ width:34px; height:34px; border-radius:10px; background:var(--card); box-shadow:var(--shadow); display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; }
+  .drawer-item.danger{ color:#B3122D; }
+  .drawer-sep{ height:1px; background:rgba(6,61,44,.12); margin:6px 10px; }
+  .drawer-ver{ margin-top:auto; text-align:center; font-size:11.5px; color:var(--ink-soft); padding:10px; }
 
   .auth-form{ background:var(--card); border-radius:16px; padding:18px; box-shadow:var(--shadow); }
   .auth-form label{ display:block; font-size:12.5px; font-weight:700; color:var(--ink-soft); margin:0 0 6px; }
@@ -411,7 +435,7 @@
         </div>
         <div class="acct-btn" id="globalSearchBtn" title="البحث الشامل">🔍</div>
         <div class="acct-btn" id="langBtn" title="Language / اللغة" style="font-size:10px; font-weight:800;">EN</div>
-        <div class="acct-btn" id="acctBtn" title="حسابي">👤</div>
+        <div class="acct-btn" id="acctBtn" title="حسابي"></div>
       </div>
     </div>
 
@@ -3252,9 +3276,65 @@ document.getElementById('aiFab').addEventListener('click', () => {
   currentTab = 'assistant'; catDetail = null; heritageSection = null; render();
 });
 
-document.getElementById('acctBtn').addEventListener('click', () => {
-  currentTab = 'account'; catDetail = null; heritageSection = null; render();
-});
+const USER_SVG = (sz) => `<svg viewBox="0 0 24 24" width="${sz}" height="${sz}" fill="currentColor" aria-hidden="true"><circle cx="12" cy="8.2" r="4.2"/><path d="M3.8 21c0-4.4 3.7-7.2 8.2-7.2s8.2 2.8 8.2 7.2z"/></svg>`;
+function closeDrawer(){
+  const ov = document.getElementById('drawerOv'); if(!ov) return;
+  ov.classList.remove('open'); setTimeout(()=>ov.remove(), 260);
+  document.removeEventListener('keydown', drawerEsc);
+}
+function drawerEsc(e){ if(e.key === 'Escape') closeDrawer(); }
+function openDrawer(){
+  if(document.getElementById('drawerOv')) return;
+  const ar = appLang === 'ar';
+  const logged = !!currentUser;
+  const name = logged ? ((currentUserProfile && currentUserProfile.displayName) || currentUser.email.split('@')[0]) : (ar ? 'زائر' : 'Guest');
+  
+  const isAdmin = logged && currentUser.email === ADMIN_EMAIL;
+  const item = (act, ic, label, cls) => `<button class="drawer-item ${cls||''}" data-d="${act}"><span class="di-ic">${ic}</span><span>${label}</span></button>`;
+  const ov = document.createElement('div');
+  ov.className = 'drawer-ov'; ov.id = 'drawerOv';
+  ov.innerHTML = `
+    <aside class="drawer ${ar ? 'side-r' : 'side-l'}" role="dialog" aria-label="${ar?'القائمة':'Menu'}">
+      <div class="drawer-head">
+        <button class="drawer-close" aria-label="${ar?'إغلاق':'Close'}">✕</button>
+        <div class="drawer-av">${USER_SVG(46)}</div>
+        <div class="drawer-name">${escapeHtml(name)}</div>
+        ${logged ? `<div class="drawer-mail">${escapeHtml(currentUser.email)}</div>` : `<button class="drawer-login" data-d="login">${ar?'تسجيل الدخول / حساب جديد':'Log in / Sign up'}</button>`}
+      </div>
+      <div class="drawer-list">
+        ${item('tour','🎬', ar?'شاهد الجولة التعريفية':'Watch the intro tour')}
+        ${item('suggest','💡', ar?'عندك اقتراح أو ملاحظة؟':'Have a suggestion or note?')}
+        ${item('about','ℹ️', ar?'عن التطبيق':'About the app')}
+        ${item('privacy','🔒', ar?'سياسة الخصوصية':'Privacy policy')}
+        ${isAdmin ? item('admin','📊', ar?'لوحة التحكم':'Dashboard') : ''}
+        ${logged ? `<div class="drawer-sep"></div>${item('logout','🚪', ar?'تسجيل الخروج':'Log out')}${item('delete','🗑️', ar?'حذف الحساب':'Delete account','danger')}` : ''}
+      </div>
+      <div class="drawer-ver">إرث – تراث وهوية</div>
+    </aside>`;
+  document.querySelector('.screen').appendChild(ov);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>ov.classList.add('open')));
+  document.addEventListener('keydown', drawerEsc);
+  ov.addEventListener('click', e => { if(e.target === ov) closeDrawer(); });
+  ov.querySelector('.drawer-close').addEventListener('click', closeDrawer);
+  ov.querySelectorAll('[data-d]').forEach(b => b.addEventListener('click', () => {
+    const a = b.getAttribute('data-d');
+    closeDrawer();
+    setTimeout(() => {
+      if(a === 'tour'){ onboardingStep = 0; renderOnboardingStep(); }
+      else if(a === 'suggest'){ currentTab = 'suggest'; catDetail = null; heritageSection = null; render(); }
+      else if(a === 'about') openAbout();
+      else if(a === 'privacy') openPrivacy();
+      else if(a === 'admin'){ adminStats = null; currentTab = 'admin'; render(); }
+      else if(a === 'logout') auth.signOut();
+      else if(a === 'delete') openDeleteAccount();
+      else if(a === 'login'){ currentTab = 'account'; catDetail = null; heritageSection = null; render(); }
+    }, 120);
+  }));
+}
+document.getElementById('acctBtn').addEventListener('click', openDrawer);
+document.getElementById('acctBtn').innerHTML = USER_SVG(16);
+document.getElementById('acctBtn').setAttribute('role','button');
+document.getElementById('acctBtn').setAttribute('aria-label','القائمة والحساب');
 
 document.getElementById('globalSearchBtn').addEventListener('click', () => {
   currentTab = 'search'; catDetail = null; heritageSection = null; window.__globalSearch = ''; render();
@@ -3276,7 +3356,7 @@ auth.onAuthStateChanged(async (user) => {
   const acctBtnEl = document.getElementById('acctBtn');
   if(acctBtnEl){
     acctBtnEl.classList.toggle('logged', !!user);
-    acctBtnEl.textContent = user ? (user.email[0].toUpperCase()) : '👤';
+    acctBtnEl.innerHTML = USER_SVG(16);
   }
   if(user){
     try{
