@@ -1,6 +1,7 @@
 const CACHE_NAME = 'irth-v4';
 const FILES_TO_CACHE = [
-  './emirati_protocol.html',
+  './',
+  './index.html',
   './manifest.json',
   './icon-192.png',
   './icon-512.png',

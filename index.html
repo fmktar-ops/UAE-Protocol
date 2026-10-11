@@ -2225,26 +2225,6 @@ function renderAccount(){
         <div><button class="logout-btn" id="logoutBtn">${t('account_logout')}</button></div>
       </div>
 
-      <div class="section-title">💡 ${appLang==='ar'?'رأيك يهمنا':'We value your feedback'}</div>
-      <div class="list-item" data-tab-link="suggest">
-        <div class="li-main">
-          <div class="li-ic">💡</div>
-          <div class="li-txt"><b>${t('suggest_title').replace('💡 ','')}</b><span>${appLang==='ar'?'أرسلها لنا وبنسمعها بعين الاعتبار':"Send it to us — we're listening"}</span></div>
-        </div>
-        <div class="chev">‹</div>
-      </div>
-
-      <div class="list-item" data-replay-onboarding="1">
-        <div class="li-main">
-          <div class="li-ic">🎬</div>
-          <div class="li-txt"><b>${appLang==='ar'?'شاهد الجولة التعريفية مرة ثانية':'Replay the intro tour'}</b><span>${appLang==='ar'?'استعراض سريع لأهم ميزات التطبيق':'A quick tour of the app’s main features'}</span></div>
-        </div>
-        <div class="chev">‹</div>
-      </div>
-
-      <div class="list-item" data-open-about="1"><div class="li-main"><div class="li-ic">ℹ️</div><div class="li-txt"><b>عن التطبيق</b><span>الناشر، المصادر، وتنويه أنه غير حكومي</span></div></div><div class="chev">‹</div></div>
-      <div class="list-item" data-open-privacy="1"><div class="li-main"><div class="li-ic">🔒</div><div class="li-txt"><b>سياسة الخصوصية</b><span>ما نجمعه وكيف تحذف بياناتك</span></div></div><div class="chev">‹</div></div>
-
       <div class="list-item danger" data-delete-account="1"><div class="li-main"><div class="li-ic">🗑️</div><div class="li-txt"><b>حذف الحساب</b><span>حذف حسابك وبياناتك نهائيًا</span></div></div><div class="chev">‹</div></div>
     `;
   }
@@ -2267,17 +2247,7 @@ function renderAccount(){
       <div class="auth-status" id="authStatus"></div>
     </div>
 
-    <div class="list-item" data-replay-onboarding="1" style="margin-top:14px;">
-      <div class="li-main">
-        <div class="li-ic">🎬</div>
-        <div class="li-txt"><b>${appLang==='ar'?'شاهد الجولة التعريفية مرة ثانية':'Replay the intro tour'}</b><span>${appLang==='ar'?'استعراض سريع لأهم ميزات التطبيق':'A quick tour of the app’s main features'}</span></div>
-      </div>
-      <div class="chev">‹</div>
-    </div>
-
-    <div class="list-item" data-open-about="1"><div class="li-main"><div class="li-ic">ℹ️</div><div class="li-txt"><b>عن التطبيق</b><span>الناشر، المصادر، وتنويه أنه غير حكومي</span></div></div><div class="chev">‹</div></div>
-    <div class="list-item" data-open-privacy="1"><div class="li-main"><div class="li-ic">🔒</div><div class="li-txt"><b>سياسة الخصوصية</b><span>ما نجمعه وكيف تحذف بياناتك</span></div></div><div class="chev">‹</div></div>
-  `;
+`;
 }
 
 let adminStats = null;
@@ -3309,7 +3279,6 @@ function openDrawer(){
         ${item('about','ℹ️', ar?'عن التطبيق':'About the app')}
         ${item('privacy','🔒', ar?'سياسة الخصوصية':'Privacy policy')}
         ${isAdmin ? item('admin','📊', ar?'لوحة التحكم':'Dashboard') : ''}
-        ${logged ? `<div class="drawer-sep"></div>${item('logout','🚪', ar?'تسجيل الخروج':'Log out')}${item('delete','🗑️', ar?'حذف الحساب':'Delete account','danger')}` : ''}
       </div>
       <div class="drawer-ver">إرث – تراث وهوية</div>
     </aside>`;
