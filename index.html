@@ -57,6 +57,7 @@
     display:flex; align-items:center; justify-content:center; font-size:13px; cursor:pointer; flex-shrink:0;
   }
   .acct-btn{ color:#7d8a82; }
+  .menu-btn{ color:var(--green-deep); }
   .acct-btn.logged{ background:var(--green); color:#fff; }
 
   /* ===== القائمة الجانبية للحساب ===== */
@@ -429,6 +430,7 @@
     <div class="status-bar">
       <span id="clock">9:41</span>
       <div style="display:flex; align-items:center; gap:10px;">
+        <div class="acct-btn menu-btn" id="menuBtn" role="button" aria-label="القائمة" title="القائمة"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M4 6.5h16M4 12h16M4 17.5h16"/></svg></div>
         <div class="flagchip">
           <svg viewBox="0 0 60 40"><rect width="60" height="40" fill="#00732F"/><rect y="13.3" width="60" height="13.3" fill="#fff"/><rect y="26.6" width="60" height="13.4" fill="#000"/><rect width="15" height="40" fill="#CE1126"/></svg>
           <span id="flagLabel">الإمارات</span>
@@ -3331,7 +3333,8 @@ function openDrawer(){
     }, 120);
   }));
 }
-document.getElementById('acctBtn').addEventListener('click', openDrawer);
+document.getElementById('menuBtn').addEventListener('click', openDrawer);
+document.getElementById('acctBtn').addEventListener('click', () => { currentTab = 'account'; catDetail = null; heritageSection = null; render(); });
 document.getElementById('acctBtn').innerHTML = USER_SVG(16);
 document.getElementById('acctBtn').setAttribute('role','button');
 document.getElementById('acctBtn').setAttribute('aria-label','القائمة والحساب');
