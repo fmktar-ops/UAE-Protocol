@@ -1,6 +1,6 @@
 // إرث – Service Worker
 // CACHE_VERSION يتغير تلقائيًا مع كل إصدار (أداة البناء تكتبه)، فتصل التحديثات للمستخدمين.
-const CACHE_VERSION = 'b3e4f745bd';
+const CACHE_VERSION = 'f854dd272b';
 const CACHE_NAME = 'irth-' + CACHE_VERSION;
 
 // ملفات لازمة لفتح التطبيق دون اتصال
