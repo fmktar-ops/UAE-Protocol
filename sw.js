@@ -1,6 +1,6 @@
 // إرث – Service Worker
 // CACHE_VERSION يتغير تلقائيًا مع كل إصدار (أداة البناء تكتبه)، فتصل التحديثات للمستخدمين.
-const CACHE_VERSION = 'f854dd272b';
+const CACHE_VERSION = '2b59fc4898';
 const CACHE_NAME = 'irth-' + CACHE_VERSION;
 
 // ملفات لازمة لفتح التطبيق دون اتصال
@@ -33,7 +33,11 @@ const OPTIONAL_FILES = [
   './tajawal-arabic-400-normal.woff2',
   './tajawal-arabic-500-normal.woff2',
   './tajawal-arabic-700-normal.woff2',
-  './qrcode-generator.min.js'
+  './qrcode-generator.min.js',
+  './playfair-display-latin-700-normal.woff2',
+  './playfair-display-latin-700-italic.woff2',
+  './alexandria-latin-500-normal.woff2',
+  './alexandria-latin-700-normal.woff2'
 ];
 
 self.addEventListener('install', (event) => {
