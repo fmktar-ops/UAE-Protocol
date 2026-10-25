@@ -1,6 +1,6 @@
 // إرث – Service Worker
 // CACHE_VERSION يتغير تلقائيًا مع كل إصدار (أداة البناء تكتبه)، فتصل التحديثات للمستخدمين.
-const CACHE_VERSION = 'c7ab7347d5';
+const CACHE_VERSION = 'bd5fcbc055';
 const CACHE_NAME = 'irth-' + CACHE_VERSION;
 
 // ملفات لازمة لفتح التطبيق دون اتصال
@@ -37,7 +37,8 @@ const OPTIONAL_FILES = [
   './playfair-display-latin-700-normal.woff2',
   './playfair-display-latin-700-italic.woff2',
   './alexandria-latin-500-normal.woff2',
-  './alexandria-latin-700-normal.woff2'
+  './alexandria-latin-700-normal.woff2',
+  './uae-history-en.vtt'
 ];
 
 self.addEventListener('install', (event) => {
